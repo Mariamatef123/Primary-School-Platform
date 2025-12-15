@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Model Answers · TinyScholars</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      .dashboard-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 25px;
+      }
+      .dashboard-nav h2 {
+        margin: 0;
+      }
+      .dashboard-nav a {
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 6px;
+        padding: 6px 12px;
+      }
+      .dashboard {
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
+        margin-top: 67px;
+      }
+      .profile-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px;
+
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .question {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="dashboard-nav">
+      <h2>Model Answers</h2>
+      <a href="dashboard-student">Back</a>
+    </nav>
+
+    <div class="dashboard">
+      <h3 id="quizTitle">Loading...</h3>
+      <div id="questionsContainer"></div>
+    </div>
+
+    <script>
+      const studentId = localStorage.getItem("userId");
+      const urlParams = new URLSearchParams(window.location.search);
+      const subjectId = urlParams.get("subjectId");
+      const assessmentId = urlParams.get("assessmentId");
+
+      if (!studentId || !subjectId || !assessmentId) {
+        alert("Missing information!");
+        window.location.href = "dashboard-student.html";
+      }
+
+      const API_BASE = "http://localhost:8080/students";
+
+      async function loadModelAnswers() {
+        try {
+          // Correct API endpoint
+          const res = await fetch(
+            `${API_BASE}/${studentId}/subjects/${subjectId}/assessments/${assessmentId}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch assessment");
+
+          const assessment = await res.json();
+
+          document.getElementById("quizTitle").innerText = assessment.title;
+
+          const container = document.getElementById("questionsContainer");
+          container.innerHTML = "";
+
+          assessment.questions.forEach((q, index) => {
+            const div = document.createElement("div");
+            const choiceIndexCorrect =
+              q.correct.replace("choice", "").charCodeAt(0) - 65;
+            const correctText = q.choices[choiceIndexCorrect];
+
+            div.classList.add("question");
+            div.innerHTML = `
+        <p><strong>Q${index + 1}: ${q.headline}</strong></p>
+        <p style="color:#4cbee4">Correct answer: <span class="answer" style="color:white">${correctText}</span></p>
+      `;
+            container.appendChild(div);
+          });
+        } catch (err) {
+          console.error(err);
+          document.getElementById("questionsContainer").innerHTML =
+            "<p>Failed to load model answers.</p>";
+        }
+      }
+
+      loadModelAnswers();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "spring.data.jpa.repositories.enabled-context-converters",
+  "type": "java.lang.String",
+  "description": "A description for 'spring.data.jpa.repositories.enabled-context-converters'"
+}]}

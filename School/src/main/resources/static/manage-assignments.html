@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Manage Assignments</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <style>
+      .dashboard {
+        padding: 20px;
+      }
+      .list-box {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .list-item {
+        background: #f4f6f8;
+        padding: 12px 15px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: black;
+      }
+      .list-item h4 {
+        margin: 0;
+      }
+      .list-item .meta {
+        font-size: 0.9rem;
+        color: #555;
+      }
+      .btn-group button,
+      .btn-group a {
+        margin-left: 8px;
+      }
+      .start-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        background-color: #00bfa5;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .start-btn:hover {
+        background-color: #009e8f;
+      }
+      .start-btn-danger {
+        background-color: #e53935;
+      }
+      .start-btn-danger:hover {
+        background-color: #c62828;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="dashboard-nav">
+      <h2>Teacher Dashboard</h2>
+      <a href="dashboard-teacher" class="start-btn">Back</a>
+    </nav>
+
+    <div class="dashboard">
+      <h2 id="subjectTitle">Manage Assignments</h2>
+      <a id="createBtn" class="start-btn" href="#">+ Create Assignment</a>
+      <div class="list-box" id="assignmentList">
+        <p>Loading assignments...</p>
+      </div>
+    </div>
+
+    <script>
+      const teacherId = localStorage.getItem("userId");
+      const API_BASE = "http://localhost:8080/api/teacher";
+
+      const subjectTitle = document.getElementById("subjectTitle");
+      const assignmentList = document.getElementById("assignmentList");
+      const createBtn = document.getElementById("createBtn");
+
+      let currentSubject = null;
+      let assignments = [];
+      let maxAssignments = 3; // fallback default
+
+      // ----------------- Fetch Teacher's Subject -----------------
+      async function fetchSubject() {
+        try {
+          const res = await fetch(`${API_BASE}/${teacherId}/subject`);
+          if (!res.ok) throw new Error("Failed to fetch subject");
+
+          const subject = await res.json();
+          if (!subject) {
+            assignmentList.innerHTML = "<p>No subject assigned to teacher.</p>";
+            createBtn.style.display = "none";
+            return;
+          }
+
+          currentSubject = subject;
+          subjectTitle.textContent = `Manage Assignments (${subject.name})`;
+          createBtn.href = `/create-assignment?subjectId=${subject.id}`;
+
+          await fetchMaxAssignments();
+          await fetchAssignments();
+        } catch (err) {
+          console.error(err);
+          assignmentList.innerHTML = `<p style="color:red">Failed to load subject: ${err.message}</p>`;
+          createBtn.style.display = "none";
+        }
+      }
+
+      // ----------------- Fetch Max Assignments -----------------
+      async function fetchMaxAssignments() {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/assessments/maxAssignments`
+          );
+          if (!res.ok) throw new Error("Failed to fetch max assignments");
+
+          const data = await res.text();
+          maxAssignments = parseInt(data) || maxAssignments;
+        } catch (err) {
+          console.error("Error fetching max assignments:", err);
+        }
+      }
+
+      // ----------------- Fetch Assignments -----------------
+      async function fetchAssignments() {
+        try {
+          const res = await fetch(
+            `${API_BASE}/assessments?teacherId=${teacherId}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch assessments");
+
+          const allAssessments = await res.json();
+          assignments = allAssessments.filter((a) => a.type === "ASSIGNMENT");
+
+          renderAssignments();
+          checkMaxAssignments();
+        } catch (err) {
+          console.error(err);
+          assignmentList.innerHTML = `<p style="color:red">Failed to load assignments: ${err.message}</p>`;
+        }
+      }
+
+      // ----------------- Render Assignments -----------------
+      function renderAssignments() {
+        assignmentList.innerHTML = "";
+
+        if (!assignments || assignments.length === 0) {
+          assignmentList.innerHTML = "<p>No assignments found.</p>";
+          return;
+        }
+
+        assignments.forEach((a) => {
+          const div = document.createElement("div");
+          div.classList.add("list-item");
+
+          div.innerHTML = `
+        <div>
+          <h4>${a.title}</h4>
+          <p class="meta">Duration: ${a.duration || "-"}</p>
+        </div>
+        <div class="btn-group">
+          <a href="/create-assignment?assignmentId=${
+            a.assessmentId
+          }&subjectId=${currentSubject.id}" class="start-btn">Edit</a>
+          <button class="start-btn start-btn-danger">Delete</button>
+        </div>
+      `;
+
+          div
+            .querySelector("button")
+            .addEventListener("click", () => deleteAssignment(a.assessmentId));
+          assignmentList.appendChild(div);
+        });
+      }
+
+      // ----------------- Check Max Assignments -----------------
+      function checkMaxAssignments() {
+        if (assignments.length >= maxAssignments) {
+          createBtn.style.display = "none";
+
+          const info = document.createElement("p");
+          info.style.color = "red";
+          info.textContent = `Maximum number of assignments (${maxAssignments}) reached.`;
+          assignmentList.prepend(info);
+        } else {
+          createBtn.style.display = "inline-block";
+        }
+      }
+
+      // ----------------- Delete Assignment -----------------
+      async function deleteAssignment(id) {
+        if (!confirm("Delete this assignment?")) return;
+
+        try {
+          const res = await fetch(`${API_BASE}/assessments/${id}`, {
+            method: "DELETE",
+          });
+          if (!res.ok) throw new Error("Failed to delete assignment");
+
+          await fetchAssignments();
+        } catch (err) {
+          console.error(err);
+          alert(`Error deleting assignment: ${err.message}`);
+        }
+      }
+
+      // ----------------- Initialize -----------------
+      fetchSubject();
+    </script>
+  </body>
+</html>

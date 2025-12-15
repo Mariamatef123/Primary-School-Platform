@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Levels</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/manage-student.css" />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <style>
+      #levelForm {
+        display: none;
+        margin: 1rem 0 2rem;
+        padding: 1.5rem;
+        border-radius: 10px;
+        background: var(--color-bg1);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+      }
+      .form-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .btn {
+        padding: 9px 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #fff;
+        margin: 8px;
+      }
+      .edit-btn {
+        background: #2196f3;
+      }
+      .delete-btn {
+        background: #f44336;
+      }
+      #levelForm input,
+      #levelForm select {
+        display: block;
+        width: 100%;
+        padding: 0.6rem 1rem;
+        margin-bottom: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        background: var(--color-bg2);
+        color: var(--color-white);
+        font-size: 0.9rem;
+        width: 25%;
+      }
+      .add-btn {
+        background: var(--color-primary);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+        <ul class="menu">
+          <li>
+            <a href="/dashboard-admin"
+              ><i class="uil uil-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/manage-student"
+              ><i class="uil uil-users-alt"></i> Students</a
+            >
+          </li>
+          <li>
+            <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
+          </li>
+          <li>
+            <a href="/manage-parent"
+              ><i class="uil uil-users-alt"></i> Parents</a
+            >
+          </li>
+          <li class="active"><i class="uil uil-layers"></i> Levels</li>
+          <li>
+            <a href="/manage-subjects"
+              ><i class="uil uil-book-open"></i> Subjects</a
+            >
+          </li>
+          <li>
+            <a href="/logout"><i class="uil uil-signout"></i> Logout</a>
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main">
+        <h1>Manage Levels</h1>
+        <button class="btn add-btn" onclick="showForm()">+ Add Level</button>
+
+        <div id="levelForm">
+          <div class="form-row">
+            <input id="levelSelect" type="text" />
+            <button class="btn add-btn" onclick="saveLevel()">Submit</button>
+            <button class="btn delete-btn" onclick="hideForm()">Cancel</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table id="levelTable" cellpadding="5" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Level</th>
+                <th>Subjects</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <script>
+      let editLevelId = null;
+      let allLevels = []; // CRITICAL: Store all levels for uniqueness check
+
+      // Show/hide form
+      function showForm() {
+        document.getElementById("levelForm").style.display = "block";
+      }
+      function hideForm() {
+        document.getElementById("levelForm").style.display = "none";
+        clearForm();
+      }
+      // Simplified: Only clear the Level select input
+      function clearForm() {
+        document.getElementById("levelSelect").value = "";
+        editLevelId = null;
+      }
+
+      // --- NEW: Uniqueness Check Function ---
+      function isLevelNameUnique(newName, currentId) {
+        const normalizedNewName = newName.trim().toLowerCase();
+
+        // Check against all existing levels
+        const duplicate = allLevels.find(
+          (level) =>
+            // Check if the name matches AND the ID is different (or it's a new level)
+            level.name.toLowerCase() === normalizedNewName &&
+            level.id !== currentId
+        );
+
+        return !duplicate;
+      }
+
+      // Load levels (Includes subject display)
+      async function loadLevels() {
+        try {
+          const res = await fetch("http://localhost:8080/api/admin/levels");
+          if (!res.ok) throw new Error("Failed to load levels");
+
+          // Store the data globally
+          allLevels = await res.json();
+
+          const tbody = document.querySelector("#levelTable tbody");
+          tbody.innerHTML = "";
+
+          for (const level of allLevels) {
+            let subjects = [];
+            try {
+              // Fetch subjects for display purposes
+              const subjRes = await fetch(
+                `http://localhost:8080/api/admin/levels/${level.id}/subjects`
+              );
+              if (subjRes.ok) subjects = await subjRes.json();
+            } catch (err) {
+              console.error("Failed to fetch subjects for level:", err);
+            }
+
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                    <td>${level.name}</td>
+                    <td>${subjects.map((s) => s.name).join(", ")}</td>
+                    <td>
+                        <button class="btn edit-btn" onclick="editLevel(${
+                          level.id
+                        })">Edit</button>
+                        <button class="btn delete-btn" onclick="deleteLevel(${
+                          level.id
+                        })">Delete</button>
+                    </td>
+                `;
+          }
+        } catch (err) {
+          console.error(err);
+          alert(err.message);
+        }
+      }
+
+      // Edit level (Simplified)
+      async function editLevel(levelId) {
+        try {
+          // Find the level in the globally stored list
+          const level = allLevels.find((l) => l.id === levelId);
+          if (!level) throw new Error("Level not found in memory.");
+
+          editLevelId = level.id;
+          document.getElementById("levelSelect").value = level.name;
+
+          showForm();
+        } catch (err) {
+          console.error(err);
+          alert("Failed to fetch level for editing: " + err.message);
+        }
+      }
+
+      // Save level (create/update) - Handles uniqueness check
+      async function saveLevel() {
+        const levelName = document.getElementById("levelSelect").value.trim();
+        if (!levelName) return alert("Level name cannot be empty.");
+
+        // --- CLIENT-SIDE UNIQUENESS CHECK ---
+        if (!isLevelNameUnique(levelName, editLevelId)) {
+          return alert(`The level name '${levelName}' already exists.`);
+        }
+        // --- END CLIENT-SIDE UNIQUENESS CHECK ---
+
+        try {
+          const url = editLevelId
+            ? `http://localhost:8080/api/admin/levels/${editLevelId}`
+            : "http://localhost:8080/api/admin/levels";
+          const method = editLevelId ? "PUT" : "POST";
+
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: levelName }),
+          });
+
+          if (!res.ok) {
+            const errorText = await res.text();
+
+            // Backend uniqueness check (as a fallback)
+            if (
+              errorText.includes("already exists") ||
+              errorText.includes("Duplicate entry")
+            ) {
+              return alert(
+                `Failed to save level: Level name '${levelName}' already exists. (Backend check failed)`
+              );
+            }
+            throw new Error(errorText);
+          }
+
+          hideForm();
+          await loadLevels();
+        } catch (err) {
+          console.error(err);
+          alert("Failed to save level: " + err.message);
+        }
+      }
+      // Delete level
+      async function deleteLevel(id) {
+        if (
+          !confirm(
+            "Delete this level? This action is permanent and may fail if entities are linked."
+          )
+        )
+          return;
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/admin/levels/${id}`,
+            { method: "DELETE" }
+          );
+          if (!res.ok) throw new Error(await res.text());
+          await loadLevels();
+        } catch (err) {
+          console.error(err);
+          // Added specific warning for linked entities
+          alert(
+            "Failed to delete level. Please check the console for details. (Possible reason: Subjects or Students are still linked to this level.)"
+          );
+        }
+      }
+
+      window.onload = loadLevels;
+    </script>
+  </body>
+</html>

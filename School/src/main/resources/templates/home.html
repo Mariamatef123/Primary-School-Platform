@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap JS (with Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </head>
+
+  <body>
+    <form
+      class="row g-3 needs-validation"
+      method="post"
+      th:action="@{/register}"
+      style="margin: 0 50px; display: grid"
+      id="registerForm"
+    >
+      <div class="col-md-12">
+        <label for="name" class="form-label">Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          name="name"
+          required
+        />
+      </div>
+
+      <div class="col-md-12">
+        <label for="age" class="form-label">Age</label>
+        <input type="text" class="form-control" id="age" name="age" required />
+      </div>
+
+      <div class="col-md-12">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          name="email"
+          required
+        />
+      </div>
+
+      <div class="col-md-12">
+        <label for="password" class="form-label">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          name="password"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+
+      <div id="msg"></div>
+    </form>
+    <a
+      href="login.html"
+      style="display: flex; justify-content: center; font-size: large"
+      >login</a
+    >
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+      $("#registerForm").submit(function (e) {
+        e.preventDefault(); // stop normal form submission
+        $("#msg").html(""); // clear previous messages
+
+        // create user object from form fields
+        const user = {
+          name: $("input[name='name']").val(),
+          email: $("input[name='email']").val(),
+          password: $("input[name='password']").val(),
+          age: $("input[name='age']").val(),
+        };
+
+        $.ajax({
+          url: "/register",
+          type: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(user),
+          success: function (res) {
+            $("#msg").text(res).css("color", "green"); // show success
+            $("#registerForm")[0].reset(); // clear form
+          },
+          error: function (xhr) {
+            const data = xhr.responseJSON;
+            if (Array.isArray(data)) {
+              $("#msg").html(data.join("<br>")).css("color", "red"); // multiple errors
+            } else {
+              $("#msg").text(data).css("color", "red"); // single error
+            }
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

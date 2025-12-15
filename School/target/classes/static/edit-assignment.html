@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Edit Assignment</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+
+    <style>
+      .question-box {
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+      }
+
+      .question-box p {
+        margin: 0 0 8px 0;
+        font-weight: bold;
+      }
+
+      .question-box input[type="text"] {
+        width: 100%;
+        margin-bottom: 8px;
+      }
+
+      .option-input {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="dashboard-nav">
+      <h2>Edit Assignment</h2>
+      <a href="manage-assignments" class="start-btn">Back</a>
+    </nav>
+
+    <div class="dashboard">
+      <div class="list-box">
+        <h3>Edit Assignment</h3>
+
+        <label>Title</label>
+        <input
+          id="titleInput"
+          type="text"
+          class="input"
+          value="Math Assignment 1"
+        />
+
+        <label>Due Date</label>
+        <input id="dateInput" type="date" class="input" value="2025-12-10" />
+
+        <hr style="margin: 20px 0" />
+
+        <h3>Questions</h3>
+
+        <div id="questionsContainer"></div>
+
+        <button id="saveBtn" class="start-btn" style="margin-top: 20px">
+          Save Changes
+        </button>
+      </div>
+    </div>
+
+    <script>
+      /* كأن الأسئلة دي جاية من قاعدة بيانات */
+      const savedQuestions = [
+        { text: "What is 2 + 2?", options: ["1", "4", "3", "5"] },
+        { text: "What is 3 + 3?", options: ["5", "6", "3", "9"] },
+        { text: "What is 4 + 4?", options: ["8", "7", "6", "9"] },
+        { text: "What is 5 + 5?", options: ["10", "11", "15", "9"] },
+        { text: "What is 6 + 6?", options: ["12", "6", "10", "18"] },
+        { text: "What is 7 + 7?", options: ["14", "10", "7", "11"] },
+        { text: "What is 8 + 8?", options: ["16", "12", "9", "20"] },
+        { text: "What is 9 + 9?", options: ["18", "15", "10", "17"] },
+        { text: "What is 10 + 10?", options: ["20", "30", "10", "5"] },
+        { text: "What is 11 + 11?", options: ["22", "21", "10", "30"] },
+      ];
+
+      const maxQuestions = 10;
+      const container = document.getElementById("questionsContainer");
+
+      /* عرض الأسئلة */
+      savedQuestions.forEach((q, index) => {
+        const box = document.createElement("div");
+        box.className = "question-box";
+
+        box.innerHTML = `
+        <p>Question ${index + 1}</p>
+        <input type="text" class="input question-text" value="${q.text}">
+
+        <input type="text" class="option-input input option" value="${
+          q.options[0]
+        }">
+        <input type="text" class="option-input input option" value="${
+          q.options[1]
+        }">
+        <input type="text" class="option-input input option" value="${
+          q.options[2]
+        }">
+        <input type="text" class="option-input input option" value="${
+          q.options[3]
+        }">
+    `;
+
+        container.appendChild(box);
+      });
+
+      /* زرار حفظ التغييرات */
+      document.getElementById("saveBtn").addEventListener("click", () => {
+        // لازم 10 أسئلة
+        const questionBoxes = document.querySelectorAll(".question-box");
+        if (questionBoxes.length !== maxQuestions) {
+          alert("Assignment must contain exactly 10 questions.");
+          return;
+        }
+
+        // مفيش سؤال فاضي
+        const questionTexts = document.querySelectorAll(".question-text");
+        for (let q of questionTexts) {
+          if (q.value.trim() === "") {
+            alert("Questions cannot be empty.");
+            return;
+          }
+        }
+
+        // مفيش اختيار فاضي
+        const allOptions = document.querySelectorAll(".option");
+        for (let opt of allOptions) {
+          if (opt.value.trim() === "") {
+            alert("Options cannot be empty.");
+            return;
+          }
+        }
+
+        alert("Assignment updated successfully!");
+        window.location.href = "/manage-assignments";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+
+# services:
+#   # --- School Service (Monolith) ---
+#   school:
+#     build:
+#       context: ./School
+#       dockerfile: Dockerfile
+#     container_name: school_service_app
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       SPRING_DATASOURCE_URL: jdbc:sqlserver://localhost:1433;databaseName=School;encrypt=true;trustServerCertificate=true
+#       SPRING_DATASOURCE_USERNAME: SA
+#       SPRING_DATASOURCE_PASSWORD: Mariam@123
+
+
+#   # --- API Gateway Service ---
+#   getway:
+#     build:
+#       context: ./apiGatway
+#       dockerfile: Dockerfile
+#     container_name: api_gateway_app
+#     ports:
+#       - "8082:8082"
+#     depends_on:
+#       - school

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Manage Exams</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <style>
+      .dashboard {
+        padding: 20px;
+      }
+      .list-box {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .list-item {
+        background: #f4f6f8;
+        padding: 12px 15px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: black;
+      }
+      .list-item h4 {
+        margin: 0;
+      }
+      .list-item .meta {
+        font-size: 0.9rem;
+        color: #555;
+      }
+      .btn-group button,
+      .btn-group a {
+        margin-left: 8px;
+      }
+      .start-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        background-color: #2196f3;
+        color: white;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .start-btn:hover {
+        background-color: #1976d2;
+      }
+      .start-btn-danger {
+        background-color: #e53935;
+      }
+      .start-btn-danger:hover {
+        background-color: #c62828;
+      }
+    </style>
+  </head>
+
+  <body>
+    <nav class="dashboard-nav">
+      <h2>Teacher Dashboard</h2>
+      <a href="dashboard-teacher" class="start-btn">Back</a>
+    </nav>
+
+    <div class="dashboard">
+      <h2 id="subjectTitle">Manage Exams</h2>
+      <a id="createBtn" class="start-btn" href="#">+ Create Exam</a>
+
+      <div class="list-box" id="examList">
+        <p>Loading exams...</p>
+      </div>
+    </div>
+
+    <script>
+      const teacherId = localStorage.getItem("userId");
+      const API_BASE = "http://localhost:8080/api/teacher";
+
+      const subjectTitle = document.getElementById("subjectTitle");
+      const examList = document.getElementById("examList");
+      const createBtn = document.getElementById("createBtn");
+
+      let currentSubject = null;
+      let exams = [];
+      let maxExams = 2; // default fallback
+
+      // ---------------- FETCH TEACHER SUBJECT ----------------
+      async function fetchSubject() {
+        try {
+          const res = await fetch(`${API_BASE}/${teacherId}/subject`);
+          if (!res.ok) throw new Error("Failed to fetch subject");
+          const subject = await res.json();
+
+          if (!subject) {
+            examList.innerHTML = "<p>No subject assigned to teacher.</p>";
+            createBtn.style.display = "none";
+            return;
+          }
+
+          currentSubject = subject;
+          subjectTitle.textContent = `Manage Exams (${subject.name})`;
+          createBtn.href = `/create-exam?subjectId=${subject.id}`;
+
+          await fetchMaxExams();
+          await fetchExams();
+        } catch (err) {
+          examList.innerHTML = `<p style="color:red">Failed to load subject: ${err.message}</p>`;
+          createBtn.style.display = "none";
+        }
+      }
+
+      // ---------------- FETCH MAX EXAMS ----------------
+      async function fetchMaxExams() {
+        try {
+          const res = await fetch(`http://localhost:8080/assessments/maxExams`);
+          if (!res.ok) throw new Error("Failed to fetch max exams");
+          maxExams = parseInt(await res.text()) || maxExams;
+        } catch (err) {
+          console.error("Error fetching max exams:", err);
+        }
+      }
+
+      // ---------------- FETCH EXAMS ----------------
+      async function fetchExams() {
+        try {
+          const res = await fetch(
+            `${API_BASE}/assessments?teacherId=${teacherId}`
+          );
+          if (!res.ok) throw new Error("Failed to fetch assessments");
+
+          const all = await res.json();
+          exams = all.filter((e) => e.type === "EXAM");
+
+          renderExams();
+          checkMaxExams();
+        } catch (err) {
+          examList.innerHTML = `<p style="color:red">Failed to load exams: ${err.message}</p>`;
+        }
+      }
+
+      // ---------------- RENDER EXAMS ----------------
+      function renderExams() {
+        examList.innerHTML = "";
+
+        if (!exams || exams.length === 0) {
+          examList.innerHTML = "<p>No exams found.</p>";
+          return;
+        }
+
+        exams.forEach((e) => {
+          const div = document.createElement("div");
+          div.classList.add("list-item");
+
+          div.innerHTML = `
+            <div>
+              <h4>${e.title}</h4>
+              <p class="meta">Duration: ${e.duration || "-"}</p>
+            </div>
+            <div class="btn-group">
+              <a href="/create-exam?examId=${e.assessmentId}&subjectId=${
+            currentSubject.id
+          }" class="start-btn">Edit</a>
+              <button class="start-btn start-btn-danger">Delete</button>
+            </div>
+          `;
+
+          div
+            .querySelector("button")
+            .addEventListener("click", () => deleteExam(e.assessmentId));
+          examList.appendChild(div);
+        });
+      }
+
+      // ---------------- CHECK MAX EXAMS ----------------
+      function checkMaxExams() {
+        if (exams.length >= maxExams) {
+          createBtn.style.display = "none";
+          const info = document.createElement("p");
+          info.style.color = "red";
+          info.textContent = `Maximum number of exams (${maxExams}) reached.`;
+          examList.prepend(info);
+        } else {
+          createBtn.style.display = "inline-block";
+        }
+      }
+
+      // ---------------- DELETE EXAM ----------------
+      async function deleteExam(id) {
+        if (!confirm("Delete this exam?")) return;
+
+        try {
+          const res = await fetch(`${API_BASE}/assessments/${id}`, {
+            method: "DELETE",
+          });
+          if (!res.ok) throw new Error("Failed to delete exam");
+
+          await fetchExams();
+        } catch (err) {
+          alert(`Error deleting exam: ${err.message}`);
+        }
+      }
+
+      // ---------------- INITIALIZE ----------------
+      fetchSubject();
+    </script>
+  </body>
+</html>

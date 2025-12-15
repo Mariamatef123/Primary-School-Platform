@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subject Details · TinyScholars</title>
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+      }
+
+      .dashboard-nav {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .dashboard-nav h2 a {
+        color: #4a5568;
+        text-decoration: none;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .dashboard-nav h2 a:hover {
+        color: #667eea;
+      }
+
+      .dashboard {
+        padding: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      .subject-header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 2.5rem;
+        border-radius: 20px;
+        text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .subject-header i {
+        font-size: 4rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+      }
+
+      .subject-header h1 {
+        color: #2d3748;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .subject-stats-header {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #667eea;
+      }
+
+      .stat-label {
+        color: #718096;
+        font-size: 0.95rem;
+        margin-top: 0.25rem;
+      }
+
+      .assessments-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .assessments-section h2 {
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        font-size: 1.8rem;
+      }
+
+      .assessments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .assessment-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 15px;
+        background: #f8faff;
+        transition: all 0.3s ease;
+      }
+
+      .assessment-item:hover {
+        border-color: #667eea;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        transform: translateY(-2px);
+      }
+
+      .assessment-info h4 {
+        color: #2d3748;
+        font-size: 1.2rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .assessment-meta {
+        color: #718096;
+        font-size: 0.9rem;
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.25rem;
+      }
+
+      .assessment-score {
+        font-size: 1.1rem;
+        font-weight: 600;
+        min-width: 120px;
+        text-align: right;
+      }
+
+      .score-completed {
+        color: #48bb78;
+      }
+
+      .score-pending {
+        color: #ed8936;
+      }
+
+      .start-btn {
+        background: linear-gradient(135deg, #4caf50, #45a049);
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+      }
+
+      .start-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+      }
+
+      .no-assessments {
+        text-align: center;
+        padding: 3rem;
+        color: #718096;
+      }
+
+      .no-assessments i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      @media (max-width: 768px) {
+        .dashboard {
+          padding: 1rem;
+        }
+
+        .assessment-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .assessment-score {
+          align-self: flex-end;
+        }
+
+        .subject-stats-header {
+          gap: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="dashboard-nav">
+      <h2>
+        <a href="dashboard"
+          ><i class="uil uil-arrow-left"></i> Back to Dashboard</a
+        >
+      </h2>
+    </nav>
+
+    <div class="dashboard">
+      <div class="subject-header">
+        <i class="uil uil-graduation-cap"></i>
+        <h1 id="subjectTitle">Loading...</h1>
+        <div class="subject-stats-header" id="subjectStats">
+          <!-- Stats will be populated by JS -->
+        </div>
+      </div>
+
+      <section class="assessments-section">
+        <h2>Assessments</h2>
+        <div class="assessments-list" id="assessmentsList">
+          <div class="no-assessments">
+            <i
+              class="uil uil-spinner-alt"
+              style="font-size: 3rem; animation: spin 1s linear infinite"
+            ></i>
+            <p>Loading assessments...</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      async function loadSubjectDetails() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const subjectId = urlParams.get("subjectId");
+        const studentId = urlParams.get("userId");
+
+        if (!subjectId || !studentId) {
+          document.body.innerHTML =
+            '<div style="text-align:center;padding:3rem;color:#718096;">Error: Missing subject or student ID</div>';
+          return;
+        }
+
+        try {
+          // Fetch subject details
+          const subjectRes = await fetch(
+            `http://localhost:8080/subjects/${subjectId}`
+          );
+          if (!subjectRes.ok) throw new Error("Subject not found");
+          const subject = await subjectRes.json();
+          document.getElementById("subjectTitle").textContent = subject.name;
+
+          // Fetch student assessments for this subject
+          // Note: You may need to adjust this endpoint based on your API
+          const assessmentsRes = await fetch(
+            `http://localhost:8080/students/${studentId}/subjects/${subjectId}/assessments`
+          );
+          let assessments = [];
+
+          if (assessmentsRes.ok) {
+            assessments = await assessmentsRes.json();
+          } else {
+            // Fallback: use assessments from student/subjects endpoint
+            const studentSubjectsRes = await fetch(
+              `http://localhost:8080/students/${studentId}/subjects`
+            );
+            const studentSubjects = await studentSubjectsRes.json();
+            const thisSubject = studentSubjects.find((s) => s.id == subjectId);
+            assessments = thisSubject?.assessments || [];
+          }
+
+          const list = document.getElementById("assessmentsList");
+          const statsContainer = document.getElementById("subjectStats");
+
+          if (assessments.length === 0) {
+            list.innerHTML = `
+              <div class="no-assessments">
+                <i class="uil uil-clipboard-notes"></i>
+                <h3>No assessments yet</h3>
+                <p>No assignments or exams have been assigned for this subject.</p>
+              </div>
+            `;
+            return;
+          }
+
+          // Calculate stats
+          let totalCompleted = 0;
+          let totalAssignments = 0;
+          let totalExams = 0;
+          let avgScore = 0;
+
+          const assessmentPromises = assessments.map(async (assessment) => {
+            let score = null;
+            try {
+              const scoreRes = await fetch(
+                `http://localhost:8080/students/${studentId}/assessments/${assessment.assessmentId}/score`
+              );
+              if (scoreRes.ok) {
+                const scoreData = await scoreRes.json();
+                score = scoreData.score || 0;
+                totalCompleted++;
+                avgScore += score;
+              }
+            } catch (e) {
+              console.warn("Score fetch failed:", e);
+            }
+
+            if (assessment.type?.toUpperCase() === "ASSIGNMENT")
+              totalAssignments++;
+            if (assessment.type?.toUpperCase() === "EXAM") totalExams++;
+
+            return { assessment, score };
+          });
+
+          const results = await Promise.all(assessmentPromises);
+
+          // Update stats
+          avgScore =
+            totalCompleted > 0 ? Math.round(avgScore / totalCompleted) : 0;
+          statsContainer.innerHTML = `
+            <div class="stat-item">
+              <div class="stat-number">${assessments.length}</div>
+              <div class="stat-label">Total Assessments</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">${totalCompleted}</div>
+              <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">${totalAssignments}</div>
+              <div class="stat-label">Assignments</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">${totalExams}</div>
+              <div class="stat-label">Exams</div>
+            </div>
+          `;
+
+          // Populate assessments list
+          list.innerHTML = "";
+          results.forEach(({ assessment, score }) => {
+            const scoreDisplay =
+              score !== null
+                ? `${score}/${assessment.numOfQues}`
+                : "Not completed";
+            const scoreClass =
+              score !== null ? "score-completed" : "score-pending";
+
+            const item = document.createElement("div");
+            item.className = "assessment-item";
+            item.innerHTML = `
+              <div class="assessment-info">
+                <h4>${assessment.title}</h4>
+                <div class="assessment-meta">
+                  <span><i class="uil uil-${
+                    assessment.type?.toLowerCase() === "exam"
+                      ? "book-alt"
+                      : "clipboard-notes"
+                  }"></i> ${assessment.type || "Assessment"}</span>
+                  <span><i class="uil uil-question-circle"></i> ${
+                    assessment.numOfQues
+                  } questions</span>
+                </div>
+              </div>
+              <div class="assessment-score ${scoreClass}">
+                ${scoreDisplay}
+                <div style="margin-top: 0.5rem;">
+                  <a href="/take-quiz?assessmentId=${
+                    assessment.assessmentId
+                  }&studentId=${studentId}" class="start-btn">
+                    ${score !== null ? "Review" : "Start"}
+                  </a>
+                </div>
+              </div>
+            `;
+            list.appendChild(item);
+          });
+        } catch (err) {
+          console.error("Subject details load error:", err);
+          document.getElementById("assessmentsList").innerHTML = `
+            <div class="no-assessments">
+              <i class="uil uil-exclamation-triangle"></i>
+              <h3>Failed to load</h3>
+              <p>Could not load subject details. <a href="/dashboard">Return to dashboard</a></p>
+            </div>
+          `;
+        }
+      }
+
+      // CSS for spinner
+      const style = document.createElement("style");
+      style.textContent = `
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Load on page ready
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadSubjectDetails);
+      } else {
+        loadSubjectDetails();
+      }
+    </script>
+  </body>
+</html>

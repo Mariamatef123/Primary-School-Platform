@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Teachers</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/manage-student.css" />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+  </head>
+  <body>
+    <div class="dashboard">
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+        <ul class="menu">
+          <li>
+            <a href="/dashboard-admin"
+              ><i class="uil uil-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/manage-student"
+              ><i class="uil uil-users-alt"></i> Students</a
+            >
+          </li>
+          <li>
+            <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
+          </li>
+          <li>
+            <a href="/manage-parent"
+              ><i class="uil uil-users-alt"></i> Parents</a
+            >
+          </li>
+          <li class="active"><i class="uil uil-layers"></i> Levels</li>
+          <li>
+            <a href="/manage-subjects"
+              ><i class="uil uil-book-open"></i> Subjects</a
+            >
+          </li>
+          <li>
+            <a href="/logout"><i class="uil uil-signout"></i> Logout</a>
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main">
+        <h1>Manage Teachers</h1>
+        <button class="add-btn" onclick="showForm()">
+          <i class="uil uil-plus"></i> Add Teacher
+        </button>
+
+        <div
+          id="teacherForm"
+          style="
+            display: none;
+            margin-bottom: 20px;
+            background: var(--color-bg2);
+            padding: 15px;
+            border-radius: 8px;
+          "
+        >
+          <input
+            type="text"
+            id="name"
+            placeholder="Name"
+            style="padding: 8px; margin: 5px"
+          />
+          <select id="subject" style="padding: 8px; margin: 5px"></select>
+          <input
+            type="email"
+            id="email"
+            placeholder="Email"
+            style="padding: 8px; margin: 5px"
+          />
+          <input
+            type="password"
+            id="password"
+            placeholder="Password (required for new teacher)"
+            style="padding: 8px; margin: 5px"
+          />
+
+          <button
+            id="submitBtn"
+            style="
+              padding: 8px;
+              margin: 5px;
+              background: var(--color-primary);
+              color: white;
+            "
+          >
+            Submit
+          </button>
+          <button
+            onclick="hideForm()"
+            style="
+              padding: 8px;
+              margin: 5px;
+              background: var(--color-danger);
+              color: white;
+            "
+          >
+            Cancel
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table id="teachersTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Email</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let editTeacherId = null;
+      // This will hold the complete list of all subjects fetched from the backend
+      let allSubjectsList = [];
+
+      // --- FORM UTILITIES ---
+
+      function showForm() {
+        // Only call loadSubjects if the list is empty (for ADD mode)
+        // In EDIT mode, editTeacher calls loadSubjects with the current subject.
+        if (allSubjectsList.length === 0) {
+          loadSubjects();
+        }
+        document.getElementById("teacherForm").style.display = "block";
+        document.getElementById("submitBtn").innerText = editTeacherId
+          ? "Update"
+          : "Submit";
+      }
+
+      function hideForm() {
+        document.getElementById("teacherForm").style.display = "none";
+        clearForm();
+      }
+
+      function clearForm() {
+        document.getElementById("name").value = "";
+        document.getElementById("subject").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+        editTeacherId = null;
+      }
+
+      // --- API CALLS & DATA HANDLING ---
+
+      /**
+       * Fetches ALL subjects and populates the dropdown.
+       * @param {Object} [currentSubject=null] - The teacher's current subject object if in edit mode.
+       */
+      async function loadSubjects(currentSubject = null) {
+        const select = document.getElementById("subject");
+        select.innerHTML = '<option value="">Select Subject</option>';
+
+        try {
+          // Fetch ALL subjects only if we haven't already
+          if (allSubjectsList.length === 0) {
+            const res = await fetch("http://localhost:8080/api/admin/subjects");
+
+            if (!res.ok) {
+              const errorText = await res.text();
+              throw new Error(errorText || res.statusText);
+            }
+
+            const subjectsData = await res.json();
+            allSubjectsList = Array.isArray(subjectsData) ? subjectsData : [];
+          }
+
+          // Populate the dropdown with ALL subjects
+          allSubjectsList.forEach((s) => {
+            const option = document.createElement("option");
+            option.value = s.id; // Use the subject ID as the value
+            option.text = s.name;
+            select.add(option);
+          });
+
+          // If editing, select the teacher's current subject by its ID
+          if (currentSubject && currentSubject.id) {
+            select.value = currentSubject.id;
+          }
+        } catch (err) {
+          console.error("Error loading subjects:", err);
+          alert(
+            "Could not load subjects. Please check the backend service at http://localhost:8080/api/admin/subjects."
+          );
+        }
+      }
+
+      // LOAD TEACHERS
+      // LOAD TEACHERS (REVISED to use the new /subject endpoint)
+      async function loadTeachers() {
+        try {
+          const res = await fetch("http://localhost:8080/api/admin/teachers");
+          const teachers = await res.json();
+          const tbody = document
+            .getElementById("teachersTable")
+            .getElementsByTagName("tbody")[0];
+          tbody.innerHTML = "";
+
+          // Use Promise.all to fetch all subjects concurrently for better performance
+          // This is still less efficient than one large call, but better than sequential fetching.
+          const teachersWithSubjectsPromises = teachers.map(async (t) => {
+            let subjectName = "-";
+            // Check if the teacher object already includes subject data (for fallback/efficiency)
+            if (t.subject && t.subject.name) {
+              subjectName = t.subject.name;
+            } else {
+              // *** API Call to the new endpoint ***
+              try {
+                const subjectRes = await fetch(
+                  `http://localhost:8080/api/teacher/${t.id}/subject`
+                );
+                if (subjectRes.ok) {
+                  const subject = await subjectRes.json();
+                  subjectName = subject.name || "-";
+                  // Update the teacher object with the full subject data for editing later
+                  t.subject = subject;
+                } else {
+                  console.warn(
+                    `Could not fetch subject for teacher ID ${t.id}. Status: ${subjectRes.status}`
+                  );
+                }
+              } catch (err) {
+                console.error(
+                  `Error fetching subject for teacher ID ${t.id}:`,
+                  err
+                );
+              }
+            }
+            return { ...t, subjectNameForDisplay: subjectName };
+          });
+
+          // Wait for all subject fetches to complete
+          const teachersWithSubjects = await Promise.all(
+            teachersWithSubjectsPromises
+          );
+
+          teachersWithSubjects.forEach((t) => {
+            // Combine phone numbers for display, using <br> for new lines
+
+            const row = tbody.insertRow();
+            // Store full teacher object for easy editing lookup
+            // Note: t.subject is updated inside the Promise.all loop
+            row.dataset.teacher = JSON.stringify(t);
+
+            row.innerHTML = `
+                <td>${t.id}</td>
+                <td>${t.name}</td>
+                <td>${t.subjectNameForDisplay}</td>
+                <td>${t.email}</td>
+         
+                <td>
+                    <button class="edit" onclick="editTeacher(${t.id})">
+                        <i class="uil uil-edit"></i>
+                    </button>
+                    <button class="delete" onclick="deleteTeacher(${t.id})">
+                        <i class="uil uil-trash-alt"></i>
+                    </button>
+                </td>
+            `;
+          });
+        } catch (err) {
+          console.error("Error loading teachers:", err);
+        }
+      }
+      // SAVE TEACHER
+      async function saveTeacher() {
+        const name = document.getElementById("name").value.trim();
+        const subjectId = document.getElementById("subject").value;
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        // Validation
+        if (!name || !email || !subjectId) {
+          return alert("Please fill in Name, Email, Subject");
+        }
+        if (!editTeacherId && !password) {
+          return alert("Password is required for a new teacher.");
+        }
+
+        const payload = {
+          name,
+          email,
+          role: "TEACHER",
+          subjectId: subjectId, // Use the ID directly from the dropdown
+        };
+
+        // Only include password if provided (for new teacher or if changing existing)
+        if (password) {
+          payload.password = password;
+        }
+
+        try {
+          const url = editTeacherId
+            ? `http://localhost:8080/api/admin/teachers/${editTeacherId}`
+            : "http://localhost:8080/api/admin/teachers";
+          const method = editTeacherId ? "PUT" : "POST";
+
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          // Check if the server returned a success status (200-299)
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(errorText || res.statusText);
+          }
+          hideForm();
+          await loadTeachers();
+        } catch (err) {
+          console.error("Error saving teacher:", err);
+          alert("Failed to save teacher: " + err.message);
+        }
+      }
+
+      // ------------------------------------------------------------------
+      // UPDATED FUNCTION: editTeacher (Fills all fields)
+      // ------------------------------------------------------------------
+      async function editTeacher(id) {
+        // Find the table row that holds the teacher data
+        const row = Array.from(
+          document.querySelectorAll("#teachersTable tbody tr")
+        ).find((tr) => JSON.parse(tr.dataset.teacher).id === id);
+        if (!row) return alert("Teacher data not found.");
+
+        const teacherData = JSON.parse(row.dataset.teacher);
+
+        // 1. Clear form and set edit ID
+        clearForm();
+        editTeacherId = id;
+
+        // 2. Populate Subject Dropdown and select the current one
+        // Awaits loadSubjects to ensure dropdown options exist before setting value
+        await loadSubjects(teacherData.subject);
+
+        // 3. Populate basic fields
+        document.getElementById("name").value = teacherData.name;
+        document.getElementById("email").value = teacherData.email;
+        // Password field is intentionally left blank for security
+
+        // 4. Populate phones
+
+        // 5. Show the form
+        showForm();
+      }
+
+      // ------------------------------------------------------------------
+      // UPDATED FUNCTION: deleteTeacher (Handles confirmation and server response)
+      // ------------------------------------------------------------------
+      async function deleteTeacher(id) {
+        // Confirmation dialog
+        if (
+          !confirm(
+            "Are you sure you want to delete this teacher? This action cannot be undone."
+          )
+        ) {
+          return; // Stop execution if the user clicks Cancel
+        }
+
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/admin/teachers/${id}`,
+            { method: "DELETE" }
+          );
+
+          if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error(errorText || res.statusText);
+          }
+
+          alert("Teacher deleted successfully!");
+          await loadTeachers();
+        } catch (err) {
+          console.error("Error deleting teacher:", err);
+          alert("Failed to delete teacher: " + err.message);
+        }
+      }
+
+      // --- INITIALIZATION ---
+
+      // Event listeners
+      document
+        .getElementById("submitBtn")
+        .addEventListener("click", saveTeacher);
+
+      window.onload = async () => {
+        // Pre-load all subjects once at startup to populate allSubjectsList
+        await loadSubjects();
+        await loadTeachers();
+      };
+    </script>
+  </body>
+</html>

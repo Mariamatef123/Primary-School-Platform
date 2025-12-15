@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Subjects</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/manage-student.css" />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <style>
+      .btn {
+        padding: 9px 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #fff;
+        margin: 8px;
+      }
+      .add-btn {
+        background: var(--color-primary);
+      }
+      .edit-btn {
+        background: #2196f3;
+      }
+      .delete-btn {
+        background: #f44336;
+      }
+      #formBox {
+        display: none;
+        background: var(--color-bg2);
+        padding: 15px;
+        border-radius: 10px;
+        margin: 15px 0;
+      }
+      #formBox input,
+      #formBox select {
+        padding: 8px;
+        margin: 5px 0;
+        width: 220px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+        <ul class="menu">
+          <li>
+            <a href="/dashboard-admin"
+              ><i class="uil uil-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/manage-student"
+              ><i class="uil uil-users-alt"></i> Students</a
+            >
+          </li>
+          <li>
+            <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
+          </li>
+          <li>
+            <a href="/manage-parent"
+              ><i class="uil uil-users-alt"></i> Parents</a
+            >
+          </li>
+          <li class="active"><i class="uil uil-layers"></i> Levels</li>
+          <li>
+            <a href="/manage-subjects"
+              ><i class="uil uil-book-open"></i> Subjects</a
+            >
+          </li>
+          <li>
+            <a href="/logout"><i class="uil uil-signout"></i> Logout</a>
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main">
+        <h1>Manage Subjects</h1>
+        <button class="btn add-btn" onclick="showForm()">+ Add Subject</button>
+
+        <!-- Form -->
+        <div id="formBox">
+          <input type="number" id="subjectCode" placeholder="Subject Code" />
+          <input type="text" id="subjectName" placeholder="Subject Name" />
+          <select id="levelSelect"></select>
+          <select id="teacherSelect"></select>
+          <br />
+          <button class="btn add-btn" onclick="saveSubject()">Save</button>
+          <button class="btn delete-btn" onclick="hideForm()">Cancel</button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+          <table id="subjectsTable" cellpadding="5" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Subject</th>
+                <th>Level</th>
+                <th>Teacher</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <script>
+      let editSubjectId = null;
+      let levels = [];
+      let teachers = [];
+      let allSubjects = []; // 1. CRITICAL: Store all subjects for uniqueness check
+
+      function showForm() {
+        document.getElementById("formBox").style.display = "block";
+        populateDropdowns();
+      }
+
+      function hideForm() {
+        document.getElementById("formBox").style.display = "none";
+        clearForm();
+      }
+
+      function clearForm() {
+        document.getElementById("subjectCode").value = "";
+        document.getElementById("subjectName").value = "";
+        document.getElementById("levelSelect").value = "";
+        document.getElementById("teacherSelect").value = "";
+        editSubjectId = null;
+      }
+
+      async function loadLevels() {
+        try {
+          const res = await fetch("http://localhost:8080/api/admin/levels");
+          if (!res.ok) throw new Error("Failed to load levels");
+          levels = await res.json();
+        } catch (err) {
+          console.error(err);
+          alert(err.message);
+        }
+      }
+
+      async function loadTeachers() {
+        try {
+          const res = await fetch("http://localhost:8080/api/admin/teachers");
+          if (!res.ok) throw new Error("Failed to load teachers");
+          teachers = await res.json();
+        } catch (err) {
+          console.error(err);
+          alert(err.message);
+        }
+      }
+
+      function populateDropdowns() {
+        const levelSelect = document.getElementById("levelSelect");
+        const teacherSelect = document.getElementById("teacherSelect");
+
+        levelSelect.innerHTML = '<option value="">Select Level</option>';
+        levels.forEach((l) => {
+          const option = document.createElement("option");
+          option.value = l.id;
+          option.textContent = l.name;
+          levelSelect.appendChild(option);
+        });
+
+        teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
+        teachers.forEach((t) => {
+          const option = document.createElement("option");
+          option.value = t.id;
+          // Use 'name' if available, otherwise combine first/last name
+          option.textContent =
+            t.name || `${t.firstName || ""} ${t.lastName || ""}`;
+          teacherSelect.appendChild(option);
+        });
+      }
+
+      // Load Subjects - UPDATED to store subjects globally
+      async function loadSubjects() {
+        try {
+          const res = await fetch("http://localhost:8080/api/admin/subjects");
+          if (!res.ok) throw new Error("Failed to load subjects");
+
+          // Store the data
+          allSubjects = await res.json();
+
+          const tbody = document.querySelector("#subjectsTable tbody");
+          tbody.innerHTML = "";
+
+          allSubjects.forEach((s) => {
+            // Use the stored array
+            const row = tbody.insertRow();
+            row.dataset.id = s.id;
+            row.innerHTML = `
+                    <td>${s.code}</td>
+                    <td>${s.name}</td>
+                    <td>${s.level?.name || "-"}</td>
+                    <td>${s.teacher?.name || "-"}</td>
+                    <td>
+                        <button class="btn edit-btn" onclick="editSubject(${
+                          s.id
+                        })">Edit</button>
+                        <button class="btn delete-btn" onclick="deleteSubject(${
+                          s.id
+                        })">Delete</button>
+                    </td>
+                `;
+          });
+        } catch (err) {
+          console.error(err);
+          alert(err.message);
+        }
+      }
+
+      // 2. NEW: Uniqueness Check Function for Code
+      function isCodeUnique(newCode, currentId) {
+        // Find if any existing subject has the same code but a different ID (for editing)
+        const duplicate = allSubjects.find(
+          (subject) => subject.code === newCode && subject.id !== currentId
+        );
+        return !duplicate;
+      }
+
+      // Edit Subject - Added logic to find subject from global array if available
+      async function editSubject(id) {
+        try {
+          let s = allSubjects.find((sub) => sub.id === id);
+
+          if (!s) {
+            const res = await fetch(
+              `http://localhost:8080/api/admin/subjects/${id}`
+            );
+            if (!res.ok) throw new Error(await res.text());
+            s = await res.json();
+          }
+
+          editSubjectId = s.id;
+          document.getElementById("subjectCode").value = s.code || "";
+          document.getElementById("subjectName").value = s.name;
+          await loadLevels();
+          await loadTeachers();
+          populateDropdowns();
+          document.getElementById("levelSelect").value = s.level?.id || "";
+          document.getElementById("teacherSelect").value = s.teacher?.id || "";
+          showForm();
+        } catch (err) {
+          console.error(err);
+          alert("Failed to fetch subject: " + err.message);
+        }
+      }
+
+      // Save Subject - UPDATED with Code Uniqueness Check
+      async function saveSubject() {
+        const code = parseInt(document.getElementById("subjectCode").value);
+        const name = document.getElementById("subjectName").value.trim();
+        const levelId = parseInt(document.getElementById("levelSelect").value);
+        const teacherId = parseInt(
+          document.getElementById("teacherSelect").value
+        );
+
+        // 3. CLIENT-SIDE UNIQUENESS CHECK FOR CODE
+        if (!isCodeUnique(code, editSubjectId)) {
+          return alert(`Subject Code '${code}' already exists.`);
+        }
+        // END CLIENT-SIDE CHECK
+
+        const payload = {
+          code,
+          name,
+          level: { id: levelId },
+          teacher: { id: teacherId },
+        };
+
+        try {
+          const url = editSubjectId
+            ? `http://localhost:8080/api/admin/subjects/${editSubjectId}`
+            : `http://localhost:8080/api/admin/subjects`;
+          const method = editSubjectId ? "PUT" : "POST";
+
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          const text = await res.text();
+          if (!res.ok) {
+            // Fallback check for backend constraint violations (e.g., uniqueness)
+            if (
+              text.includes("Duplicate entry") ||
+              text.includes("already exists")
+            ) {
+              return alert(
+                `Failed to save subject: Code or Name already exists (Backend validation).`
+              );
+            }
+            throw new Error(text);
+          }
+
+          hideForm();
+          // Reloads subjects and updates the global list
+          await loadSubjects();
+        } catch (err) {
+          console.error(err);
+          alert("Failed to save subject: " + err.message);
+        }
+      }
+
+      // Delete Subject
+      async function deleteSubject(id) {
+        if (!confirm("Delete this subject?")) return;
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/admin/subjects/${id}`,
+            { method: "DELETE" }
+          );
+          const text = await res.text();
+          if (!res.ok) throw new Error(text);
+          await loadSubjects();
+        } catch (err) {
+          console.error(err);
+          alert("Failed to delete subject: " + err.message);
+        }
+      }
+
+      // On load
+      window.onload = async () => {
+        await loadLevels();
+        await loadTeachers();
+        await loadSubjects();
+      };
+    </script>
+  </body>
+</html>

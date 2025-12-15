@@ -1,0 +1,120 @@
+body{
+    margin:0;
+    font-family:Arial;
+    background:var(--color-bg);
+    color:var(--color-white);
+}
+
+.dashboard{
+    display:flex;
+}
+
+/* Sidebar */
+.sidebar{
+    width:250px;
+    background:var(--color-bg1);
+    height:100vh;
+    padding:20px;
+    position:fixed;
+    left:0;
+    top:0;
+}
+
+.sidebar .logo{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.sidebar .menu{
+    list-style:none;
+    padding:0;
+}
+
+.sidebar .menu li{
+    margin:15px 0;
+    padding:10px;
+    cursor:pointer;
+    border-radius:6px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    transition:var(--transition);
+}
+
+.sidebar .menu li:hover,
+.sidebar .menu .active{
+    background:var(--color-bg2);
+}
+
+.sidebar .menu li a{
+    color:var(--color-white);
+    text-decoration:none;
+    display:flex;
+    gap:10px;
+}
+
+/* MAIN */
+.main{
+    margin-left:270px;
+    padding:30px;
+    width:calc(100% - 270px);
+}
+
+/* ADD BUTTON */
+.add-btn{
+    background:var(--color-primary);
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    color:var(--color-white);
+    cursor:pointer;
+    margin-bottom:20px;
+    transition:var(--transition);
+}
+
+.add-btn:hover{
+    opacity:0.8;
+}
+
+/* Table */
+.table-container{
+    background:var(--color-bg1);
+    padding:20px;
+    border-radius:10px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th, td{
+    padding: 12px;; 
+    text-align:center; 
+}
+
+
+th{
+    background:var(--color-bg2);
+}
+
+tr:nth-child(even){
+    background:rgba(255,255,255,0.05);
+}
+
+/* Buttons */
+.edit, .delete{
+    border:none;
+    padding:8px;
+    border-radius:5px;
+    cursor:pointer;
+    color:white;
+}
+
+.edit{
+    background:var(--color-warning);
+}
+
+.delete{
+    background:var(--color-danger);
+}

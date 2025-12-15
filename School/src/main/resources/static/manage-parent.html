@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Parents</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/manage-student.css" />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <style>
+      .phone-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+      }
+      .phone-row input {
+        margin-right: 5px;
+      }
+      .phone-row select {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+        <ul class="menu">
+          <li>
+            <a href="/dashboard-admin"
+              ><i class="uil uil-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/manage-student"
+              ><i class="uil uil-users-alt"></i> Students</a
+            >
+          </li>
+          <li>
+            <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
+          </li>
+          <li>
+            <a href="/manage-parent"
+              ><i class="uil uil-users-alt"></i> Parents</a
+            >
+          </li>
+          <li class="active"><i class="uil uil-layers"></i> Levels</li>
+          <li>
+            <a href="/manage-subjects"
+              ><i class="uil uil-book-open"></i> Subjects</a
+            >
+          </li>
+          <li>
+            <a href="/logout"><i class="uil uil-signout"></i> Logout</a>
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main">
+        <h1>Manage Parents</h1>
+        <button class="add-btn" onclick="showForm()">
+          <i class="uil uil-plus"></i> Add Parent
+        </button>
+
+        <!-- FORM -->
+        <div
+          id="parentForm"
+          style="
+            display: none;
+            margin-bottom: 20px;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+          "
+        >
+          <input
+            type="text"
+            id="name"
+            placeholder="Name"
+            style="padding: 8px; margin: 5px"
+          />
+          <input
+            type="email"
+            id="email"
+            placeholder="Email"
+            style="padding: 8px; margin: 5px"
+          />
+          <input
+            type="password"
+            id="password"
+            placeholder="Password"
+            style="padding: 8px; margin: 5px"
+          />
+
+          <!-- Phones -->
+
+          <!-- Children IDs -->
+          <input
+            type="text"
+            id="children"
+            placeholder="Children IDs (comma-separated)"
+            style="padding: 8px; margin: 5px"
+          />
+
+          <button
+            id="submitBtn"
+            style="padding: 8px; margin: 5px; background: #007bff; color: white"
+          >
+            Submit
+          </button>
+          <button
+            onclick="hideForm()"
+            style="padding: 8px; margin: 5px; background: #dc3545; color: white"
+          >
+            Cancel
+          </button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+          <table id="parentsTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Children</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let editParentId = null;
+
+      function showForm() {
+        document.getElementById("parentForm").style.display = "block";
+      }
+      function hideForm() {
+        document.getElementById("parentForm").style.display = "none";
+        clearForm();
+      }
+      function clearForm() {
+        document.getElementById("name").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("children").value = "";
+
+        editParentId = null;
+      }
+
+      async function saveParent() {
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const childrenInput = document.getElementById("children").value.trim();
+        if (!name || !email || !password)
+          return alert("Name, Email, and Password are required.");
+
+        const children = childrenInput
+          ? childrenInput.split(",").map((id) => ({ id: id.trim() })) // Sends { id: '101' }
+          : [];
+        const payload = { name, email, password, children };
+
+        try {
+          const url = editParentId
+            ? `http://localhost:8080/api/admin/parents/${editParentId}`
+            : "http://localhost:8080/api/admin/parents";
+          const method = editParentId ? "PUT" : "POST";
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!res.ok) throw new Error(await res.text());
+          hideForm();
+          await loadParents();
+        } catch (err) {
+          console.error(err);
+          alert("Failed to save parent: " + err.message);
+        }
+      }
+
+      async function loadParents() {
+        try {
+          const res = await fetch("http://localhost:8080/api/admin/parents");
+          const parents = await res.json();
+          const tbody = document.querySelector("#parentsTable tbody");
+          tbody.innerHTML = "";
+          parents.forEach((p) => {
+            const childrenText = p.children
+              ? p.children.map((c) => c.id).join(", ")
+              : "-";
+            const row = tbody.insertRow();
+
+            row.innerHTML = `<td>${p.id}</td><td>${p.name}</td><td>${p.email}</td><td>${childrenText}</td>
+                       <td><button class="edit" onclick="editParent(this, ${p.id})">Edit</button>
+                       <button class="delete" onclick="deleteParent(${p.id}, this)">Delete</button></td>`;
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      function editParent(btn, id) {
+        const row = btn.closest("tr");
+        editParentId = id;
+        document.getElementById("name").value = row.cells[1].innerText;
+        document.getElementById("email").value = row.cells[2].innerText;
+        document.getElementById("password").value = "";
+        document.getElementById("children").value = row.cells[4].innerText;
+
+        showForm();
+      }
+
+      async function deleteParent(id, btn) {
+        if (!confirm("Delete parent?")) return;
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/admin/parents/${id}`,
+            { method: "DELETE" }
+          );
+          if (!res.ok) throw new Error(await res.text());
+          btn.closest("tr").remove();
+        } catch (err) {
+          console.error(err);
+          alert(err.message);
+        }
+      }
+
+      document
+        .getElementById("submitBtn")
+        .addEventListener("click", saveParent);
+      window.onload = loadParents;
+    </script>
+  </body>
+</html>

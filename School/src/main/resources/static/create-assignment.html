@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create/Edit Assignment</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <style>
+      .dashboard {
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+      }
+      label {
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input,
+      textarea {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        width: 100%;
+      }
+      .choice-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 5px;
+      }
+      .choice-group input[type="radio"] {
+        width: auto;
+      }
+      .start-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 5px;
+        background-color: #00bfa5;
+        color: white;
+        cursor: pointer;
+      }
+      .start-btn:hover {
+        background-color: #009e8f;
+      }
+      .question-form {
+        border: 1px solid #ccc;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        position: relative;
+      }
+      .delete-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 2px 8px;
+        font-size: 0.8rem;
+      }
+      .delete-btn:hover {
+        background-color: darkred;
+      }
+      .disabled {
+        opacity: 0.6;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="dashboard-nav">
+      <h2>Create/Edit Assignment</h2>
+      <a href="/manage-assignments" class="start-btn">Back</a>
+    </nav>
+
+    <div class="dashboard">
+      <div class="form-group">
+        <label for="assignmentTitle">Assignment Title</label>
+        <input type="text" id="assignmentTitle" required />
+      </div>
+      <button id="addQuestionBtn" class="start-btn">+ Add Question</button>
+      <form id="assignmentForm">
+        <div id="questionContainer"></div>
+        <button type="submit" class="start-btn">Submit Assignment</button>
+      </form>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:8080/api/teacher/assessments";
+      const teacherId = localStorage.getItem("userId");
+      const params = new URLSearchParams(window.location.search);
+      const assignmentId = params.get("assignmentId");
+
+      let DURATION = 0;
+      let MAX_QUESTIONS = 0;
+      let MAX_ASSIGNMENTS = 0;
+      let questionCount = 0;
+
+      async function init() {
+        try {
+          DURATION = parseInt(
+            await (
+              await fetch(
+                `http://localhost:8080/assessments/assessmentDurationAssignment`
+              )
+            ).text()
+          );
+          MAX_QUESTIONS = parseInt(
+            await (
+              await fetch(
+                `http://localhost:8080/assessments/assessmentNoOfQuesAssignment`
+              )
+            ).text()
+          );
+          MAX_ASSIGNMENTS = parseInt(
+            await (
+              await fetch(`http://localhost:8080/assessments/maxAssignments`)
+            ).text()
+          );
+
+          if (!assignmentId && MAX_ASSIGNMENTS <= 0) {
+            document.getElementById("addQuestionBtn").classList.add("disabled");
+            document.getElementById("assignmentForm").classList.add("disabled");
+            alert(
+              `You cannot create more than ${MAX_ASSIGNMENTS} assignments.`
+            );
+          }
+
+          if (!assignmentId) {
+            for (let i = 0; i < MAX_QUESTIONS; i++) addQuestionForm();
+          } else {
+            await loadAssignment();
+          }
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+
+      function addQuestionForm(q = null) {
+        if (questionCount >= MAX_QUESTIONS) {
+          alert(`Cannot add more than ${MAX_QUESTIONS} questions.`);
+          return;
+        }
+        questionCount++;
+        const container = document.getElementById("questionContainer");
+        const div = document.createElement("div");
+        div.classList.add("question-form");
+        div.dataset.qid = q?.id || 0;
+        const headline = q?.headline || "";
+        const choices = q?.choices || ["", "", "", ""];
+        const correct = q?.correct || "";
+
+        div.innerHTML = `
+  <button type="button" class="delete-btn">Delete</button>
+  <div class="form-group">
+    <label>Question ${questionCount}</label>
+    <textarea class="question-input" required>${headline}</textarea>
+  </div>
+  <div class="form-group">
+    <label>Choices</label>
+    ${["A", "B", "C", "D"]
+      .map(
+        (l, i) => `
+      <div class="choice-group">
+        <input type="radio" name="correctChoice${questionCount}" value="choice${l}" ${
+          correct === "choice" + l ? "checked" : ""
+        } required>
+        <input type="text" class="choice-input" placeholder="Choice ${l}" value="${
+          choices[i]
+        }">
+      </div>`
+      )
+      .join("")}
+  </div>
+  `;
+        container.appendChild(div);
+
+        div.querySelector(".delete-btn").addEventListener("click", () => {
+          if (!confirm("Delete this question?")) return;
+          div.remove();
+          questionCount--;
+          renumberQuestions();
+        });
+      }
+
+      function renumberQuestions() {
+        document.querySelectorAll(".question-form").forEach((form, idx) => {
+          const newIndex = idx + 1;
+          form.querySelector("label").innerText = `Question ${newIndex}`;
+          form
+            .querySelectorAll('input[type="radio"]')
+            .forEach((r) => (r.name = `correctChoice${newIndex}`));
+        });
+      }
+
+      async function loadAssignment() {
+        try {
+          const res = await fetch(
+            `${API_BASE}/${assignmentId}?teacherId=${teacherId}`
+          );
+          if (!res.ok) throw new Error("Failed to load assignment");
+          const data = await res.json();
+          document.getElementById("assignmentTitle").value = data.title;
+          data.questions.forEach((q) => addQuestionForm(q));
+          document
+            .querySelectorAll(".question-form .delete-btn")
+            .forEach((btn) => (btn.style.display = "none"));
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+
+      document
+        .getElementById("assignmentForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const title = document.getElementById("assignmentTitle").value.trim();
+          if (!title) {
+            alert("Title required");
+            return;
+          }
+          const forms = document.querySelectorAll(".question-form");
+          if (forms.length !== MAX_QUESTIONS) {
+            alert(`You must have exactly ${MAX_QUESTIONS} questions`);
+            return;
+          }
+
+          const questions = Array.from(forms).map((form, idx) => {
+            const headline = form.querySelector(".question-input").value.trim();
+            const choices = Array.from(
+              form.querySelectorAll(".choice-input")
+            ).map((c) => c.value.trim());
+            const correct = form.querySelector(
+              `input[name="correctChoice${idx + 1}"]:checked`
+            )?.value;
+            if (!headline || choices.some((c) => !c) || !correct)
+              throw new Error(`Question ${idx + 1} incomplete`);
+            return {
+              id: parseInt(form.dataset.qid) || 0,
+              headline,
+              choices,
+              correct,
+            };
+          });
+
+          const payload = {
+            title,
+            duration: DURATION,
+            numOfQues: questions.length,
+            type: "ASSIGNMENT",
+            questions,
+          };
+
+          try {
+            let url = `${API_BASE}?teacherId=${teacherId}`,
+              method = "POST";
+            if (assignmentId) {
+              url = `${API_BASE}/${assignmentId}?teacherId=${teacherId}`;
+              method = "PUT";
+            }
+            const res = await fetch(url, {
+              method,
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+            if (!res.ok) throw new Error("Failed to save assignment");
+            alert("Assignment saved successfully!");
+            window.location.href = "/manage-assignments";
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+
+      document
+        .getElementById("addQuestionBtn")
+        .addEventListener("click", () => addQuestionForm());
+      init();
+    </script>
+  </body>
+</html>

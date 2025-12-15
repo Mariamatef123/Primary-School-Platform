@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login · TinyScholars</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/login.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1>Login</h1>
+      <p id="error-message" class="error"></p>
+
+      <form id="form">
+        <div class="input-box">
+          <label>Email or ID</label>
+          <input
+            type="text"
+            id="userId"
+            name="email"
+            placeholder="Enter your Email or ID"
+            required
+          />
+          <i class="uil uil-user"></i>
+        </div>
+
+        <div class="input-box">
+          <label>Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your Password"
+            required
+          />
+          <i class="uil uil-lock-alt"></i>
+        </div>
+
+        <div class="input-box">
+          <label>Role</label>
+          <select id="role" name="role" required>
+            <option value="">Select Role</option>
+            <option value="STUDENT">Student</option>
+            <option value="TEACHER">Teacher</option>
+            <option value="PARENT">Parent</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+          <i class="uil uil-users-alt"></i>
+        </div>
+
+        <button type="submit" class="btn">Login</button>
+      </form>
+
+      <div class="register-link">
+        <p>Go back to <a href="/">Home</a></p>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const userId = document.getElementById("userId").value;
+        const password = document.getElementById("password").value;
+        const role = document.getElementById("role").value;
+        const errorMessage = document.getElementById("error-message");
+
+        if (!userId || !password || !role) {
+          errorMessage.innerText = "Please fill all fields";
+          return;
+        }
+
+        try {
+          const response = await fetch("http://localhost:8082/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: userId, password, role }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            errorMessage.innerText = data.message || "Login failed";
+            return;
+          }
+
+          // Save token & userId in localStorage
+          localStorage.setItem("token", data.token); // ⚡ JWT token
+          localStorage.setItem("userId", data.id); // ⚡ userId from backend
+
+          // Redirect based on role
+          switch (role) {
+            case "STUDENT":
+              window.location.href = "/dashboard-student";
+              break;
+            case "TEACHER":
+              window.location.href = "/dashboard-teacher";
+              break;
+            case "PARENT":
+              window.location.href = "/dashboard-parent";
+              break;
+            case "ADMIN":
+              window.location.href = "/dashboard-admin";
+              break;
+            default:
+              window.location.href = "/index";
+          }
+        } catch (error) {
+          console.error(error);
+          errorMessage.innerText = "Server error. Please try again later.";
+        }
+      });
+    </script>
+  </body>
+</html>

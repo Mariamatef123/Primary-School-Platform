@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parent Dashboard · TinyScholars</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard-parent.css" />
+
+    <style>
+      .main {
+        color: black;
+      }
+      .main h1 {
+        color: white;
+      }
+      .child-info-box {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: #fff;
+        margin-bottom: 20px;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      }
+      .child-icon {
+        font-size: 60px;
+        color: var(--color-primary, #4caf50);
+      }
+      .cards {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+      }
+      .card {
+        flex: 1;
+        min-width: 180px;
+        background: #fff;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      }
+      .card .icon {
+        font-size: 30px;
+        margin-bottom: 10px;
+        color: var(--color-primary, #4caf50);
+      }
+      .table-container {
+        background: #fff;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      .status.success {
+        color: green;
+        font-weight: bold;
+      }
+      .status.warning {
+        color: orange;
+        font-weight: bold;
+      }
+      .status.danger {
+        color: red;
+        font-weight: bold;
+      }
+      #childSelect {
+        margin-bottom: 15px;
+        padding: 5px 10px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+        <ul class="menu">
+          <li class="active"><i class="uil uil-home"></i> Dashboard</li>
+          <li>
+            <a id="childPageLink"><i class="uil uil-user"></i> My Children</a>
+          </li>
+
+          <li>
+            <a href="/"><i class="uil uil-signout"></i> Logout</a>
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main">
+        <h1>Parent Dashboard</h1>
+
+        <select id="childSelect">
+          <option>Loading children...</option>
+        </select>
+
+        <div class="child-info-box">
+          <i class="uil uil-user-circle child-icon"></i>
+          <div>
+            <h2 id="childName">Child: Loading...</h2>
+            <p>Level: <span id="childLevel"></span></p>
+          </div>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <i class="uil uil-book-open icon"></i>
+            <h3>Total Subjects</h3>
+            <p id="totalSubjects">--</p>
+          </div>
+          <div class="card">
+            <i class="uil uil-check-circle icon"></i>
+            <h3>Completed Assignments</h3>
+            <p id="completedAssignments">--</p>
+          </div>
+          <div class="card">
+            <i class="uil uil-file-alt icon"></i>
+            <h3>Pending Assignments</h3>
+            <p id="pendingAssignments">--</p>
+          </div>
+          <div class="card">
+            <i class="uil uil-chart-line icon"></i>
+            <h3>Progress Score</h3>
+            <p id="progressScore">--%</p>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <h2>Recent Grades</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Grade</th>
+                <th>Type</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="gradesTableBody">
+              <tr>
+                <td colspan="4">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const parentId = localStorage.getItem("userId");
+      if (!parentId) alert("Missing parentId");
+
+      let childrenList = [];
+      let childId = null;
+
+      async function loadChildInfo() {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/parents/${parentId}/children`
+          );
+          if (!res.ok) {
+            if (res.status === 404) {
+              alert("Children endpoint not found or parent has no children");
+              return;
+            }
+            throw new Error("Failed to fetch children");
+          }
+
+          const children = await res.json();
+          if (!children || children.length === 0) {
+            alert("No children found for this parent");
+            return;
+          }
+
+          childrenList = children;
+
+          // Populate dropdown
+          const select = document.getElementById("childSelect");
+          select.innerHTML = "";
+          children.forEach((child, index) => {
+            const opt = document.createElement("option");
+            opt.value = child.id;
+            opt.textContent = child.name;
+            if (index === 0) opt.selected = true;
+            select.appendChild(opt);
+          });
+
+          select.addEventListener("change", (e) => {
+            childId = e.target.value;
+            updateDashboardForChild(childId);
+          });
+
+          childId = children[0].id;
+          updateDashboardForChild(childId);
+        } catch (err) {
+          console.error(err);
+          alert("Error loading child info: " + err.message);
+        }
+      }
+
+      function updateDashboardForChild(childId) {
+        const child = childrenList.find((c) => c.id == childId);
+        if (!child) return;
+
+        document.getElementById("childName").textContent =
+          "Child: " + child.name;
+        document.getElementById("childLevel").textContent =
+          child.level?.name || "-";
+        document.getElementById("totalSubjects").textContent =
+          child.subjects?.length || 0;
+
+        // Calculate completed/pending assignments from assessments
+        let completed = 0;
+        let pending = 0;
+        let totalAssessments = 0;
+        child.subjects?.forEach((subj) => {
+          subj.assessments?.forEach((a) => {
+            totalAssessments++;
+            if (a.scoreData?.taken) completed++;
+            else pending++;
+          });
+        });
+        document.getElementById("completedAssignments").textContent = completed;
+        document.getElementById("pendingAssignments").textContent = pending;
+        const progress =
+          totalAssessments > 0
+            ? Math.round((completed / totalAssessments) * 100)
+            : 0;
+        document.getElementById("progressScore").textContent = progress + "%";
+
+        // Sidebar links
+        document.getElementById(
+          "childPageLink"
+        ).href = `/view-child?parentId=${parentId}&childId=${childId}`;
+
+        // Load grades table
+        loadRecentGrades();
+      }
+
+      async function loadRecentGrades() {
+        if (!childId) return;
+
+        const table = document.getElementById("gradesTableBody");
+        table.innerHTML = "";
+        let completed = 0;
+        let pending = 0;
+        let totalAssessments = 0;
+
+        try {
+          const subjRes = await fetch(
+            `http://localhost:8080/api/parents/${parentId}/children/${childId}/subjects`
+          );
+          if (!subjRes.ok) throw new Error("Failed to fetch subjects");
+          const subjects = await subjRes.json();
+
+          let hasGrades = false;
+
+          for (let subj of subjects) {
+            const assessRes = await fetch(
+              `http://localhost:8080/api/parents/${parentId}/children/${childId}/subjects/${subj.id}/assessments`
+            );
+            const assessments = await assessRes.json();
+
+            for (let assessment of assessments) {
+              const id = assessment.id || assessment.assessmentId;
+              if (!id) continue;
+              totalAssessments++;
+
+              const scoreRes = await fetch(
+                `http://localhost:8080/api/parents/${parentId}/children/${childId}/assessments/${id}/score`
+              );
+              const scoreData = await scoreRes.json();
+
+              let status = "Pending";
+              if (scoreData.taken) {
+                status = "Completed";
+                completed++;
+              } else pending++;
+
+              hasGrades = true;
+              const score =
+                scoreData.score + "/" + (assessment.numOfQues || "-");
+
+              table.innerHTML += `
+                <tr>
+                  <td>${subj.name}</td>
+                  <td>${scoreData.score != null ? score : "-"}</td>
+                  <td>${scoreData.type || "EXAM"}</td>
+                  <td><span class="status">${status}</span></td>
+                </tr>`;
+            }
+          }
+
+          if (!hasGrades)
+            table.innerHTML = `<tr><td colspan="4">No grades available</td></tr>`;
+          document.getElementById("progressScore").textContent =
+            totalAssessments > 0
+              ? Math.round((completed / totalAssessments) * 100) + "%"
+              : "0%";
+          document.getElementById("completedAssignments").textContent =
+            completed;
+          document.getElementById("pendingAssignments").textContent = pending;
+        } catch (err) {
+          console.error(err);
+          alert("Error loading grades: " + err.message);
+        }
+      }
+
+      loadChildInfo();
+    </script>
+  </body>
+</html>

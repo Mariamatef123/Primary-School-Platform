@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard-admin.css" />
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+
+        <ul class="menu">
+          <li class="active"><i class="uil uil-home"></i> Dashboard</li>
+          <li>
+            <a href="/manage-student"
+              ><i class="uil uil-users-alt"></i> Students</a
+            >
+          </li>
+          <li>
+            <a href="/manage-teacher"
+              ><i class="uil uil-user"></i> Teachers</a
+            >
+          </li>
+          <li>
+            <a href="/manage-parent"
+              ><i class="uil uil-users-alt"></i> Parents</a
+            >
+          </li>
+          <li>
+            <a href="/manage-levels"
+              ><i class="uil uil-layers"></i> Levels</a
+            >
+          </li>
+          <li>
+            <a href="/manage-subjects"
+              ><i class="uil uil-book-open"></i> Subjects</a
+            >
+          </li>
+          <li>
+            <a href="/index"><i class="uil uil-signout"></i> Logout</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main">
+        <h1>Admin Dashboard</h1>
+
+        <!-- CARDS -->
+        <div class="cards">
+          <div class="card">
+            <i class="uil uil-users-alt icon"></i>
+            <h3>Total Students</h3>
+            <p id="totalStudents">--</p>
+          </div>
+
+          <div class="card">
+            <i class="uil uil-user icon"></i>
+            <h3>Total Teachers</h3>
+            <p id="totalTeachers">--</p>
+          </div>
+
+          <div class="card">
+            <i class="uil uil-users-alt icon"></i>
+            <h3>Total Parents</h3>
+            <p id="totalParents">--</p>
+          </div>
+
+          <div class="card">
+            <i class="uil uil-book-open icon"></i>
+            <h3>Total Subjects</h3>
+            <p id="totalSubjects">--</p>
+          </div>
+        </div>
+
+        <!-- RECENT STUDENTS TABLE -->
+        <div class="table-container">
+          <h2>Recent Registered Students</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Level</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+
+            <tbody id="recentStudentsTable">
+              <tr>
+                <td colspan="3">Loading...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+
+<script>
+async function loadAdminDashboard() {
+  try {
+    // 1️⃣ Load summary cards
+    const summaryRes = await fetch('http://localhost:8080/api/admin/dashboard-summary');
+    const summary = await summaryRes.json();
+
+    document.querySelector('#totalStudents').textContent = summary.totalStudents;
+    document.querySelector('#totalTeachers').textContent = summary.totalTeachers;
+    document.querySelector('#totalParents').textContent = summary.totalParents;
+    document.querySelector('#totalSubjects').textContent = summary.totalSubjects;
+
+    // 2️⃣ Load recent students table
+    const recentRes = await fetch('http://localhost:8080/api/admin/students/recent');
+    const students = await recentRes.json();
+
+    const tbody = document.querySelector('table tbody');
+    tbody.innerHTML = '';
+
+    students.forEach(s => {
+  tbody.innerHTML += `
+    <tr>
+      <td>${s.name}</td>
+      <td>${s.level?.name || 'N/A'}</td>
+      <td>${s.email}</td>
+    </tr>
+  `;
+});
+
+  } catch (err) {
+    console.error('Error loading dashboard:', err);
+  }
+}
+
+loadAdminDashboard();
+</script>
+
+  </body>
+</html>

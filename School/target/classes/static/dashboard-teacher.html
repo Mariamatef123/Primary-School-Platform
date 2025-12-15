@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard-teacher.css" />
+  </head>
+  <body>
+    <div class="dashboard">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+        <ul class="menu">
+          <li class="active"><i class="uil uil-home"></i> Dashboard</li>
+          <li>
+            <a href="/manage-assignments"
+              ><i class="uil uil-file-edit-alt"></i><span>Assignments</span></a
+            >
+          </li>
+          <li>
+            <a href="/manage-quizzes"
+              ><i class="uil uil-edit"></i><span>Exams</span></a
+            >
+          </li>
+          <li>
+            <a href="/view-student-grades"
+              ><i class="uil uil-users-alt"></i><span>Students</span></a
+            >
+          </li>
+          <li>
+            <a href="/teacher-profile"
+              ><i class="uil uil-user-circle"></i><span>Profile</span></a
+            >
+          </li>
+          <li>
+            <a href="/"><i class="uil uil-signout"></i> Logout</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main">
+        <h1>Teacher Dashboard</h1>
+
+        <!-- CARDS -->
+        <div class="cards">
+          <div class="card">
+            <i class="uil uil-file-edit-alt icon"></i>
+            <h3>Total Assignments</h3>
+            <p id="totalAssignments">0</p>
+          </div>
+
+          <div class="card">
+            <i class="uil uil-edit icon"></i>
+            <h3>Total Exams</h3>
+            <p id="totalExams">0</p>
+          </div>
+
+          <div class="card">
+            <i class="uil uil-users-alt icon"></i>
+            <h3>Students</h3>
+            <p id="totalStudents">0</p>
+          </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-container">
+          <h2>Submissions</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Assessment</th>
+                <th>Status</th>
+                <th>Score</th>
+              </tr>
+            </thead>
+            <tbody id="recentSubmissions"></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:8080/api/teacher";
+      const teacherId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token"); // <-- JWT token from login
+
+      async function loadDashboard() {
+        try {
+          // Add Authorization header to every request
+          const headers = { Authorization: `Bearer ${token}` };
+
+          // 1. Fetch dashboard summary
+          const resSummary = await fetch(`${API_BASE}/${teacherId}/dashboard`, {
+            headers,
+          });
+          if (!resSummary.ok)
+            throw new Error("Failed to fetch dashboard summary");
+          const summary = await resSummary.json();
+          document.getElementById("totalAssignments").innerText =
+            summary.totalAssignments || 0;
+          document.getElementById("totalExams").innerText =
+            summary.totalExams || 0;
+          document.getElementById("totalStudents").innerText =
+            summary.totalStudents || 0;
+
+          // 2. Fetch recent submissions
+          const resRecent = await fetch(
+            `${API_BASE}/${teacherId}/recent-submissions`,
+            { headers }
+          );
+          if (!resRecent.ok)
+            throw new Error("Failed to fetch recent submissions");
+          const submissions = await resRecent.json();
+
+          const tbody = document.getElementById("recentSubmissions");
+          tbody.innerHTML = "";
+          submissions.forEach((s) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${s.studentName}</td>
+              <td>${s.assessmentTitle}</td>
+              <td><span class="status ${s.status.toLowerCase()}" style="color:white">${
+              s.status
+            }</span></td>
+              <td>${s.score}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        } catch (err) {
+          console.error(err);
+          alert("Error loading dashboard: " + err.message);
+        }
+      }
+
+      // Initialize
+      loadDashboard();
+    </script>
+  </body>
+</html>

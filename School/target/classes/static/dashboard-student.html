@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard · TinyScholars</title>
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <style>
+      .dashboard {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      /* ===== Subjects Section Upgrade ===== */
+      #materialsList {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .list-box {
+        background-color: #2e3267;
+        color: white;
+        border-radius: 12px;
+        padding: 15px 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+      .list-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      }
+      .list-box h3 {
+        font-size: 1.3rem;
+        margin-bottom: 12px;
+        color: #ffffff;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+
+      .subject-details {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .list-item {
+        background: #f4f6f8;
+        border-radius: 10px;
+        padding: 12px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        transition: background 0.2s;
+      }
+      .list-item:hover {
+        background: #e0f7fa;
+      }
+
+      .list-item p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .type-badge {
+        padding: 2px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        color: #fff;
+        font-weight: 500;
+      }
+
+      .start-btn {
+        background-color: #00bfa5;
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        width: fit-content;
+        transition: background 0.2s;
+        margin-top: 5px;
+      }
+      .start-btn:hover {
+        background-color: #009e8f;
+      }
+
+      .progress-container {
+        background-color: #ddd;
+        border-radius: 6px;
+        height: 10px;
+        width: 100%;
+        margin-top: 4px;
+      }
+      .progress-bar {
+        height: 100%;
+        border-radius: 6px;
+        background-color: #42a5f5;
+        width: 0%;
+        transition: width 0.5s;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="dashboard-nav">
+      <h2>TinyScholars</h2>
+      <a href="/" id="logoutBtn">Logout</a>
+    </nav>
+
+    <div class="dashboard">
+      <section class="profile-box">
+        <i class="uil uil-user-circle"></i>
+        <h3 id="studentName">Loading...</h3>
+        <p>ID: <span id="studentId"></span></p>
+        <p>Role: Student</p>
+        <p>Level: <span id="studentLevel"></span></p>
+      </section>
+
+      <section class="performance">
+        <h2>Performance</h2>
+        <div class="performance-cards">
+          <div class="card">
+            <i class="uil uil-chart-line"></i>
+            <h3 id="avgGrade">0%</h3>
+            <p>Average Grade</p>
+          </div>
+          <div class="card">
+            <i class="uil uil-clipboard-notes"></i>
+            <h3 id="assignDone">0</h3>
+            <p>Assignments Done</p>
+          </div>
+          <div class="card">
+            <i class="uil uil-book-open"></i>
+            <h3 id="ExamDone">0</h3>
+            <p>Exams Completed</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Subjects Section (Updated Style) -->
+      <section class="materials">
+        <h2>Subjects</h2>
+        <div id="materialsList">Loading subjects...</div>
+      </section>
+    </div>
+
+    <script>
+      const studentId = localStorage.getItem("userId");
+
+      if (!studentId) {
+        alert("No student ID found. Please login first.");
+        window.location.href = "login.html";
+      }
+
+      const API_BASE = "http://localhost:8080/students";
+
+      async function loadDashboard() {
+        try {
+          const studentRes = await fetch(`${API_BASE}/${studentId}`);
+          const student = await studentRes.json();
+
+          document.getElementById("studentName").innerText = student.name;
+          document.getElementById("studentId").innerText = student.id;
+          document.getElementById("studentLevel").innerText =
+            student.level?.name || student.level;
+
+          const subjectsRes = await fetch(`${API_BASE}/${studentId}/subjects`);
+          const subjects = await subjectsRes.json();
+
+          const materialsList = document.getElementById("materialsList");
+          materialsList.innerHTML = "";
+
+          let totalAssignments = 0;
+          let totalExams = 0;
+          let totalGrades = 0; // sum of earned scores
+          let totalMaxScore = 0; // sum of all possible points
+
+          for (const subject of subjects) {
+            const subjectDiv = document.createElement("div");
+            subjectDiv.classList.add("list-box");
+
+            const title = document.createElement("h3");
+            title.innerText = subject.name;
+            subjectDiv.appendChild(title);
+
+            const detailsDiv = document.createElement("div");
+            detailsDiv.classList.add("subject-details");
+
+            if (!subject.assessments || subject.assessments.length === 0) {
+              detailsDiv.innerHTML = "<p>No assessments yet.</p>";
+            } else {
+              for (const a of subject.assessments) {
+                const item = document.createElement("div");
+                item.classList.add("list-item");
+
+                // ========= FIXED SCORE FETCH =========
+                let taken = false;
+                let score = 0;
+
+                try {
+                  const res = await fetch(
+                    `${API_BASE}/${studentId}/assessments/${a.assessmentId}/score`
+                  );
+
+                  if (res.ok) {
+                    const scoreData = await res.json();
+                    taken = scoreData?.taken || false;
+                    score = scoreData?.score || 0;
+                  }
+                } catch (err) {
+                  console.error(
+                    "Failed to fetch score for",
+                    a.assessmentId,
+                    err
+                  );
+                }
+
+                // ========= FIXED PROGRESS CALCULATION =========
+                const maxScore = Number(a.numOfQues);
+                const percentScore = taken
+                  ? Math.round((score / maxScore) * 100)
+                  : 0;
+
+                // ========= FIXED COUNTERS =========
+                if (taken) {
+                  if (a.type === "ASSIGNMENT") totalAssignments++;
+                  if (a.type === "EXAM") totalExams++;
+
+                  totalGrades += score;
+                  totalMaxScore += maxScore;
+                }
+
+                const takenText = taken ? `Score: ${score}` : "Not taken yet";
+                const typeBadge = `<span class="type-badge" style="background-color:${
+                  a.type === "EXAM" ? "#ff7043" : "#42a5f5"
+                }">${a.type}</span>`;
+
+                const url = taken
+                  ? `/model-answer?studentId=${studentId}&subjectId=${subject.id}&assessmentId=${a.assessmentId}`
+                  : `/take-Exam?studentId=${studentId}&subjectId=${subject.id}&assessmentId=${a.assessmentId}`;
+
+                // Render assessment box
+                item.innerHTML = `
+            <p><strong>${a.title}</strong> ${typeBadge}</p>
+            <p>Duration: ${a.duration || 0} min | Questions: ${
+                  a.numOfQues
+                } | ${takenText}</p>
+            <div class="progress-container">
+              <div class="progress-bar" style="width:${percentScore}%"></div>
+            </div>
+            <a href="${url}" class="start-btn">${
+                  taken ? "View Model Answer" : "Start"
+                }</a>
+          `;
+
+                detailsDiv.appendChild(item);
+              }
+            }
+
+            subjectDiv.appendChild(detailsDiv);
+            materialsList.appendChild(subjectDiv);
+          }
+
+          // ========= FIXED PERFORMANCE RESULT =========
+          document.getElementById("assignDone").innerText =
+            totalAssignments > 0 ? totalAssignments : "0";
+
+          document.getElementById("ExamDone").innerText =
+            totalExams > 0 ? totalExams : "0";
+
+          const avgGradePercent =
+            totalMaxScore > 0
+              ? Math.round((totalGrades / totalMaxScore) * 100)
+              : 0;
+
+          document.getElementById("avgGrade").innerText = `${avgGradePercent}%`;
+        } catch (err) {
+          console.error(err);
+          document.getElementById("materialsList").innerHTML =
+            "<p>Failed to load subjects.</p>";
+          document.getElementById("assignDone").innerText = "0";
+          document.getElementById("ExamDone").innerText = "0";
+          document.getElementById("avgGrade").innerText = "0%";
+        }
+      }
+
+      loadDashboard();
+    </script>
+  </body>
+</html>

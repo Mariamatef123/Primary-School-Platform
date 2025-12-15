@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Take Quiz</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+      }
+      .dashboard-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 25px;
+      }
+      .dashboard-nav h2 {
+        margin: 0;
+      }
+      .dashboard-nav a {
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 6px;
+        padding: 6px 12px;
+      }
+      .dashboard {
+        max-width: 900px;
+        margin: auto;
+        padding: 20px;
+      }
+      .list-box {
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .question-box {
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 8px;
+      }
+      .question-box p {
+        margin: 0 0 8px 0;
+      }
+      .question-box label {
+        display: block;
+        margin-bottom: 5px;
+        cursor: pointer;
+      }
+      .start-btn {
+        padding: 10px 18px;
+        border-radius: 6px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .timer {
+        font-weight: bold;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+        color: #ff7043;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="dashboard-nav">
+      <h2>Take Quiz</h2>
+      <a href="/dashboard-student" class="start-btn">Quit</a>
+    </nav>
+
+    <div class="dashboard">
+      <div class="list-box">
+        <h2 id="quizTitle">Loading...</h2>
+        <div class="timer" id="timer">Time Left: 00:00</div>
+        <form id="quizForm">
+          <div id="questionsContainer"></div>
+          <button type="submit" id="submitBtn" class="start-btn">
+            Submit Quiz
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:8080/students";
+      // const studentId = localStorage.getItem("userId");
+      const urlParams = new URLSearchParams(window.location.search);
+      const studentId = urlParams.get("studentId");
+      const subjectId = urlParams.get("subjectId");
+      const assessmentId = urlParams.get("assessmentId");
+
+      if (!studentId || !subjectId || !assessmentId) {
+        alert("Missing quiz identifiers!");
+        window.location.href = "dashboard-student.html";
+      }
+
+      let timerInterval;
+
+      async function loadQuiz() {
+        try {
+          const res = await fetch(
+            `${API_BASE}/${studentId}/subjects/${subjectId}/assessments/${assessmentId}`
+          );
+          const assessment = await res.json();
+          window.assessmentData = assessment;
+
+          document.getElementById("quizTitle").innerText = assessment.title;
+          const container = document.getElementById("questionsContainer");
+          container.innerHTML = "";
+
+          assessment.questions.forEach((q, index) => {
+            const div = document.createElement("div");
+            div.classList.add("question-box");
+            div.innerHTML = `<p><strong>${index + 1}. ${q.headline}</strong></p>
+              ${q.choices
+                .map(
+                  (opt, idx) =>
+                    `<label>
+                  <input type="radio" name="q${index}" value="choice${String.fromCharCode(
+                      65 + idx
+                    )}" required> ${opt}
+                </label>`
+                )
+                .join("")}`;
+            container.appendChild(div);
+          });
+
+          const duration = Number(assessment.duration) || 0;
+          const timerEl = document.getElementById("timer");
+          if (duration > 0) {
+            timerEl.style.display = "block";
+            startTimer(duration);
+          } else if (timerEl) {
+            timerEl.remove();
+          }
+        } catch (err) {
+          console.error(err);
+          document.getElementById("questionsContainer").innerHTML =
+            "<p>Failed to load quiz.</p>";
+        }
+      }
+
+      function startTimer(minutes) {
+        let timeLeft = minutes * 60;
+        const timerEl = document.getElementById("timer");
+
+        timerInterval = setInterval(() => {
+          if (timeLeft < 0) {
+            clearInterval(timerInterval);
+            alert("Time is up! Submitting quiz...");
+            submitQuiz();
+            return;
+          }
+          const m = Math.floor(timeLeft / 60);
+          const s = timeLeft % 60;
+          if (timerEl) {
+            timerEl.innerText = `Time Left: ${m.toString().padStart(2, "0")}:${s
+              .toString()
+              .padStart(2, "0")}`;
+          }
+          timeLeft--;
+        }, 1000);
+      }
+
+      async function submitQuiz() {
+        clearInterval(timerInterval);
+
+        if (!studentId || !subjectId || !assessmentId) {
+          alert("Cannot submit quiz: missing identifiers!");
+          window.location.href = "dashboard-student.html";
+          return;
+        }
+
+        const questionEls = document.querySelectorAll(".question-box");
+        const answers = Array.from(questionEls).map((qBox) => {
+          const checked = qBox.querySelector("input[type=radio]:checked");
+          return checked ? checked.value : "No Answer";
+        });
+
+        let score = 0;
+        const questions = window.assessmentData?.questions || [];
+        questions.forEach((q, i) => {
+          if (answers[i] === q.correct) score++;
+        });
+
+        const result = { score, assessment: window.assessmentData, answers };
+        localStorage.setItem("examResult", JSON.stringify(result));
+
+        // -----------------------------
+        // FIXED SCORE PAYLOAD
+        // Only send what backend needs
+        // Backend sets: subject, assessment, type
+        // -----------------------------
+        const scorePayload = {
+          score: score,
+          taken: true,
+          type: window.assessmentData.type || "EXAM",
+        };
+
+        try {
+          const res = await fetch(
+            `${API_BASE}/${studentId}/assessments/${assessmentId}/score`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(scorePayload),
+            }
+          );
+
+          if (!res.ok) throw new Error("Failed to save score to server");
+
+          const data = await res.json();
+          console.log("Score saved:", data);
+        } catch (err) {
+          console.error("Error submitting score:", err);
+        }
+
+        window.location.href = "Exam-result.html";
+      }
+
+      document.getElementById("quizForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        submitQuiz();
+      });
+
+      loadQuiz();
+    </script>
+  </body>
+</html>

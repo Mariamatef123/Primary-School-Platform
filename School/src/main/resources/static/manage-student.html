@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Students</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/manage-student.css" />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+        <ul class="menu">
+          <li>
+            <a href="/dashboard-admin"
+              ><i class="uil uil-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/manage-student"
+              ><i class="uil uil-users-alt"></i> Students</a
+            >
+          </li>
+          <li>
+            <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
+          </li>
+          <li>
+            <a href="/manage-parent"
+              ><i class="uil uil-users-alt"></i> Parents</a
+            >
+          </li>
+          <li class="active"><i class="uil uil-layers"></i> Levels</li>
+          <li>
+            <a href="/manage-subjects"
+              ><i class="uil uil-book-open"></i> Subjects</a
+            >
+          </li>
+          <li>
+            <a href="/logout"><i class="uil uil-signout"></i> Logout</a>
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main">
+        <h1>Manage Students</h1>
+
+        <button class="add-btn" onclick="showForm()">
+          <i class="uil uil-plus"></i> Add Student
+        </button>
+
+        <!-- STUDENT FORM -->
+        <div
+          id="studentForm"
+          style="
+            display: none;
+            margin-bottom: 20px;
+            background: var(--color-bg2);
+            padding: 15px;
+            border-radius: 8px;
+          "
+        >
+          <input
+            type="text"
+            id="studentName"
+            placeholder="Name"
+            style="padding: 8px; margin: 5px"
+          />
+          <select id="level" style="padding: 8px; margin: 5px"></select>
+          <input
+            type="date"
+            id="dateOfBirth"
+            style="padding: 8px; margin: 5px"
+          />
+          <input
+            type="text"
+            id="ssn"
+            placeholder="SSN"
+            style="padding: 8px; margin: 5px"
+          />
+          <input
+            type="email"
+            id="email"
+            placeholder="Email"
+            style="padding: 8px; margin: 5px"
+          />
+          <input
+            type="password"
+            id="password"
+            placeholder="Password (leave blank to keep unchanged)"
+            style="padding: 8px; margin: 5px"
+          />
+          <select id="role" style="padding: 8px; margin: 5px">
+            <option value="STUDENT">Student</option>
+          </select>
+
+          <button
+            id="submitBtn"
+            style="
+              padding: 8px;
+              margin: 5px;
+              background: var(--color-primary);
+              color: white;
+            "
+          >
+            Submit
+          </button>
+          <button
+            onclick="hideForm()"
+            style="
+              padding: 8px;
+              margin: 5px;
+              background: var(--color-danger);
+              color: white;
+            "
+          >
+            Cancel
+          </button>
+        </div>
+
+        <!-- STUDENT TABLE -->
+        <div class="table-container">
+          <table id="studentsTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Level</th>
+                <th>dateOfBirth</th>
+                <th>SSN</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let editStudentId = null;
+
+      function showForm() {
+        document.getElementById("studentForm").style.display = "block";
+      }
+
+      function hideForm() {
+        document.getElementById("studentForm").style.display = "none";
+        clearForm();
+      }
+
+      function clearForm() {
+        document.getElementById("studentName").value = "";
+        document.getElementById("level").value = "";
+        document.getElementById("dateOfBirth").value = "";
+        document.getElementById("ssn").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("role").value = "STUDENT";
+        editStudentId = null;
+      }
+
+      async function loadLevels() {
+        try {
+          const res = await fetch("http://localhost:8080/api/admin/levels");
+          const levels = await res.json();
+
+          const select = document.getElementById("level");
+          select.innerHTML = '<option value="">Select Level</option>';
+
+          levels.forEach((lvl) => {
+            const opt = document.createElement("option");
+            opt.value = lvl.id;
+            opt.textContent = lvl.name;
+            select.appendChild(opt);
+          });
+        } catch (err) {
+          console.error("Error loading levels:", err);
+        }
+      }
+
+      async function loadStudents() {
+        try {
+          const res = await fetch("http://localhost:8080/api/admin/students");
+          const students = await res.json();
+
+          const tbody = document.querySelector("#studentsTable tbody");
+          tbody.innerHTML = "";
+
+          students.forEach((s) => {
+            const levelName = s.level ? s.level.name : "N/A";
+            const levelId = s.level ? s.level.id : "";
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${s.id}</td>
+              <td>${s.name}</td>
+              <td data-level-id="${levelId}">${levelName}</td>
+              <td data-dateOfBirth="${s.dateOfBirth || ""}">${
+              s.dateOfBirth || "-"
+            }</td>
+              <td>${s.ssn || "-"}</td>
+              <td>${s.email || "-"}</td>
+              <td>${s.role || "-"}</td>
+              <td>
+                <button class="edit" onclick="startEdit(${
+                  s.id
+                }, this)"><i class="uil uil-edit"></i></button>
+                <button class="delete" onclick="deleteStudent(${
+                  s.id
+                }, this)"><i class="uil uil-trash-alt"></i></button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        } catch (err) {
+          console.error("Error loading students:", err);
+        }
+      }
+
+      function startEdit(id, btn) {
+        const row = btn.closest("tr");
+        editStudentId = id;
+
+        const cells = row.cells;
+
+        document.getElementById("studentName").value =
+          cells[1].innerText.trim();
+        document.getElementById("level").value =
+          cells[2].getAttribute("data-level-id");
+
+        const dateOfBirth = cells[3].getAttribute("data-dateOfBirth");
+        document.getElementById("dateOfBirth").value = dateOfBirth || "";
+
+        document.getElementById("ssn").value =
+          cells[4].innerText.trim() !== "-" ? cells[4].innerText.trim() : "";
+        document.getElementById("email").value =
+          cells[5].innerText.trim() !== "-" ? cells[5].innerText.trim() : "";
+        document.getElementById("role").value = cells[6].innerText.trim();
+
+        // Password must stay empty
+        document.getElementById("password").value = "";
+
+        showForm();
+      }
+
+      async function submitStudent() {
+        const name = document.getElementById("studentName").value.trim();
+        const levelId = parseInt(document.getElementById("level").value);
+        const dateOfBirth = document.getElementById("dateOfBirth").value;
+        const ssn = document.getElementById("ssn").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const role = document.getElementById("role").value;
+
+        if (!name || !levelId || !dateOfBirth || !ssn || !email) {
+          alert("Please fill all required fields");
+          return;
+        }
+
+        const dto = { name, levelId, dateOfBirth, ssn, email, role };
+        if (password) dto.password = password;
+
+        const url = editStudentId
+          ? `http://localhost:8080/api/admin/students/${editStudentId}`
+          : "http://localhost:8080/api/admin/students";
+
+        const method = editStudentId ? "PUT" : "POST";
+
+        try {
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dto),
+          });
+
+          if (!res.ok) throw new Error(await res.text());
+
+          hideForm();
+          await loadStudents();
+        } catch (err) {
+          alert("Failed to save: " + err.message);
+        }
+      }
+
+      async function deleteStudent(id, btn) {
+        if (!confirm("Delete this student?")) return;
+
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/admin/students/${id}`,
+            {
+              method: "DELETE",
+            }
+          );
+
+          if (!res.ok) throw new Error(await res.text());
+
+          btn.closest("tr").remove();
+        } catch (err) {
+          alert("Failed to delete: " + err.message);
+        }
+      }
+
+      document
+        .getElementById("submitBtn")
+        .addEventListener("click", submitStudent);
+
+      window.onload = async () => {
+        await loadLevels();
+        await loadStudents();
+      };
+    </script>
+  </body>
+</html>

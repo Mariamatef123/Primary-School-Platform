@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Profile · TinyScholars</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/dashboard-teacher.css" />
+
+    <style>
+      .profile-box {
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        margin: 30px auto;
+      }
+      .profile-box h2 {
+        margin: 10px 0;
+      }
+      .profile-box input {
+        width: 100%;
+        padding: 8px 10px;
+        margin: 5px 0 12px 0;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+        color: black;
+        background-color: white;
+      }
+      .start-btn {
+        display: inline-block;
+        padding: 10px 15px;
+        background: var(--color-primary, #4caf50);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+      }
+      .start-btn:hover {
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+        <ul class="menu">
+          <li>
+            <a href="/dashboard-teacher"
+              ><i class="uil uil-home"></i> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="/manage-assignments"
+              ><i class="uil uil-file-edit-alt"></i> Assignments</a
+            >
+          </li>
+          <li>
+            <a href="/manage-quizzes"><i class="uil uil-edit"></i> Quizzes</a>
+          </li>
+          <li>
+            <a href="/view-student-grades"
+              ><i class="uil uil-users-alt"></i> Students</a
+            >
+          </li>
+
+          <li class="active"><i class="uil uil-user-circle"></i> Profile</li>
+          <li>
+            <a href="index"><i class="uil uil-signout"></i> Logout</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <h1>My Profile</h1>
+        <div class="profile-box teacher-profile">
+          <i
+            class="uil uil-user-circle icon-big"
+            style="font-size: 60px; display: block"
+          ></i>
+
+          <label>Name:</label>
+          <input type="text" id="nameInput" />
+
+          <label>ID:</label>
+          <input type="text" id="idInput" disabled />
+
+          <label>Email:</label>
+          <input type="email" id="emailInput" />
+
+          <label>Subject:</label>
+          <input type="text" id="subjectInput" disabled />
+
+          <label>Phone:</label>
+          <input type="text" id="phoneInput" />
+
+          <button class="start-btn" id="saveBtn">Save Profile</button>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const API_BASE = "http://localhost:8080/api/teacher";
+      const teacherId = localStorage.getItem("userId");
+
+      // Load teacher profile dynamically
+      async function loadProfile() {
+        try {
+          const res = await fetch(`${API_BASE}/${teacherId}`);
+          if (!res.ok) throw new Error("Failed to fetch profile");
+          const teacher = await res.json();
+
+          document.getElementById("nameInput").value = teacher.name || "";
+          document.getElementById("idInput").value = teacher.id || "";
+          document.getElementById("emailInput").value = teacher.email || "";
+          document.getElementById("subjectInput").value =
+            teacher.subject?.name || "";
+
+          // Show first phone if available
+          document.getElementById("phoneInput").value =
+            teacher.phones && teacher.phones.length > 0
+              ? teacher.phones[0].phoneNumber
+              : "";
+        } catch (err) {
+          console.error(err);
+          alert("Error loading profile: " + err.message);
+        }
+      }
+
+      // Save updated teacher profile
+      document.getElementById("saveBtn").addEventListener("click", async () => {
+        try {
+          const updatedTeacher = {
+            name: document.getElementById("nameInput").value,
+            email: document.getElementById("emailInput").value,
+            phones: [
+              {
+                phoneNumber: document.getElementById("phoneInput").value,
+                phoneType: "MOBILE",
+              },
+            ],
+          };
+
+          const res = await fetch(`${API_BASE}/${teacherId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedTeacher),
+          });
+
+          if (!res.ok) throw new Error("Failed to save profile");
+
+          alert("Profile updated successfully!");
+          loadProfile();
+        } catch (err) {
+          console.error(err);
+          alert("Error saving profile: " + err.message);
+        }
+      });
+
+      // Initialize
+      loadProfile();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,56 @@
+package com.first.first_app.Service;
+
+import org.springframework.stereotype.Service;
+
+import com.first.first_app.Model.User;
+import com.first.first_app.Repo.UserRepo;
+
+import java.util.List;
+
+@Service
+public class UserService {
+    private final UserRepo userRepo;
+
+    public UserService(UserRepo userRepo) { this.userRepo = userRepo; }
+
+
+
+public User login(User user) {
+    User found = userRepo.findByEmail(user.getEmail());
+
+    if (found != null && found.getPassword().equals(user.getPassword()) && found.getRole().equals(user.getRole())) {
+        return found;
+    }
+    return null; 
+}
+
+
+public User getUserByEmail(String email) {
+    // Assuming your UserRepo has a findByEmail method that returns an Optional<User>
+    return userRepo.findByEmail(email);
+}
+
+    public List<User> getAllUsers() { return userRepo.findAll(); }
+
+    public User update(User user, int id) {
+        User oldUser = userRepo.findById(id).orElse(null);
+        if (oldUser == null) return null;
+        
+        oldUser.setName(user.getName());
+        oldUser.setEmail(user.getEmail());
+        
+        // FIX: Only update password if a new one is provided.
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            oldUser.setPassword(user.getPassword());
+        }
+
+        // FIX: Handle new multivalued phone number list
+        if (user.getPhones() != null) {
+            oldUser.setPhones(user.getPhones()); 
+        }
+
+        return userRepo.save(oldUser);
+    }
+
+    public void delete(int id) { userRepo.deleteById(id); }
+}
