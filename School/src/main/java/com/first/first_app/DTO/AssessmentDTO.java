@@ -11,7 +11,7 @@ public class AssessmentDTO {
     private Integer duration;
     private int numOfQues;
     private String type;
-    private int subjectId; // add this
+    private int subjectId; 
     private List<QuestionDTO> questions;
     // private List<Integer> deletedQuestionIds;
     public AssessmentDTO(Assessment a) {
@@ -65,10 +65,5 @@ public void setQuestions(List<QuestionDTO> questions) {
 public List<QuestionDTO> getQuestions() {
     return questions;
 }
-// public void setDeletedQuestionIds(List<Integer> deletedQuestionIds) {
-//     this.deletedQuestionIds = deletedQuestionIds;
-// }
-// public List<Integer> getDeletedQuestionIds() {
-//     return deletedQuestionIds;
-// }
+
 }

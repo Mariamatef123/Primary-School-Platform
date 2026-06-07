@@ -9,7 +9,7 @@ public class TeacherDTO {
     private String password;
     private String role;
     private Integer subjectId;
-    private Integer adminId; // Add adminId to DTO
+    private Integer adminId; 
     private List<PhoneDTO> phones;
 
     public TeacherDTO() {}
@@ -25,7 +25,7 @@ public class TeacherDTO {
         this.phones = phones;
     }
 
-    // Getters and setters
+  
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
@@ -47,7 +47,7 @@ public class TeacherDTO {
     public List<PhoneDTO> getPhones() { return phones; }
     public void setPhones(List<PhoneDTO> phones) { this.phones = phones; }
 
-    // Nested PhoneDTO
+   
     public static class PhoneDTO {
         private String phoneNumber;
         private String phoneType;

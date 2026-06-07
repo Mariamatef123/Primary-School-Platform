@@ -12,4 +12,5 @@ ENTRYPOINT ["java","-jar","app.jar"]
 
 
 # docker pull eclipse-temurin:17-jdk
+
 # docker run -p 8080:8080 -e SPRING_DATASOURCE_URL="jdbc:sqlserver://host.docker.internal:1433;databaseName=School;encrypt=true;trustServerCertificate=true" -e SPRING_DATASOURCE_USERNAME=SA -e SPRING_DATASOURCE_PASSWORD=Mariam@123 school_service_app

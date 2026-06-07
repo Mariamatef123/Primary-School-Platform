@@ -47,11 +47,10 @@ public class SubjectService {
 
         existingSubject.setCode(updatedSubject.getCode());
         existingSubject.setName(updatedSubject.getName());
-        // Level is usually set via LevelService.assignSubjectToLevel, but can be
-        // updated here
+     
         existingSubject.setLevel(updatedSubject.getLevel());
 
-        // One-to-One Teacher is handled by the model's setter logic
+        
         existingSubject.setTeacher(updatedSubject.getTeacher());
 
         return subjectRepo.save(existingSubject);
@@ -62,30 +61,26 @@ public class SubjectService {
         Subject subject = subjectRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Subject not found"));
 
-        // --- FIX 1: Break the Teacher-Subject One-to-One Link ---
         if (subject.getTeacher() != null) {
             Teacher teacher = subject.getTeacher();
             teacher.setSubject(null);
-            teacherRepo.save(teacher); // Explicitly save the Teacher
+            teacherRepo.save(teacher); 
         }
 
-        // --- FIX 2: Break the Level-Subject One-to-Many Link ---
+      
         if (subject.getLevel() != null) {
-            // Retrieve the Level and remove the Subject from the List
+         
             Level level = subject.getLevel();
 
-            // This line is CRITICAL for @OneToMany link management
             level.getSubjects().remove(subject);
 
-            // Ensure the Level is saved to flush the collection change
             levelRepo.save(level);
         }
 
-        // --- Cleanup the inverse (ManyToOne) side as well, just in case ---
+ 
         subject.setLevel(null);
         subject.setTeacher(null);
 
-        // Now delete the Subject
         subjectRepo.delete(subject);
     }
 }

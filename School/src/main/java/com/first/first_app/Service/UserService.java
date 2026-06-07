@@ -26,7 +26,7 @@ public User login(User user) {
 
 
 public User getUserByEmail(String email) {
-    // Assuming your UserRepo has a findByEmail method that returns an Optional<User>
+
     return userRepo.findByEmail(email);
 }
 
@@ -39,12 +39,11 @@ public User getUserByEmail(String email) {
         oldUser.setName(user.getName());
         oldUser.setEmail(user.getEmail());
         
-        // FIX: Only update password if a new one is provided.
+       
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             oldUser.setPassword(user.getPassword());
         }
 
-        // FIX: Handle new multivalued phone number list
         if (user.getPhones() != null) {
             oldUser.setPhones(user.getPhones()); 
         }

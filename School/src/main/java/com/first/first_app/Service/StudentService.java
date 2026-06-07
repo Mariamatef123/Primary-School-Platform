@@ -58,17 +58,17 @@ public Assessment getAssessment(int studentId, int subjectId, int assessmentId) 
 }
 
 public List<Assessment> getAllAssessments(int studentId, int subjectId) {
-    // 1️⃣ Retrieve the student, throw if not found
+
     Student student = studentRepo.findById(studentId)
             .orElseThrow(() -> new RuntimeException("Student not found"));
 
-    // 2️⃣ Verify that the subject belongs to the student
+
     Subject subject = student.getSubjects().stream()
             .filter(s -> s.getId() == subjectId)
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Subject does not belong to this student"));
 
-    // 3️⃣ Get all assessments for the subject
+    
     List<Assessment> assessments = subject.getAssessments();
 
 

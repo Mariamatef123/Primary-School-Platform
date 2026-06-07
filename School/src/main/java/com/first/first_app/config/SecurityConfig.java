@@ -22,19 +22,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // ❌ No CSRF
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // ❌ No authentication at all
                 .authorizeHttpRequests(auth -> auth
                                 .anyRequest().permitAll()
                 )
 
-                // ❌ Disable Spring login
+        
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
 
-                // ✅ Enable CORS
+                
                 .cors(withDefaults());
 
         return http.build();

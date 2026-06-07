@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 
 public class StudentDTO {
 
-    private Integer id; // Optional, used for edit
+    private Integer id;
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -24,19 +24,18 @@ public class StudentDTO {
     @NotBlank(message = "Email is required")
     private String email;
 
-    private String password; // Optional on edit
+    private String password; 
 
-    private String role; // usually "STUDENT"
+    private String role; 
 
-    private List<Integer> parentIds;   // Optional list of parent IDs
+    private List<Integer> parentIds;   
 
-    private List<PhoneDTO> phones;     // Optional list of phones
+    private List<PhoneDTO> phones;     
 
-    private Integer adminId;           // Optional admin reference
+    private Integer adminId;          
 
-    private List<Integer> teacherIds;  // Optional list of teacher IDs
+    private List<Integer> teacherIds;  
 
-    // Constructors
     public StudentDTO() {}
 
     public StudentDTO(Integer id, String name, Integer levelId, LocalDate dateOfBirth, String ssn,
@@ -56,7 +55,7 @@ public class StudentDTO {
         this.teacherIds = teacherIds;
     }
 
-    // Getters & Setters
+  
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 

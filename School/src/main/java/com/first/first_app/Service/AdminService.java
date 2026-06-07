@@ -11,7 +11,7 @@ import com.first.first_app.Model.Parent;
 import com.first.first_app.Model.Student;
 import com.first.first_app.Model.Subject;
 import com.first.first_app.Model.Teacher;
-// Assuming UserPhone is a model class
+
 import com.first.first_app.Model.UserPhone;
 import com.first.first_app.Repo.AdminRepo;
 import com.first.first_app.Repo.LevelRepo;
@@ -56,7 +56,6 @@ public class AdminService {
         Subject subject = subjectRepo.findById(subjectId)
                 .orElseThrow(() -> new RuntimeException("Subject not found with ID: " + subjectId));
 
-        // Use the Teacher model's setter, which handles the bidirectional link logic
         teacher.setSubject(subject);
 
         return teacherRepo.save(teacher);
@@ -79,7 +78,7 @@ public class AdminService {
         return studentRepo.save(student);
     }
 
-    @Transactional // check the id and remove the student from its parent first and after that delete from repo
+    @Transactional 
     public void deleteStudent(Integer studentId) {
         Student student = studentRepo.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
@@ -146,10 +145,10 @@ public class AdminService {
     }
 
     public List<Student> getRecentStudents() {
-        return studentRepo.findTop5ByOrderByIdDesc(); // get last 5 students
+        return studentRepo.findTop5ByOrderByIdDesc(); 
     }
 
-    @Transactional // add the teacher to students that in and add the students to teacher
+    @Transactional 
     public Teacher addTeacher(Teacher teacher, List<Student> students) {
         for (Student student : students) {
             teacher.getStudents().add(student);
@@ -158,7 +157,7 @@ public class AdminService {
         return teacherRepo.save(teacher);
     }
 
-    @Transactional // set the subject to null of teacher and and set the subjects of teacher null and delete it
+    @Transactional 
     public void deleteTeacher(Integer teacherId) {
 
         Teacher teacher = teacherRepo.findById(teacherId)
@@ -182,7 +181,7 @@ public class AdminService {
         teacherRepo.delete(teacher);
     }
 
-    // checks from data and save it
+
     public void editTeacher(Integer teacherId, TeacherDTO teacherDTO) {
 
         Teacher existingTeacher = teacherRepo.findById(teacherId)
@@ -231,7 +230,7 @@ public class AdminService {
     }
 
     public Parent addParent(Parent parent) {
-        // The controller already set the children and the bidirectional links.
+        
         return parentRepo.save(parent);
     }
 
@@ -273,7 +272,7 @@ public class AdminService {
     }
 
     @Transactional 
-    // assign the level to subject and chack if exceed the limit of subjects in that level or not  and set teacher to subject and save in repo
+    
     public Subject addSubject(Subject subject) {
 
         if (subject.getLevel() == null || (Integer) subject.getLevel().getId() == null) {
@@ -297,7 +296,7 @@ public class AdminService {
         return subjectRepo.save(subject);
     }
 
-    @Transactional //validate the data and save it
+    @Transactional 
     public Subject editSubject(int id, Subject updated) {
         Subject subject = subjectRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Subject not found"));

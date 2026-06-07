@@ -96,7 +96,7 @@ public class AssessmentService {
         scoreObj.setScore(scoreCount);
         scoreObj.setIsTaken(true);
 
-        // Maintain bidirectional relationship
+    
         if (assessment.getScores() == null) {
             assessment.setScores(new ArrayList<>());
         }

@@ -5,7 +5,7 @@ import java.util.List;
 import com.first.first_app.Model.CorrectChoice;
 
 public class QuestionDTO {
-        private int id; // 0 = new question
+        private int id; 
     private String headline;
     private List<String> choices;
     private CorrectChoice correct;

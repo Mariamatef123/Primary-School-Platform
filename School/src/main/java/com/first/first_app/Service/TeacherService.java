@@ -38,7 +38,7 @@ public class TeacherService {
         return teacherRepo.findById(teacherId)
                 .orElseThrow(() -> new RuntimeException("Teacher not found with ID: " + teacherId));
     }
- // Save or update teacher
+
     public Teacher saveTeacher(Teacher teacher) {
         return teacherRepo.save(teacher);
     }
@@ -50,7 +50,7 @@ public class TeacherService {
         assessmentRepo.deleteById(assessmentId);
     }
 
-    // FIX: Implemented missing method to get assessments for a teacher's subject
+ 
     public List<Assessment> getAssessmentsByTeacherId(int teacherId) {
         Teacher teacher = getTeacherById(teacherId);
         Subject subject = teacher.getSubject();
@@ -58,7 +58,7 @@ public class TeacherService {
         if (subject == null) {
             throw new RuntimeException("Teacher is not currently assigned to a subject.");
         }
-        // Return assessments for the teacher's subject
+    
         return subject.getAssessments(); 
     }
 
@@ -70,8 +70,7 @@ public class TeacherService {
         if (updatedAssessment.getTitle() != null) existing.setTitle(updatedAssessment.getTitle());
         if (updatedAssessment.getType() != null) existing.setType(updatedAssessment.getType());
         
-        // Handle partial question update carefully to maintain validation. 
-        // For partial, we'll assume a full replacement of the question list if provided.
+ 
         if (updatedAssessment.getQuestions() != null && !updatedAssessment.getQuestions().isEmpty()) {
             existing.getQuestions().clear(); 
             updatedAssessment.getQuestions().forEach(existing::addQuestion);
@@ -129,13 +128,12 @@ public class TeacherService {
         Assessment existing = assessmentRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Assessment not found with id: " + id));
 
-        // ----------------- BASIC FIELDS -----------------
+     
         existing.setTitle(request.getTitle());
 
         if (request.getDuration() != null) existing.setDuration(request.getDuration());
         if (request.getNumOfQues() > 0) existing.setNumOfQuestions(request.getNumOfQues());
 
-        // ----------------- DELETE QUESTIONS -----------------
         if (deletedQuestionIds != null) {
             for (Integer qid : deletedQuestionIds) {
                 Question q = questionRepo.findById(qid)
@@ -145,12 +143,12 @@ public class TeacherService {
             }
         }
 
-        // ----------------- ADD OR UPDATE QUESTIONS -----------------
+  
         List<Question> incoming = request.getQuestions() != null ? request.getQuestions() : new ArrayList<>();
         List<Question> current = existing.getQuestions();
 
         for (Question q : incoming) {
-            if (q.getId() == 0) { // new question
+            if (q.getId() == 0) { 
                 q.setAssessment(existing);
                 current.add(q);
             } else {

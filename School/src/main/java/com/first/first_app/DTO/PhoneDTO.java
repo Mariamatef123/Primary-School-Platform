@@ -7,7 +7,7 @@ public  class PhoneDTO {
         private String phoneNumber;
 
         @NotBlank(message = "Phone type is required")
-        private String phoneType; // e.g., MOBILE, HOME, WORK
+        private String phoneType; 
 
         public PhoneDTO() {}
 
