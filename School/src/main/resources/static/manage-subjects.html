@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -65,10 +65,10 @@
             <a href="/manage-parent"
               ><i class="uil uil-users-alt"></i> Parents</a
             >
-          </li>
-          <li class="active"><i class="uil uil-layers"></i> Levels</li>
-          <li>
-            <a href="/manage-subjects"
+          </li href="/manage-levels" >
+          <li><a href="/manage-levels"><i class="uil uil-layers"></i> Levels</a></li>
+          <li class="active">
+            <a href="/manage-subjects" 
               ><i class="uil uil-book-open"></i> Subjects</a
             >
           </li>
@@ -220,7 +220,7 @@
       function isCodeUnique(newCode, currentId) {
         // Find if any existing subject has the same code but a different ID (for editing)
         const duplicate = allSubjects.find(
-          (subject) => subject.code === newCode && subject.id !== currentId
+          (subject) => subject.code === newCode && subject.id !== currentId,
         );
         return !duplicate;
       }
@@ -232,7 +232,7 @@
 
           if (!s) {
             const res = await fetch(
-              `http://localhost:8080/api/admin/subjects/${id}`
+              `http://localhost:8080/api/admin/subjects/${id}`,
             );
             if (!res.ok) throw new Error(await res.text());
             s = await res.json();
@@ -259,7 +259,7 @@
         const name = document.getElementById("subjectName").value.trim();
         const levelId = parseInt(document.getElementById("levelSelect").value);
         const teacherId = parseInt(
-          document.getElementById("teacherSelect").value
+          document.getElementById("teacherSelect").value,
         );
 
         // 3. CLIENT-SIDE UNIQUENESS CHECK FOR CODE
@@ -295,7 +295,7 @@
               text.includes("already exists")
             ) {
               return alert(
-                `Failed to save subject: Code or Name already exists (Backend validation).`
+                `Failed to save subject: Code or Name already exists (Backend validation).`,
               );
             }
             throw new Error(text);
@@ -316,7 +316,7 @@
         try {
           const res = await fetch(
             `http://localhost:8080/api/admin/subjects/${id}`,
-            { method: "DELETE" }
+            { method: "DELETE" },
           );
           const text = await res.text();
           if (!res.ok) throw new Error(text);

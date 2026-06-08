@@ -1,26 +1,72 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: school_sql_server
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Mariam@123}
+    ports:
+     - "1434:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    restart: unless-stopped
 
-# services:
-#   # --- School Service (Monolith) ---
-#   school:
-#     build:
-#       context: ./School
-#       dockerfile: Dockerfile
-#     container_name: school_service_app
-#     ports:
-#       - "8080:8080"
-#     environment:
-#       SPRING_DATASOURCE_URL: jdbc:sqlserver://localhost:1433;databaseName=School;encrypt=true;trustServerCertificate=true
-#       SPRING_DATASOURCE_USERNAME: SA
-#       SPRING_DATASOURCE_PASSWORD: Mariam@123
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: school_db_init
+    depends_on:
+      - db
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Mariam@123}
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        until /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1" >/dev/null 2>&1; do
+          echo "Waiting for SQL Server..."
+          sleep 2
+        done
+        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "$$MSSQL_SA_PASSWORD" -Q "IF DB_ID('School') IS NULL CREATE DATABASE School"
+    restart: "no"
 
+  school:
+    build:
+      context: .
+      dockerfile: School/Dockerfile
+    container_name: school_service_app
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:sqlserver://db:1433;databaseName=School;encrypt=true;trustServerCertificate=true"
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD: ${MSSQL_SA_PASSWORD:-Mariam@123}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      LOGGING_FILE_NAME: /app/logs/app.log
+    volumes:
+      - school-logs:/app/logs
+    restart: unless-stopped
 
-#   # --- API Gateway Service ---
-#   getway:
-#     build:
-#       context: ./apiGatway
-#       dockerfile: Dockerfile
-#     container_name: api_gateway_app
-#     ports:
-#       - "8082:8082"
-#     depends_on:
-#       - school
+  gateway:
+    build:
+      context: ./apiGetway
+      dockerfile: Dockerfile
+    container_name: api_gateway_app
+    depends_on:
+      - school
+    ports:
+      - "8082:8082"
+    environment:
+      SCHOOL_SERVICE_URL: http://school:8080
+      LOGGING_FILE_NAME: /app/logs/app.log
+    volumes:
+      - gateway-logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:
+  school-logs:
+  gateway-logs:

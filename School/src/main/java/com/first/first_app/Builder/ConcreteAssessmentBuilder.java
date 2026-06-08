@@ -66,11 +66,14 @@ public class ConcreteAssessmentBuilder implements AssessmentBuilder {
     public AssessmentBuilder withQuestions(List<Question> questions) {
         if (questions != null) {
             for (Question q : questions) {
-                if (q.getchoices() == null || q.getchoices().size() < 2)
-                    throw new IllegalArgumentException("Each question must have 2 choices.");
-                if (q.getCorrect() == null)
-                    throw new IllegalArgumentException("Question must have a correct answer.");
+             if (q.getChoices() == null) {
+    q.setChoices(new ArrayList<>());
+}
 
+if (q.getChoices().size() < 2) {
+    throw new IllegalArgumentException("Each question must have at least 2 choices.");
+}
+            
                 q.setAssessment(assessment);
                 assessment.addQuestion(q);
             }

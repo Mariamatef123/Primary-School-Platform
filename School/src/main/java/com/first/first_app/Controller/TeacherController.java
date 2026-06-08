@@ -203,6 +203,7 @@ public class TeacherController {
     
     public List<Map<String, Object>> getStudentGrades(@PathVariable int teacherId) {
         return scoreRepo.findAll().stream()
+                .filter(score -> score.getAssessment().getTeacher().getId() == teacherId)
                 .map(s -> {
                     Map<String, Object> map = new HashMap<>();
                     map.put("studentName", s.getStudent().getName());

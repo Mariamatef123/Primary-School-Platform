@@ -1,0 +1,11 @@
+.git/
+.github/
+.vscode/
+.idea/
+Documentation/
+logs/
+**/logs/
+**/target/
+*.tar
+*.zip
+*.iml

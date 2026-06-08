@@ -44,6 +44,6 @@ spring:
     gateway:
       routes:
         - id: frontend-route
-          uri: http://localhost:8080
+          uri: ${SCHOOL_SERVICE_URL:http://localhost:8080}
           predicates:
             - Path=/**   # Forward all requests

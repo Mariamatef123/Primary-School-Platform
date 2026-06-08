@@ -1,16 +1,22 @@
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 
-FROM eclipse-temurin:17-jdk
+WORKDIR /workspace
+
+COPY pom.xml .
+COPY apiGetway/pom.xml apiGetway/pom.xml
+COPY School/pom.xml School/pom.xml
+COPY School/src School/src
+
+RUN mvn -B -pl School -am -DskipTests package
+
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
+RUN mkdir -p /app/logs
 
-COPY target/school-monolith-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /workspace/School/target/school-monolith-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","app.jar"]
-
-
-# docker pull eclipse-temurin:17-jdk
-
-# docker run -p 8080:8080 -e SPRING_DATASOURCE_URL="jdbc:sqlserver://host.docker.internal:1433;databaseName=School;encrypt=true;trustServerCertificate=true" -e SPRING_DATASOURCE_USERNAME=SA -e SPRING_DATASOURCE_PASSWORD=Mariam@123 school_service_app
+ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -26,15 +26,18 @@
               ><i class="uil uil-users-alt"></i> Students</a
             >
           </li>
-          <li>
-            <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
+          <li class="active">
+            <a><i class="uil uil-user"></i> Teachers</a>
           </li>
           <li>
             <a href="/manage-parent"
               ><i class="uil uil-users-alt"></i> Parents</a
             >
           </li>
-          <li class="active"><i class="uil uil-layers"></i> Levels</li>
+
+          <li>
+            <a href="/manage-levels"><i class="uil uil-layers"></i> Levels</a>
+          </li>
           <li>
             <a href="/manage-subjects"
               ><i class="uil uil-book-open"></i> Subjects</a
@@ -194,7 +197,7 @@
         } catch (err) {
           console.error("Error loading subjects:", err);
           alert(
-            "Could not load subjects. Please check the backend service at http://localhost:8080/api/admin/subjects."
+            "Could not load subjects. Please check the backend service at http://localhost:8080/api/admin/subjects.",
           );
         }
       }
@@ -221,7 +224,7 @@
               // *** API Call to the new endpoint ***
               try {
                 const subjectRes = await fetch(
-                  `http://localhost:8080/api/teacher/${t.id}/subject`
+                  `http://localhost:8080/api/teacher/${t.id}/subject`,
                 );
                 if (subjectRes.ok) {
                   const subject = await subjectRes.json();
@@ -230,13 +233,13 @@
                   t.subject = subject;
                 } else {
                   console.warn(
-                    `Could not fetch subject for teacher ID ${t.id}. Status: ${subjectRes.status}`
+                    `Could not fetch subject for teacher ID ${t.id}. Status: ${subjectRes.status}`,
                   );
                 }
               } catch (err) {
                 console.error(
                   `Error fetching subject for teacher ID ${t.id}:`,
-                  err
+                  err,
                 );
               }
             }
@@ -245,7 +248,7 @@
 
           // Wait for all subject fetches to complete
           const teachersWithSubjects = await Promise.all(
-            teachersWithSubjectsPromises
+            teachersWithSubjectsPromises,
           );
 
           teachersWithSubjects.forEach((t) => {
@@ -334,7 +337,7 @@
       async function editTeacher(id) {
         // Find the table row that holds the teacher data
         const row = Array.from(
-          document.querySelectorAll("#teachersTable tbody tr")
+          document.querySelectorAll("#teachersTable tbody tr"),
         ).find((tr) => JSON.parse(tr.dataset.teacher).id === id);
         if (!row) return alert("Teacher data not found.");
 
@@ -366,7 +369,7 @@
         // Confirmation dialog
         if (
           !confirm(
-            "Are you sure you want to delete this teacher? This action cannot be undone."
+            "Are you sure you want to delete this teacher? This action cannot be undone.",
           )
         ) {
           return; // Stop execution if the user clicks Cancel
@@ -375,7 +378,7 @@
         try {
           const res = await fetch(
             `http://localhost:8080/api/admin/teachers/${id}`,
-            { method: "DELETE" }
+            { method: "DELETE" },
           );
 
           if (!res.ok) {

@@ -108,21 +108,31 @@ public class TeacherService {
         return assessmentRepo.findById(id).orElse(null);
     }
 
- public Assessment createAssessment(Assessment request, Subject subject, Teacher teacher) {
+public Assessment createAssessment(Assessment request, Subject subject, Teacher teacher) {
 
-        Assessment assessment = new ConcreteAssessmentBuilder()
-                .withTitle(request.getTitle())
-                .ofType(request.getType()) 
-                .withCustomDuration(request.getDuration())
-                .withCustomNumOfQuestions(request.getNumOfQues())
-                .belongsToSubject(subject)
-                .assignToTeacher(teacher)
-                .withQuestions(request.getQuestions())
-                .build();
-
-        return assessmentRepo.save(assessment);
+    if (request.getQuestions() == null || request.getQuestions().isEmpty()) {
+        throw new IllegalArgumentException("Questions cannot be empty");
     }
 
+    for (Question q : request.getQuestions()) {
+        if (q.getChoices() == null || q.getChoices().size() < 2) {
+            throw new IllegalArgumentException("Each question must have at least 2 choices");
+        }
+        q.setAssessment(null);
+    }
+
+    Assessment assessment = new ConcreteAssessmentBuilder()
+            .withTitle(request.getTitle())
+            .ofType(request.getType())
+            .withCustomDuration(request.getDuration())
+            .withCustomNumOfQuestions(request.getNumOfQues())
+            .belongsToSubject(subject)
+            .assignToTeacher(teacher)
+            .withQuestions(request.getQuestions())
+            .build();
+
+    return assessmentRepo.save(assessment);
+}
     public Assessment updateAssessment(int id, Assessment request, List<Integer> deletedQuestionIds) {
 
         Assessment existing = assessmentRepo.findById(id)
@@ -157,7 +167,7 @@ public class TeacherService {
                         .findFirst()
                         .ifPresent(eq -> {
                             eq.setHeadline(q.getHeadline());
-                            eq.setchoices(q.getchoices());
+                            eq.setChoices(q.getChoices());
                             eq.setCorrect(q.getCorrect());
                         });
             }

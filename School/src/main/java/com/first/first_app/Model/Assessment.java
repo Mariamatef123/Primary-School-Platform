@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.first.first_app.DTO.QuestionDTO;
 
 @Entity
 @Table(name = "assessments")
@@ -152,8 +153,8 @@ public class Assessment {
         return new ArrayList<>(questions);
     }
 
-    public void setQuestions(List<Question> questions) {
-        this.questions = questions;
+    public void setQuestions(List<Question> questions2) {
+        this.questions = questions2;
     }
 
     public Subject getSubject() {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -22,10 +22,8 @@
               ><i class="uil uil-home"></i> Dashboard</a
             >
           </li>
-          <li>
-            <a href="/manage-student"
-              ><i class="uil uil-users-alt"></i> Students</a
-            >
+          <li class="active">
+            <a><i class="uil uil-users-alt"></i> Students</a>
           </li>
           <li>
             <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
@@ -35,7 +33,10 @@
               ><i class="uil uil-users-alt"></i> Parents</a
             >
           </li>
-          <li class="active"><i class="uil uil-layers"></i> Levels</li>
+
+          <li>
+            <a href="/manage-levels"><i class="uil uil-layers"></i> Levels</a>
+          </li>
           <li>
             <a href="/manage-subjects"
               ><i class="uil uil-book-open"></i> Subjects</a
@@ -204,8 +205,8 @@
               <td>${s.name}</td>
               <td data-level-id="${levelId}">${levelName}</td>
               <td data-dateOfBirth="${s.dateOfBirth || ""}">${
-              s.dateOfBirth || "-"
-            }</td>
+                s.dateOfBirth || "-"
+              }</td>
               <td>${s.ssn || "-"}</td>
               <td>${s.email || "-"}</td>
               <td>${s.role || "-"}</td>
@@ -298,7 +299,7 @@
             `http://localhost:8080/api/admin/students/${id}`,
             {
               method: "DELETE",
-            }
+            },
           );
 
           if (!res.ok) throw new Error(await res.text());

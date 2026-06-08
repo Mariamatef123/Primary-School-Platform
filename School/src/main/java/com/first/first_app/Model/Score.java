@@ -83,6 +83,14 @@ public class Score {
         this.assessment = assessment;
     }
 
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
     public void setIsTaken(Boolean isTaken) {
         this.isTaken = isTaken;
     }

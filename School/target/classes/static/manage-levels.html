@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -80,7 +80,9 @@
               ><i class="uil uil-users-alt"></i> Parents</a
             >
           </li>
-          <li class="active"><i class="uil uil-layers"></i> Levels</li>
+          <li class="active">
+            <a href="/manage-levels"><i class="uil uil-layers"></i> Levels</a>
+          </li>
           <li>
             <a href="/manage-subjects"
               ><i class="uil uil-book-open"></i> Subjects</a
@@ -145,7 +147,7 @@
           (level) =>
             // Check if the name matches AND the ID is different (or it's a new level)
             level.name.toLowerCase() === normalizedNewName &&
-            level.id !== currentId
+            level.id !== currentId,
         );
 
         return !duplicate;
@@ -168,7 +170,7 @@
             try {
               // Fetch subjects for display purposes
               const subjRes = await fetch(
-                `http://localhost:8080/api/admin/levels/${level.id}/subjects`
+                `http://localhost:8080/api/admin/levels/${level.id}/subjects`,
               );
               if (subjRes.ok) subjects = await subjRes.json();
             } catch (err) {
@@ -244,7 +246,7 @@
               errorText.includes("Duplicate entry")
             ) {
               return alert(
-                `Failed to save level: Level name '${levelName}' already exists. (Backend check failed)`
+                `Failed to save level: Level name '${levelName}' already exists. (Backend check failed)`,
               );
             }
             throw new Error(errorText);
@@ -261,14 +263,14 @@
       async function deleteLevel(id) {
         if (
           !confirm(
-            "Delete this level? This action is permanent and may fail if entities are linked."
+            "Delete this level? This action is permanent and may fail if entities are linked.",
           )
         )
           return;
         try {
           const res = await fetch(
             `http://localhost:8080/api/admin/levels/${id}`,
-            { method: "DELETE" }
+            { method: "DELETE" },
           );
           if (!res.ok) throw new Error(await res.text());
           await loadLevels();
@@ -276,7 +278,7 @@
           console.error(err);
           // Added specific warning for linked entities
           alert(
-            "Failed to delete level. Please check the console for details. (Possible reason: Subjects or Students are still linked to this level.)"
+            "Failed to delete level. Please check the console for details. (Possible reason: Subjects or Students are still linked to this level.)",
           );
         }
       }
