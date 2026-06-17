@@ -2,7 +2,7 @@ package com.first.first_app.Service;
 
 import com.first.first_app.Repo.SubjectRepo;
 
-import org.apache.logging.log4j.message.SimpleMessage;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -16,7 +16,7 @@ import com.first.first_app.Enum.StudentStatus;
 import com.first.first_app.Enum.Term;
 import com.first.first_app.Model.Assessment;
 import com.first.first_app.Model.Level;
-import com.first.first_app.Model.Parent;
+
 import com.first.first_app.Model.Score;
 import com.first.first_app.Model.Student;
 import com.first.first_app.Repo.AssessmentRepo;
@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 

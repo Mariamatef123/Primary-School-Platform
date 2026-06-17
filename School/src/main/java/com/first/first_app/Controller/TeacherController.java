@@ -1,9 +1,7 @@
 package com.first.first_app.Controller;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,15 +33,21 @@ import java.util.stream.Stream;
 @RequestMapping("/api/teacher")
 public class TeacherController {
     private static final String TEACHER_AUTH = "hasRole('ADMIN') or #teacherId == authentication.principal.id";
-    @Autowired
-    private TeacherService teacherService;
-    @Autowired
-    ScoreRepo scoreRepo;
-    @Autowired
-    StudentRepo studentRepo;
 
-    @Autowired
-    AssessmentRepo assessmentRepo;
+    private final TeacherService teacherService;
+    private final ScoreRepo scoreRepo;
+    private final StudentRepo studentRepo;
+    private final AssessmentRepo assessmentRepo;
+
+    public TeacherController(TeacherService teacherService,
+                             ScoreRepo scoreRepo,
+                             StudentRepo studentRepo,
+                             AssessmentRepo assessmentRepo) {
+        this.teacherService = teacherService;
+        this.scoreRepo = scoreRepo;
+        this.studentRepo = studentRepo;
+        this.assessmentRepo = assessmentRepo;
+    }
 
     @GetMapping("/{teacherId}/dashboard")
     

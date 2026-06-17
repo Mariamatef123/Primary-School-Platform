@@ -10,7 +10,7 @@ import com.first.first_app.DTO.StudentDTO;
 import com.first.first_app.DTO.SubjectDTO;
 import com.first.first_app.Model.Assessment;
 import com.first.first_app.Model.Parent;
-import com.first.first_app.Model.Score;
+
 import com.first.first_app.Model.Student;
 import com.first.first_app.Repo.ParentRepo;
 import com.first.first_app.Repo.StudentRepo;

@@ -1,12 +1,12 @@
 package com.first.first_app.Controller;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -33,7 +33,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,20 +46,30 @@ import java.util.stream.Collectors;
 @RequestMapping("/students")
 public class StudentController {
 
-    @Autowired
-    private StudentService studentService;
-    @Autowired
-    private AssessmentRepo assessmentRepo;
-    @Autowired
-    private StudentRepo studentRepo;
-    @Autowired
-    private ScoreRepo scoreRepo;
-    @Autowired
-    private AssessmentService assessmentService;
-        @Autowired
-    private LevelRepo levelRepo;
-    @Autowired
-      private  JavaMailSender mailSender;
+    private final StudentService studentService;
+    private final AssessmentRepo assessmentRepo;
+    private final StudentRepo studentRepo;
+    private final ScoreRepo scoreRepo;
+    private final AssessmentService assessmentService;
+    private final LevelRepo levelRepo;
+    private final JavaMailSender mailSender;
+
+    public StudentController(
+            StudentService studentService,
+            AssessmentRepo assessmentRepo,
+            StudentRepo studentRepo,
+            ScoreRepo scoreRepo,
+            AssessmentService assessmentService,
+            LevelRepo levelRepo,
+            JavaMailSender mailSender) {
+        this.studentService = studentService;
+        this.assessmentRepo = assessmentRepo;
+        this.studentRepo = studentRepo;
+        this.scoreRepo = scoreRepo;
+        this.assessmentService = assessmentService;
+        this.levelRepo = levelRepo;
+        this.mailSender = mailSender;
+    }
 
     @PostMapping("/{studentId}/subjects/{subjectId}")
     public Student enrollInSubject(

@@ -1,6 +1,6 @@
 package com.first.first_app.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import com.first.first_app.Builder.ConcreteAssessmentBuilder;
@@ -25,13 +25,12 @@ public class TeacherService {
     private final AssessmentRepo assessmentRepo;
     private final StudentRepo studentRepo;
     private final TeacherRepo teacherRepo;
-  @Autowired QuestionRepo questionRepo;
-    public TeacherService(AssessmentRepo assessmentRepo,
-                          StudentRepo studentRepo,
-                          TeacherRepo teacherRepo) {
+ private final QuestionRepo questionRepo;
+    public TeacherService(AssessmentRepo assessmentRepo, StudentRepo studentRepo, TeacherRepo teacherRepo, QuestionRepo questionRepo) {
         this.assessmentRepo = assessmentRepo;
         this.studentRepo = studentRepo;
         this.teacherRepo = teacherRepo;
+        this.questionRepo = questionRepo;
     }
 
     public Teacher getTeacherById(int teacherId) {

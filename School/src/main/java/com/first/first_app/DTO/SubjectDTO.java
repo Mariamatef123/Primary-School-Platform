@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.first.first_app.Enum.Term;
-import com.first.first_app.Model.Assessment;
+
 
 public class SubjectDTO {
     private int id;

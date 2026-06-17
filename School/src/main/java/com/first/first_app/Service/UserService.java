@@ -1,21 +1,21 @@
 package com.first.first_app.Service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.first.first_app.Model.User;
 import com.first.first_app.Repo.UserRepo;
-import com.first.first_app.Security.JwtUtil;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepo userRepo ;
+    private final UserRepo userRepo ;
+
+
+    UserService(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
 
 
 public User login(User user) {

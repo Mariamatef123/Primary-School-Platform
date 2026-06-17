@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
 
@@ -24,14 +23,13 @@ import com.first.first_app.Service.UserService;
 @RestController
 public class UserController {
     
-    @Autowired
-    private UserService userService;
-  
+private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    
-
-@Autowired
-private JwtUtil jwtUtil;
+    public UserController(UserService userService, JwtUtil jwtUtil) {
+        this.userService = userService;
+        this.jwtUtil = jwtUtil;
+    }
 
 @PostMapping("/login")
 public ResponseEntity<?> login(@RequestBody User user) {

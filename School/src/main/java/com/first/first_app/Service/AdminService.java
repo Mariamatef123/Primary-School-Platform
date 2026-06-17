@@ -1,7 +1,7 @@
 package com.first.first_app.Service;
 
 import com.first.first_app.FirstAppApplication;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,11 +21,11 @@ import com.first.first_app.Model.Admin;
 import com.first.first_app.Model.Family;
 import com.first.first_app.Model.Level;
 import com.first.first_app.Model.Parent;
-import com.first.first_app.Model.Role;
+
 import com.first.first_app.Model.Student;
 import com.first.first_app.Model.Subject;
 import com.first.first_app.Model.Teacher;
-import com.first.first_app.Model.User;
+
 import com.first.first_app.Model.UserPhone;
 import com.first.first_app.Repo.AdminRepo;
 import com.first.first_app.Repo.FamilyRepo;
@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -52,29 +52,41 @@ public class AdminService {
 
     private final LevelService levelService;
  
-    @Autowired
-    private FamilyRepo familyRepo;
-    @Autowired
-    private StudentRepo studentRepo;
-    @Autowired
-    private TeacherRepo teacherRepo;
-    @Autowired
-    private ParentRepo parentRepo;
-    @Autowired
-    private SubjectRepo subjectRepo;
-    @Autowired
-    private AdminRepo adminRepo;
-    @Autowired
-    LevelRepo levelRepo;
-    @Autowired
-    private SubjectService subjectService;
-    @Autowired
-    private UserPhoneRepo userPhoneRepo;
-@Autowired
-private PasswordEncoder passwordEncoder;
-    AdminService(LevelService levelService, FirstAppApplication firstAppApplication) {
+    private final FamilyRepo familyRepo;
+    private final StudentRepo studentRepo;
+    private final TeacherRepo teacherRepo;
+    private final ParentRepo parentRepo;
+    private final SubjectRepo subjectRepo;
+    private final AdminRepo adminRepo;
+    private final LevelRepo levelRepo;
+    private final SubjectService subjectService;
+    private final UserPhoneRepo userPhoneRepo;
+    private final PasswordEncoder passwordEncoder;
+
+    AdminService(LevelService levelService,
+                 FirstAppApplication firstAppApplication,
+                 FamilyRepo familyRepo,
+                 StudentRepo studentRepo,
+                 TeacherRepo teacherRepo,
+                 ParentRepo parentRepo,
+                 SubjectRepo subjectRepo,
+                 AdminRepo adminRepo,
+                 LevelRepo levelRepo,
+                 SubjectService subjectService,
+                 UserPhoneRepo userPhoneRepo,
+                 PasswordEncoder passwordEncoder) {
         this.levelService = levelService;
         this.firstAppApplication = firstAppApplication;
+        this.familyRepo = familyRepo;
+        this.studentRepo = studentRepo;
+        this.teacherRepo = teacherRepo;
+        this.parentRepo = parentRepo;
+        this.subjectRepo = subjectRepo;
+        this.adminRepo = adminRepo;
+        this.levelRepo = levelRepo;
+        this.subjectService = subjectService;
+        this.userPhoneRepo = userPhoneRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Teacher assignSubjectToTeacher(int teacherId, int subjectId) {

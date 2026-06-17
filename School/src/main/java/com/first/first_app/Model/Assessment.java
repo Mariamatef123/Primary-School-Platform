@@ -7,7 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.first.first_app.DTO.QuestionDTO;
+
 import com.first.first_app.Enum.AssessmentType;
 
 @Entity

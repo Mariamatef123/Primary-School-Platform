@@ -1,6 +1,5 @@
 package com.first.first_app.Controller;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +14,11 @@ import com.first.first_app.Service.AssessmentService;
 @RequestMapping("/assessments")
 public class AssessmentController {
  
-    @Autowired
-    private AssessmentService assessmentService;
-
+    
+    private final AssessmentService assessmentService;
+ public AssessmentController(AssessmentService assessmentService){
+    this.assessmentService=assessmentService;
+ }
     @GetMapping("/{assessmentId}")
     public Assessment getAssessment(@PathVariable int assessmentId) {
         return assessmentService.getAssessmentById(assessmentId);

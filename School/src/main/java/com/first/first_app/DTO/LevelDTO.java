@@ -2,7 +2,7 @@
 package com.first.first_app.DTO;
 
 import com.first.first_app.Model.Level;
-import com.first.first_app.Enum.Term;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

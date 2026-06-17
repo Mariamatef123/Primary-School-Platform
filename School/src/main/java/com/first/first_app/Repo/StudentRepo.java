@@ -6,8 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.first.first_app.DTO.StudentDTO;
-import com.first.first_app.DTO.StudentListDTO;
+
 import com.first.first_app.Enum.StudentStatus;
 import com.first.first_app.Model.Level;
 import com.first.first_app.Model.Student;
