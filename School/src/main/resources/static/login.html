@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -19,12 +19,12 @@
 
       <form id="form">
         <div class="input-box">
-          <label>Email or ID</label>
+          <label>Email</label>
           <input
             type="text"
-            id="userId"
+            id="email"
             name="email"
-            placeholder="Enter your Email or ID"
+            placeholder="Enter your Email"
             required
           />
           <i class="uil uil-user"></i>
@@ -42,18 +42,6 @@
           <i class="uil uil-lock-alt"></i>
         </div>
 
-        <div class="input-box">
-          <label>Role</label>
-          <select id="role" name="role" required>
-            <option value="">Select Role</option>
-            <option value="STUDENT">Student</option>
-            <option value="TEACHER">Teacher</option>
-            <option value="PARENT">Parent</option>
-            <option value="ADMIN">Admin</option>
-          </select>
-          <i class="uil uil-users-alt"></i>
-        </div>
-
         <button type="submit" class="btn">Login</button>
       </form>
 
@@ -63,24 +51,32 @@
     </div>
 
     <script>
+      function parseJwt(token) {
+        try {
+          return JSON.parse(atob(token.split(".")[1]));
+        } catch (e) {
+          return null;
+        }
+      }
+
       document.getElementById("form").addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const userId = document.getElementById("userId").value;
+        const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
-        const role = document.getElementById("role").value;
+
         const errorMessage = document.getElementById("error-message");
 
-        if (!userId || !password || !role) {
+        if (!email || !password) {
           errorMessage.innerText = "Please fill all fields";
           return;
         }
 
         try {
-          const response = await fetch("http://localhost:8082/login", {
+          const response = await fetch("http://localhost:8080/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: userId, password, role }),
+            body: JSON.stringify({ email, password }),
           });
 
           const data = await response.json();
@@ -90,12 +86,18 @@
             return;
           }
 
-          // Save token & userId in localStorage
-          localStorage.setItem("token", data.token); // ⚡ JWT token
-          localStorage.setItem("userId", data.id); // ⚡ userId from backend
+          if (!data.token) {
+            errorMessage.innerText = "Token not received";
+            return;
+          }
 
-          // Redirect based on role
-          switch (role) {
+          const payload = parseJwt(data.token);
+
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("userId", payload?.userId);
+          localStorage.setItem("role", payload?.role);
+
+          switch (payload?.role) {
             case "STUDENT":
               window.location.href = "/dashboard-student";
               break;

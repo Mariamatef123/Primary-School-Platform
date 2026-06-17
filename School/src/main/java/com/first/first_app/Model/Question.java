@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.first.first_app.Enum.CorrectChoice;
 
 @Entity
 @Table(name = "questions")
@@ -53,7 +54,6 @@ public class Question {
         this.headline = headline;
     }
 
-    // standard camelCase accessors
     public List<String> getChoices() {
         return choices;
     }
@@ -78,14 +78,5 @@ public class Question {
         this.assessment = assessment;
     }
 
-    // legacy-style accessors used elsewhere in the codebase
-//        @JsonIgnore
-// public List<String> getchoices() {
-//     return getChoices();
-// }
-
-//  @JsonIgnore
-// public void setchoices(List<String> choices) {
-//     setChoices(choices);
-// }
+ 
 }

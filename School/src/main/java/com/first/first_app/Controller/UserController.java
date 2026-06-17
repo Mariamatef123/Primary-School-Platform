@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.first.first_app.Model.User;
+import com.first.first_app.Security.JwtUtil;
 import com.first.first_app.Service.UserService;
 
 
@@ -29,24 +30,35 @@ public class UserController {
 
     
 
+@Autowired
+private JwtUtil jwtUtil;
+
 @PostMapping("/login")
 public ResponseEntity<?> login(@RequestBody User user) {
+
     User loggedInUser = userService.login(user);
 
     if (loggedInUser != null) {
-   
+
+        String token = jwtUtil.generateToken(loggedInUser.getId(),
+                loggedInUser.getEmail(),
+                loggedInUser.getRole().toString()
+        );
+
         Map<String, Object> response = new HashMap<>();
-        response.put("id", loggedInUser.getId()); 
+        response.put("id", loggedInUser.getId());
         response.put("name", loggedInUser.getName());
         response.put("role", loggedInUser.getRole());
-        return ResponseEntity.ok(response);
-    } else {
-        Map<String, Object> error = new HashMap<>();
-        error.put("message", "Login failed");
-        return ResponseEntity.status(401).body(error);
-    }
-}
+        response.put("token", token); 
 
+        return ResponseEntity.ok(response);
+    }
+
+    Map<String, Object> error = new HashMap<>();
+    error.put("message", "Login failed");
+
+    return ResponseEntity.status(401).body(error);
+}
 
     @GetMapping("/users")
     public List<User> getAllUsers() {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -12,34 +12,107 @@
     <link rel="stylesheet" href="css/dashboard-teacher.css" />
   </head>
   <body>
+    <style>
+      .sidebar {
+        width: 260px;
+        background: var(--color-bg1);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        left: 0;
+        top: 0;
+      }
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
+        padding: 0 20px 24px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .menu {
+        list-style: none;
+        padding: 20px 0;
+        margin: 0;
+      }
+
+      .menu li {
+        margin-bottom: 4px;
+      }
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+      }
+
+      .menu li a:hover,
+      .menu li.active a {
+        background: rgba(108, 99, 255, 0.1);
+        opacity: 1;
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .menu li a i {
+        font-size: 18px;
+      }
+    </style>
     <div class="dashboard">
       <!-- SIDEBAR -->
       <aside class="sidebar">
         <h2 class="logo">TinyScholars</h2>
         <ul class="menu">
-          <li class="active"><i class="uil uil-home"></i> Dashboard</li>
-          <li>
-            <a href="/manage-assignments"
-              ><i class="uil uil-file-edit-alt"></i><span>Assignments</span></a
-            >
+          <li class="active">
+            <a href="/dashboard-teacher">
+              <i class="uil uil-home"></i>
+              <span>Dashboard</span>
+            </a>
           </li>
           <li>
-            <a href="/manage-quizzes"
-              ><i class="uil uil-edit"></i><span>Exams</span></a
-            >
+            <a href="/manage-assignments">
+              <i class="uil uil-file-edit-alt"></i>
+              <span>Assignments</span>
+            </a>
           </li>
           <li>
-            <a href="/view-student-grades"
-              ><i class="uil uil-users-alt"></i><span>Students</span></a
-            >
+            <a href="/manage-quizzes">
+              <i class="uil uil-edit"></i>
+              <span>Exams</span>
+            </a>
           </li>
           <li>
-            <a href="/teacher-profile"
-              ><i class="uil uil-user-circle"></i><span>Profile</span></a
-            >
+            <a href="/manage-summer-exam.html">
+              <i class="uil uil-edit"></i>
+              <span>Summer Exams</span>
+            </a>
           </li>
           <li>
-            <a href="/"><i class="uil uil-signout"></i> Logout</a>
+            <a href="/view-student-grades">
+              <i class="uil uil-users-alt"></i>
+              <span>Students</span>
+            </a>
+          </li>
+          <li>
+            <a href="/teacher-profile">
+              <i class="uil uil-user-circle"></i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li>
+            <a href="/index">
+              <i class="uil uil-signout"></i>
+              <span>Logout</span>
+            </a>
           </li>
         </ul>
       </aside>
@@ -90,20 +163,33 @@
     <script>
       const API_BASE = "http://localhost:8080/api/teacher";
       const teacherId = localStorage.getItem("userId");
-      const token = localStorage.getItem("token"); // <-- JWT token from login
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("No token found. Please login again.");
+        window.location.href = "/index";
+      }
+      console.log(token);
+      if (!teacherId) {
+        alert("User session expired");
+        window.location.href = "/index";
+      }
 
       async function loadDashboard() {
         try {
-          // Add Authorization header to every request
-          const headers = { Authorization: `Bearer ${token}` };
+          const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          };
 
-          // 1. Fetch dashboard summary
           const resSummary = await fetch(`${API_BASE}/${teacherId}/dashboard`, {
             headers,
           });
-          if (!resSummary.ok)
-            throw new Error("Failed to fetch dashboard summary");
+
+          if (!resSummary.ok) throw new Error("Failed to fetch dashboard");
+
           const summary = await resSummary.json();
+
           document.getElementById("totalAssignments").innerText =
             summary.totalAssignments || 0;
           document.getElementById("totalExams").innerText =
@@ -111,27 +197,32 @@
           document.getElementById("totalStudents").innerText =
             summary.totalStudents || 0;
 
-          // 2. Fetch recent submissions
           const resRecent = await fetch(
             `${API_BASE}/${teacherId}/recent-submissions`,
-            { headers }
+            { headers },
           );
-          if (!resRecent.ok)
-            throw new Error("Failed to fetch recent submissions");
+
+          if (!resRecent.ok) throw new Error("Failed to fetch submissions");
+
           const submissions = await resRecent.json();
 
           const tbody = document.getElementById("recentSubmissions");
           tbody.innerHTML = "";
+
           submissions.forEach((s) => {
             const tr = document.createElement("tr");
+
             tr.innerHTML = `
-              <td>${s.studentName}</td>
-              <td>${s.assessmentTitle}</td>
-              <td><span class="status ${s.status.toLowerCase()}" style="color:white">${
-              s.status
-            }</span></td>
-              <td>${s.score}</td>
-            `;
+        <td>${s.studentName}</td>
+        <td>${s.assessmentTitle}</td>
+        <td>
+          <span class="status ${s.status.toLowerCase()}" style="color:white">
+            ${s.status}
+          </span>
+        </td>
+        <td>${s.score}</td>
+      `;
+
             tbody.appendChild(tr);
           });
         } catch (err) {
@@ -140,7 +231,6 @@
         }
       }
 
-      // Initialize
       loadDashboard();
     </script>
   </body>

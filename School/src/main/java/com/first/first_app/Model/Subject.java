@@ -3,6 +3,8 @@ package com.first.first_app.Model;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.first.first_app.Enum.AssessmentType;
+import com.first.first_app.Enum.Term;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -28,9 +30,23 @@ public class Subject {
     @JoinColumn(name = "level_id")
     private Level level;
 
+    @ManyToMany(mappedBy = "subjectsFailed")
+private List<Student> failedByStudents;
+
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("subject-assessment")
     private List<Assessment> assessments = new ArrayList<>();
+
+        @Enumerated(EnumType.STRING)
+    private Term term; 
+        public void setTerm(Term term) {
+        this.term = term;
+    }
+
+    public Term getTerm() {
+        return term;
+    }
+     
 
     @OneToOne(mappedBy = "subject", cascade = CascadeType.PERSIST)
     @JsonManagedReference("teacher-subject")

@@ -1,30 +1,35 @@
 package com.first.first_app.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.first.first_app.Model.User;
 import com.first.first_app.Repo.UserRepo;
+import com.first.first_app.Security.JwtUtil;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
-    private final UserRepo userRepo;
-
-    public UserService(UserRepo userRepo) { this.userRepo = userRepo; }
-
+    @Autowired
+    private UserRepo userRepo ;
 
 
 public User login(User user) {
+
     User found = userRepo.findByEmail(user.getEmail());
 
-    if (found != null && found.getPassword().equals(user.getPassword()) && found.getRole().equals(user.getRole())) {
+    if (found != null &&
+        found.getPassword().equals(user.getPassword())) {
+
         return found;
     }
-    return null; 
+
+    return null;
 }
-
-
 public User getUserByEmail(String email) {
 
     return userRepo.findByEmail(email);

@@ -12,45 +12,167 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/dashboard-admin.css" />
   </head>
+<style>
+        .sidebar {
+        width: 260px;
+        background: var(--color-bg1);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        left: 0;
+        top: 0;
+      }
 
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
+        padding: 0 20px 24px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .menu {
+        list-style: none;
+        padding: 20px 0;
+        margin: 0;
+      }
+
+      .menu li {
+        margin-bottom: 4px;
+      }
+      .sidebar .menu li {
+        padding: 0px;
+      }
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+      }
+
+      .menu li a:hover,
+      .menu li.active a {
+        opacity: 1;
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .menu li a i {
+        font-size: 18px;
+      }
+            @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .logo,
+        .sidebar .menu li a span {
+          display: none;
+        }
+
+        .sidebar .menu li a i {
+          margin: 0 auto;
+        }
+
+        .main {
+          margin-left: 70px;
+          max-width: calc(100% - 70px);
+          padding: 20px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .child-selector {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        #childSelect {
+          width: 100%;
+        }
+
+        .child-info-card {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+</style>
   <body>
     <div class="dashboard">
       <!-- SIDEBAR -->
-      <aside class="sidebar">
-        <h2 class="logo">TinyScholars</h2>
+<aside class="sidebar">
+  <h2 class="logo" style="text-align: left">TinyScholars</h2>
 
-        <ul class="menu">
-          <li class="active"><i class="uil uil-home"></i> Dashboard</li>
-          <li>
-            <a href="/manage-student"
-              ><i class="uil uil-users-alt"></i> Students</a
-            >
-          </li>
-          <li>
-            <a href="/manage-teacher"
-              ><i class="uil uil-user"></i> Teachers</a
-            >
-          </li>
-          <li>
-            <a href="/manage-parent"
-              ><i class="uil uil-users-alt"></i> Parents</a
-            >
-          </li>
-          <li>
-            <a href="/manage-levels"
-              ><i class="uil uil-layers"></i> Levels</a
-            >
-          </li>
-          <li>
-            <a href="/manage-subjects"
-              ><i class="uil uil-book-open"></i> Subjects</a
-            >
-          </li>
-          <li>
-            <a href="/index"><i class="uil uil-signout"></i> Logout</a>
-          </li>
-        </ul>
-      </aside>
+  <ul class="menu">
+    <li class="active">
+      <a href="/dashboard">
+        <i class="uil uil-home"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+
+    <!-- <li>
+      <a href="/manage-student">
+        <i class="uil uil-users-alt"></i>
+        <span>Students</span>
+      </a>
+    </li> -->
+
+    <li>
+      <a href="/manage-teacher">
+        <i class="uil uil-user"></i>
+        <span>Teachers</span>
+      </a>
+    </li>
+
+    <!-- <li>
+      <a href="/manage-parent">
+        <i class="uil uil-users-alt"></i>
+        <span>Parents</span>
+      </a>
+    </li> -->
+
+    <li>
+      <a href="/ManageFamilyMembers.html">
+        <i class="uil uil-users-alt"></i>
+        <span>Family Members</span>
+      </a>
+    </li>
+
+    <li>
+      <a href="/manage-levels">
+        <i class="uil uil-layers"></i>
+        <span>Levels</span>
+      </a>
+    </li>
+
+    <!-- <li>
+      <a href="/manage-subjects">
+        <i class="uil uil-book-open"></i>
+        <span>Subjects</span>
+      </a>
+    </li> -->
+
+    <li>
+      <a href="/index">
+        <i class="uil uil-signout"></i>
+        <span>Logout</span>
+      </a>
+    </li>
+  </ul>
+</aside>
 
       <!-- MAIN CONTENT -->
       <main class="main">
@@ -108,7 +230,7 @@
 <script>
 async function loadAdminDashboard() {
   try {
-    // 1️⃣ Load summary cards
+  
     const summaryRes = await fetch('http://localhost:8080/api/admin/dashboard-summary');
     const summary = await summaryRes.json();
 
@@ -117,7 +239,6 @@ async function loadAdminDashboard() {
     document.querySelector('#totalParents').textContent = summary.totalParents;
     document.querySelector('#totalSubjects').textContent = summary.totalSubjects;
 
-    // 2️⃣ Load recent students table
     const recentRes = await fetch('http://localhost:8080/api/admin/students/recent');
     const students = await recentRes.json();
 
@@ -128,7 +249,7 @@ async function loadAdminDashboard() {
   tbody.innerHTML += `
     <tr>
       <td>${s.name}</td>
-      <td>${s.level?.name || 'N/A'}</td>
+      <td>${s.levelName || 'N/A'}</td>
       <td>${s.email}</td>
     </tr>
   `;

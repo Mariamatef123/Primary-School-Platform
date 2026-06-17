@@ -21,7 +21,7 @@ public class ParentController {
         this.parentService = parentService;
     }
 
-    @GetMapping("/{parentId}/children")//get children by parent id
+    @GetMapping("/{parentId}/children")
     
     public ResponseEntity<?> getChildren(@PathVariable int parentId) {
         try {

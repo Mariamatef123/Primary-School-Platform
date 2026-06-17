@@ -59,7 +59,7 @@ public class TeacherService {
             throw new RuntimeException("Teacher is not currently assigned to a subject.");
         }
     
-        return subject.getAssessments(); 
+        return subject.getAssessments().stream().filter(a->a.getSummerExam()==false).toList(); 
     }
 
 
@@ -108,7 +108,7 @@ public class TeacherService {
         return assessmentRepo.findById(id).orElse(null);
     }
 
-public Assessment createAssessment(Assessment request, Subject subject, Teacher teacher) {
+public Assessment createAssessment(Assessment request, Subject subject, Teacher teacher,boolean isSummerExam   ) {
 
     if (request.getQuestions() == null || request.getQuestions().isEmpty()) {
         throw new IllegalArgumentException("Questions cannot be empty");
@@ -129,10 +129,12 @@ public Assessment createAssessment(Assessment request, Subject subject, Teacher 
             .belongsToSubject(subject)
             .assignToTeacher(teacher)
             .withQuestions(request.getQuestions())
+            .isSummerExam(request.getSummerExam())
             .build();
 
     return assessmentRepo.save(assessment);
 }
+
     public Assessment updateAssessment(int id, Assessment request, List<Integer> deletedQuestionIds) {
 
         Assessment existing = assessmentRepo.findById(id)

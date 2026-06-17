@@ -5,9 +5,16 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.first.first_app.Enum.StudentStatus;
+import com.first.first_app.Enum.Term;
 
 @Entity
 @Table(name = "students")
@@ -38,10 +45,33 @@ public class Student extends User {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Score> scores = new ArrayList<>();
+   @ManyToMany
+@JoinTable(
+    name = "subjects_failed",
+    joinColumns = @JoinColumn(name = "student_id"),
+    inverseJoinColumns = @JoinColumn(name = "subject_id")
+)
+private List<Subject> subjectsFailed;
 
-    private List<Integer> parentIds; // received from frontend
+    private List<Integer> parentIds;
 
+    private StudentStatus status=StudentStatus.PENDING;
+   @Column(name = "is_locked", nullable = false)
+   
+private boolean isLocked = false;
+ @Column(name = "is_assessments_locked",nullable = false)
+private boolean isAssessmentsLocked=false;
+ @Column(nullable = false)
+    private int unlockedAssessmentCount = 0;
+    
 
+    public int getUnlockedAssessmentCount() {
+        return unlockedAssessmentCount;
+    }
+    
+    public void setUnlockedAssessmentCount(int unlockedAssessmentCount) {
+        this.unlockedAssessmentCount = unlockedAssessmentCount;
+    }
     public Student() {
         super();
         this.role = Role.STUDENT;
@@ -61,7 +91,61 @@ public class Student extends User {
         return age >= 7 && age <= 10;
     }
 
+    
 
+    @Enumerated(EnumType.STRING)
+    private Term currentTerm = Term.TERM_1;
+
+     
+    @ElementCollection
+    @CollectionTable(name = "student_completed_levels", 
+                     joinColumns = @JoinColumn(name = "student_id"))
+    @Column(name = "level_id")
+    private Set<Integer> completedLevelIds = new HashSet<>();
+    
+    @ElementCollection
+    @CollectionTable(name = "student_completed_terms", 
+                     joinColumns = @JoinColumn(name = "student_id"))
+    private Map<String, LocalDate> completedTerms = new HashMap<>(); 
+    
+  
+    public Set<Integer> getCompletedLevelIds() {
+        return completedLevelIds;
+    }
+    
+    public void setCompletedLevelIds(Set<Integer> completedLevelIds) {
+        this.completedLevelIds = completedLevelIds;
+    }
+    
+    public Map<String, LocalDate> getCompletedTerms() {
+        return completedTerms;
+    }
+    
+    public void setCompletedTerms(Map<String, LocalDate> completedTerms) {
+        this.completedTerms = completedTerms;
+    }
+    
+    public void addCompletedTerm(int levelId, Term term, LocalDate completionDate) {
+        String key = "LEVEL_" + levelId + "_" + term.name();
+        completedTerms.put(key, completionDate);
+    }
+    
+    public boolean isTermCompleted(int levelId, Term term) {
+        String key = "LEVEL_" + levelId + "_" + term.name();
+        return completedTerms.containsKey(key);
+    }
+    public void setAssessmentsLocked(boolean isAssessmentsLocked) {
+        this.isAssessmentsLocked = isAssessmentsLocked;
+    }
+    
+    public void setCurrentTerm(Term currentTerm) {
+        this.currentTerm = currentTerm;
+    }
+
+    public Term getCurrentTerm() {
+        return currentTerm;
+    }
+     
     public String getSsn() {
         return ssn;
     }
@@ -95,8 +179,8 @@ public class Student extends User {
         return level;
     }
 
-    public void setLevel(Level level) {
-        this.level = level;
+    public void setLevel(Level level2) {
+        this.level = level2;
     }
 
     public Admin getAdmin() {
@@ -153,4 +237,29 @@ public class Student extends User {
     public void setRole(Role role) {
         this.role = role;
     }
+    public void setStatus(StudentStatus status){
+        this.status=status;
+    }
+    public StudentStatus getStatus(){
+     return status;
+    }
+    public void setSubjectsFailed(List<Subject> subjectsFailed) {
+        this.subjectsFailed = subjectsFailed;
+    }
+   public List<Subject>getSubjectsFailed(){
+    return subjectsFailed;
+   }
+   public void addSubjectFailed(Subject subject){
+    this.subjectsFailed.add(subject);
+   }
+   public void setLocked(boolean isLocked) {
+       this.isLocked = isLocked;
+   }
+   public boolean getLocked(){
+    return isLocked;
+   }
+     public boolean getAssessmentsLocked(){
+    return isAssessmentsLocked;
+   }
+   
 }

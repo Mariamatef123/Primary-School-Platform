@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -17,8 +17,8 @@
       }
 
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         color: #333;
@@ -257,27 +257,23 @@
         }
 
         try {
-          // Fetch subject details
           const subjectRes = await fetch(
-            `http://localhost:8080/subjects/${subjectId}`
+            `http://localhost:8080/subjects/${subjectId}`,
           );
           if (!subjectRes.ok) throw new Error("Subject not found");
           const subject = await subjectRes.json();
           document.getElementById("subjectTitle").textContent = subject.name;
 
-          // Fetch student assessments for this subject
-          // Note: You may need to adjust this endpoint based on your API
           const assessmentsRes = await fetch(
-            `http://localhost:8080/students/${studentId}/subjects/${subjectId}/assessments`
+            `http://localhost:8080/students/${studentId}/subjects/${subjectId}/assessments`,
           );
           let assessments = [];
 
           if (assessmentsRes.ok) {
             assessments = await assessmentsRes.json();
           } else {
-            // Fallback: use assessments from student/subjects endpoint
             const studentSubjectsRes = await fetch(
-              `http://localhost:8080/students/${studentId}/subjects`
+              `http://localhost:8080/students/${studentId}/subjects`,
             );
             const studentSubjects = await studentSubjectsRes.json();
             const thisSubject = studentSubjects.find((s) => s.id == subjectId);
@@ -298,7 +294,6 @@
             return;
           }
 
-          // Calculate stats
           let totalCompleted = 0;
           let totalAssignments = 0;
           let totalExams = 0;
@@ -308,7 +303,7 @@
             let score = null;
             try {
               const scoreRes = await fetch(
-                `http://localhost:8080/students/${studentId}/assessments/${assessment.assessmentId}/score`
+                `http://localhost:8080/students/${studentId}/assessments/${assessment.assessmentId}/score`,
               );
               if (scoreRes.ok) {
                 const scoreData = await scoreRes.json();
@@ -329,7 +324,6 @@
 
           const results = await Promise.all(assessmentPromises);
 
-          // Update stats
           avgScore =
             totalCompleted > 0 ? Math.round(avgScore / totalCompleted) : 0;
           statsContainer.innerHTML = `
@@ -351,7 +345,6 @@
             </div>
           `;
 
-          // Populate assessments list
           list.innerHTML = "";
           results.forEach(({ assessment, score }) => {
             const scoreDisplay =
@@ -402,7 +395,6 @@
         }
       }
 
-      // CSS for spinner
       const style = document.createElement("style");
       style.textContent = `
         @keyframes spin {
@@ -412,7 +404,6 @@
       `;
       document.head.appendChild(style);
 
-      // Load on page ready
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", loadSubjectDetails);
       } else {

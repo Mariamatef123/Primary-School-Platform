@@ -44,7 +44,7 @@ services:
       SPRING_DATASOURCE_URL: "jdbc:sqlserver://db:1433;databaseName=School;encrypt=true;trustServerCertificate=true"
       SPRING_DATASOURCE_USERNAME: sa
       SPRING_DATASOURCE_PASSWORD: ${MSSQL_SA_PASSWORD:-Mariam@123}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       LOGGING_FILE_NAME: /app/logs/app.log
     volumes:
       - school-logs:/app/logs

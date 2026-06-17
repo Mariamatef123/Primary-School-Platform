@@ -3,8 +3,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.first.first_app.Enum.AssessmentType;
 import com.first.first_app.Model.Assessment;
-import com.first.first_app.Model.AssessmentType;
 import com.first.first_app.Model.Question;
 import com.first.first_app.Model.Score;
 import com.first.first_app.Model.Student;
@@ -35,7 +36,7 @@ public class AssessmentController {
     }
 
 
-    @PostMapping("/{assessmentId}/submit/{studentId}")// when submit call the function of evaluate answers
+    @PostMapping("/{assessmentId}/submit/{studentId}")
     public Score submitAssessment(
             @PathVariable int assessmentId,
             @PathVariable int studentId,
@@ -56,12 +57,12 @@ public class AssessmentController {
     }
 
 
- @GetMapping("/assessmentNoOfQuesAssignment")// get the no of question of assignment
+ @GetMapping("/assessmentNoOfQuesAssignment")
     public ResponseEntity<Integer> getExactNoOfQuestionsAssignment() {
         return ResponseEntity.ok(AssessmentType.ASSIGNMENT.getNoQuestions());
     }
 
-    @GetMapping("/assessmentNoOfQuesExam")// get the no of question of exam
+    @GetMapping("/assessmentNoOfQuesExam")
     public ResponseEntity<Integer> getExactNoOfQuestionsExam() {
         return ResponseEntity.ok(AssessmentType.EXAM.getNoQuestions());
     }

@@ -7,8 +7,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.first.first_app.DTO.AssessmentDTO;
+import com.first.first_app.DTO.SubjectDTO;
+import com.first.first_app.DTO.TeacherDTO;
+import com.first.first_app.Enum.AssessmentType;
 import com.first.first_app.Model.Assessment;
-import com.first.first_app.Model.AssessmentType;
 import com.first.first_app.Model.Score;
 import com.first.first_app.Model.Subject;
 import com.first.first_app.Model.Teacher;
@@ -20,10 +23,12 @@ import com.first.first_app.Model.Student;
 import com.first.first_app.Service.TeacherService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
@@ -44,11 +49,13 @@ public class TeacherController {
     
     public Map<String, Object> getTeacherDashboard(@PathVariable int teacherId) {
         Map<String, Object> dashboard = new HashMap<>();
-
-        List<Assessment> teacherAssessments = assessmentRepo.findAll().stream()
-                .filter(assessment -> assessment.getSubject().getTeacher().getId() == teacherId)
-                .toList();
-
+List<Assessment> teacherAssessments = assessmentRepo.findAll().stream()
+        .filter(assessment ->
+                assessment.getSubject() != null &&
+                assessment.getSubject().getTeacher() != null &&
+                assessment.getSubject().getTeacher().getId() == teacherId
+        )
+        .toList();
         long totalExams = teacherAssessments.stream()
                 .filter(a -> a.getType() == AssessmentType.EXAM)
                 .count();
@@ -77,32 +84,38 @@ public class TeacherController {
         return dashboard;
     }
 
-    @GetMapping("/{teacherId}/recent-submissions")
-    
-    public List<Map<String, Object>> getRecentSubmissions(@PathVariable int teacherId) {
-        return scoreRepo.findAll().stream()
-                .filter(score -> score.getAssessment().getSubject().getTeacher().getId() == teacherId)
-                .sorted(Comparator.comparingInt(Score::getId).reversed())
-                .limit(10)
-                .map(s -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("studentName", s.getStudent().getName());
-                    map.put("assessmentTitle", s.getAssessment().getTitle());
-                    map.put("status", s.isTaken() ? "Taken" : "Pending");
-                    map.put("score", s.getScore());
-                    map.put("scoreId", s.getId());
+  @GetMapping("/{teacherId}/recent-submissions")
+public List<Map<String, Object>> getRecentSubmissions(@PathVariable int teacherId) {
 
-                    return map;
-                })
-                .toList();
-    }
+    return scoreRepo.findAll().stream()
+            .filter(s ->
+                    s.getAssessment() != null &&
+                    s.getAssessment().getSubject() != null &&
+                    s.getAssessment().getSubject().getTeacher() != null &&
+                    s.getAssessment().getSubject().getTeacher().getId() == teacherId
+            )
+            .sorted(Comparator.comparingInt(Score::getId).reversed())
+            .limit(10)
+            .map(s -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("studentName", s.getStudent().getName());
+                map.put("assessmentTitle", s.getAssessment().getTitle());
+                map.put("status", s.isTaken() ? "Taken" : "Pending");
+                map.put("score", s.getScore());
+                map.put("scoreId", s.getId());
+                return map;
+            })
+            .toList();
+}
 
     @PostMapping(value = "/assessments", consumes = "application/json")
     
     public ResponseEntity<?> createAssessment(
             @RequestParam int teacherId,
             @RequestBody Assessment requestBody,
-            HttpServletRequest request) {
+            HttpServletRequest request,
+            @RequestParam(required = false, defaultValue = "false") boolean isSummerExam
+        ) {
         try {
             Teacher teacher = teacherService.getTeacherById(teacherId);
 
@@ -118,7 +131,7 @@ public class TeacherController {
             Assessment created = teacherService.createAssessment(
                     requestBody,
                     teacher.getSubject(),
-                    teacher);
+                    teacher,isSummerExam);
 
             return ResponseEntity.ok(created);
 
@@ -181,12 +194,17 @@ public class TeacherController {
         return teacherService.partialUpdateAssessment(id, assessment);
     }
 
-    @GetMapping("/{id}/subject")
-    // 
-    public Subject showSubject(@PathVariable int id) {
-        return teacherService.getTeacherById(id).getSubject();
+@GetMapping("/{id}/subject")
+public ResponseEntity<SubjectDTO> showSubject(@PathVariable int id) {
+    Teacher teacher = teacherService.getTeacherById(id);
+    Subject subject = teacher.getSubject();
+    
+    if (subject == null) {
+        return ResponseEntity.notFound().build();
     }
-
+    
+    return ResponseEntity.ok(new SubjectDTO(subject));
+}
     @GetMapping("/students")
  
     public List<Student> showStudents(@RequestParam int teacherId) {
@@ -199,40 +217,38 @@ public class TeacherController {
         return teacherService.getStudent(id);
     }
 
-    @GetMapping("/{teacherId}/students-grades")
+@GetMapping("/{teacherId}/students-grades")
+public List<Map<String, Object>> getStudentGrades(@PathVariable int teacherId) {
+
+    return scoreRepo.findAll().stream()
+            .filter(score ->
+                    score.getAssessment() != null &&
+                    score.getAssessment().getSubject() != null &&
+                    score.getAssessment().getSubject().getTeacher() != null &&
+                    score.getAssessment().getSubject().getTeacher().getId() == teacherId
+            )
+            .map(s -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("studentName", s.getStudent().getName());
+                map.put("assessmentTitle", s.getAssessment().getTitle());
+                map.put("score", s.getScore());
+                map.put("total", s.getAssessment().getNumOfQues());
+                return map;
+            })
+            .toList();
+}
+
+@GetMapping("/{teacherId}")
+public ResponseEntity<TeacherDTO> getTeacherProfile(@PathVariable int teacherId) {
+    Teacher teacher = teacherService.getTeacherById(teacherId);
     
-    public List<Map<String, Object>> getStudentGrades(@PathVariable int teacherId) {
-        return scoreRepo.findAll().stream()
-                .filter(score -> score.getAssessment().getTeacher().getId() == teacherId)
-                .map(s -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("studentName", s.getStudent().getName());
-                    map.put("assessmentTitle", s.getAssessment().getTitle());
-                    map.put("score", s.getScore());
-                    map.put("total", s.getAssessment().getNumOfQues());
-                    return map;
-                })
-                .toList();
+    if (teacher == null) {
+        return ResponseEntity.notFound().build();
     }
-
-
-    @GetMapping("/{teacherId}")
     
-    public ResponseEntity<Map<String, Object>> getTeacherProfile(@PathVariable int teacherId) {
-        Teacher teacher = teacherService.getTeacherById(teacherId);
 
-        if (teacher != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("id", teacher.getId());
-            response.put("name", teacher.getName());
-            response.put("email", teacher.getEmail());
-            response.put("phones", teacher.getPhones());
-            response.put("subject", teacher.getSubject()); // Include subject object here
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    return ResponseEntity.ok(new TeacherDTO(teacher));
+}
 
     @PutMapping("/{teacherId}")
     
@@ -253,7 +269,7 @@ public class TeacherController {
         }
         if (updates.containsKey("phones")) {
             List<Map<String, String>> phoneList = (List<Map<String, String>>) updates.get("phones");
-            existingTeacher.getPhones().clear(); // remove old phones
+            existingTeacher.getPhones().clear(); 
             for (Map<String, String> p : phoneList) {
                 UserPhone phone = new UserPhone();
                 phone.setPhoneNumber(p.get("phoneNumber"));
@@ -269,21 +285,28 @@ public class TeacherController {
         return ResponseEntity.ok(savedTeacher);
     }
 
-    @GetMapping("/assessments/{id}")
- 
-    public ResponseEntity<?> getAssessment(@PathVariable int id) {
-        try {
-            Assessment assessment = assessmentRepo.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Assessment not found with id: " + id));
-            return ResponseEntity.ok(assessment);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "timestamp", LocalDateTime.now(),
-                    "status", 500,
-                    "error", "Internal Server Error",
-                    "message", e.getMessage()));
-        }
-
+@GetMapping("/assessments/{id}")
+public ResponseEntity<AssessmentDTO> getAssessment(@PathVariable int id) {
+    Assessment assessment = assessmentRepo.findById(id)
+            .orElseThrow(() -> new RuntimeException("Assessment not found with id: " + id));
+    
+    AssessmentDTO assessmentDTO = new AssessmentDTO(assessment);
+    return ResponseEntity.ok(assessmentDTO);
+}
+@GetMapping("/{teacherId}/SummerExam")
+public ResponseEntity<List<AssessmentDTO>> getSummerExam(@PathVariable int teacherId) {
+    Teacher teacher = teacherService.getTeacherById(teacherId);
+    Subject subject = teacher.getSubject();
+    
+    if (subject == null) {
+        return ResponseEntity.ok(Collections.emptyList());
     }
-
+    
+    List<AssessmentDTO> summerExams = subject.getAssessments().stream()
+            .filter(assessment -> assessment != null && Boolean.TRUE.equals(assessment.getSummerExam()))
+            .map(AssessmentDTO::new)
+            .collect(Collectors.toList());
+    
+    return ResponseEntity.ok(summerExams);
+}
 }

@@ -1,5 +1,6 @@
 package com.first.first_app.Controller;
 
+import com.first.first_app.DTO.LevelDTO;
 import com.first.first_app.Model.Level;
 import com.first.first_app.Service.LevelService;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,7 @@ public class LevelController {
     }
 
     @GetMapping
-    public List<Level> getAllLevels() {
+    public List<LevelDTO> getAllLevels() {
         return levelService.getAllLevels();
     }
 

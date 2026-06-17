@@ -1,4 +1,5 @@
 package com.first.first_app.Builder;
+import com.first.first_app.Enum.AssessmentType;
 import com.first.first_app.Model.*;
 
 import java.util.ArrayList;
@@ -59,6 +60,12 @@ public class ConcreteAssessmentBuilder implements AssessmentBuilder {
     public AssessmentBuilder assignToTeacher(Teacher teacher) {
         if (teacher == null) throw new IllegalArgumentException("Teacher is required.");
         assessment.setTeacher(teacher);
+        return this;
+    }
+    
+    @Override
+    public AssessmentBuilder isSummerExam(boolean isSummerExam) {
+        assessment.setSummerExam(isSummerExam);
         return this;
     }
 

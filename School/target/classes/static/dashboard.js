@@ -1,6 +1,4 @@
-// ===============================
-// 1) Read student info
-// ===============================
+
 const student = JSON.parse(localStorage.getItem("currentStudent"));
 
 document.getElementById("studentName").innerText = student.name;
@@ -8,17 +6,11 @@ document.getElementById("studentId").innerText = student.id;
 document.getElementById("studentLevel").innerText = student.level;
 
 
-// ===============================
-// 2) Load subjects saved by ADMIN
-// ===============================
 let levelsSubjects = JSON.parse(localStorage.getItem("levelsSubjects")) || {};
 
 let subjects = levelsSubjects[student.level] || [];
 
 
-// ===============================
-// 3) Generate Assignments (4 per subject)
-// ===============================
 const assignBox = document.getElementById("assignList");
 assignBox.innerHTML = "";
 
@@ -35,9 +27,7 @@ subjects.forEach(subject => {
 });
 
 
-// ===============================
-// 4) Generate Quizzes (2 per subject)
-// ===============================
+
 const quizBox = document.getElementById("quizList");
 quizBox.innerHTML = "";
 

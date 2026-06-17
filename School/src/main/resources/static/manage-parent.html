@@ -4,391 +4,1431 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manage Parents</title>
-
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/manage-student.css" />
     <link
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
     />
-
     <style>
-      /* ===== MODAL ===== */
-      /* ===== MODAL (THEME MATCHED) ===== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+      input::placeholder,
+      select::placeholder,
+      textarea::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+        opacity: 1;
+      }
+      .page-header h1 {
+        margin: 0;
+      }
+      .page-header p {
+        font-size: 13px;
+        color: var(--color-white);
+        opacity: 0.5;
+        margin: 4px 0 0;
+      }
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .stat-icon.blue {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+      .stat-icon.green {
+        background: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+      }
+      .stat-icon.orange {
+        background: rgba(255, 152, 0, 0.15);
+        color: #ff9800;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: var(--color-white);
+        opacity: 0.5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .stat-val {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--color-white);
+        line-height: 1.2;
+      }
+      .add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+      .add-btn:hover {
+        opacity: 0.88;
+      }
+      .add-btn:active {
+        transform: scale(0.98);
+      }
+      .table-wrap {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .table-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .search-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 7px 12px;
+        transition: border-color 0.15s;
+      }
+      .search-box:focus-within {
+        border-color: var(--color-primary);
+      }
+      .search-box i {
+        color: var(--color-white);
+        opacity: 0.4;
+        font-size: 16px;
+      }
+      .search-box input {
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--color-white);
+        font-size: 13px;
+        width: 200px;
+      }
+      .search-box input::placeholder {
+        color: var(--color-white);
+        opacity: 0.35;
+      }
+      .row-count {
+        font-size: 12px;
+        color: var(--color-white);
+        opacity: 0.45;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--color-white);
+      }
+      thead th {
+        background: var(--color-bg2);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 11px 16px;
+        text-align: left;
+        color: var(--color-white);
+        opacity: 0.6;
+      }
+      tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: background 0.12s;
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: var(--color-bg2);
+      }
+      td {
+        padding: 13px 16px;
+        vertical-align: middle;
+        font-size: 14px;
+      }
+      .cell-name {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        opacity: 0.85;
+      }
+      .id-badge {
+        display: inline-block;
+        background: var(--color-bg2);
+        color: var(--color-white);
+        opacity: 0.6;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin: 2px;
+      }
+      .action-btns {
+        display: flex;
+        gap: 6px;
+      }
+      .btn-edit,
+      .btn-delete {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 11px;
+        border: none;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+      .btn-edit:active,
+      .btn-delete:active {
+        transform: scale(0.97);
+      }
+      .btn-edit {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+      .btn-delete {
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+      }
+      .btn-edit:hover {
+        background: rgba(33, 150, 243, 0.28);
+      }
+      .btn-delete:hover {
+        background: rgba(244, 67, 54, 0.28);
+      }
+      .empty-row td {
+        text-align: center;
+        padding: 52px;
+        color: var(--color-white);
+        opacity: 0.35;
+      }
+      .empty-row i {
+        font-size: 38px;
+        display: block;
+        margin-bottom: 10px;
+      }
       #parentForm {
         display: none;
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.6);
+        background: rgba(0, 0, 0, 0.65);
         justify-content: center;
         align-items: center;
         z-index: 999;
+        animation: fadeBg 0.2s;
       }
-
+      @keyframes fadeBg {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
       .form-card {
         background: var(--color-bg1);
-        padding: 20px;
-        border-radius: 12px;
-        width: 420px;
+        border-radius: 14px;
+        width: 500px;
+        max-width: 95vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+        color: var(--color-white);
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .form-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .form-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+      }
+      .close-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: none;
+        background: var(--color-bg2);
+        color: var(--color-white);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        opacity: 0.7;
+        transition:
+          opacity 0.15s,
+          background 0.15s;
+      }
+      .close-btn:hover {
+        opacity: 1;
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+      .form-body {
+        padding: 22px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        color: var(--color-white);
+        gap: 15px;
       }
-
-      .form-card h3 {
-        margin-bottom: 5px;
-        color: var(--color-white);
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
       }
-
-      .form-card input {
-        padding: 10px;
-        border: 1px solid var(--color-bg2);
-        border-radius: 6px;
+      .field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0.55;
+        margin-bottom: 0;
+      }
+      .field input,
+      .field select {
+        padding: 10px 12px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        color: var(--color-white);
+        font-size: 14px;
         outline: none;
+        transition: border-color 0.15s;
+        font-family: inherit;
+      }
+      .field input:focus,
+      .field select:focus {
+        border-color: var(--color-primary);
+      }
+      .field select option {
         background: var(--color-bg2);
-        color: var(--color-white);
+      }
+      .field input.error,
+      .field select.error {
+        border-color: #f44336;
+      }
+      .error-message {
+        color: #f44336;
+        font-size: 11px;
+        margin-top: 4px;
+        display: none;
+      }
+      .error-message.show {
+        display: block;
+      }
+      .phone-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.05);
+        margin-bottom: 10px;
       }
 
-      /* ===== BUTTONS (MATCH YOUR THEME) ===== */
-      .btn {
+      .phone-left {
+        display: flex;
+        gap: 10px;
+        flex: 1;
+      }
+
+      .phone-input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: transparent;
+        color: white;
+      }
+
+      .phone-select {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: transparent;
+        color: white;
+      }
+
+      .phone-remove-btn {
+        background: transparent;
+        border: none;
+        color: #ff4d4d;
+        font-size: 18px;
+        cursor: pointer;
+      }
+
+      .phone-remove-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .remove-anim {
+        opacity: 0;
+        transform: translateX(10px);
+        transition: 0.15s ease;
+      }
+      .rm-btn {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--color-bg2);
+        color: var(--color-white);
+        border-radius: 8px;
+        cursor: pointer;
+        opacity: 0.5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition:
+          opacity 0.15s,
+          background 0.15s;
+      }
+      .rm-btn:hover {
+        opacity: 1;
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+      .add-phone-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        padding: 8px;
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        background: none;
+        color: var(--color-white);
+        opacity: 0.5;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        transition:
+          opacity 0.15s,
+          border-color 0.15s;
+        font-family: inherit;
+      }
+      .add-phone-btn:hover {
+        opacity: 1;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+      }
+      .form-footer {
+        display: flex;
+        gap: 10px;
+        padding: 16px 22px;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .btn-submit {
+        flex: 1;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
         padding: 10px;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         cursor: pointer;
-        font-weight: 500;
+        transition: opacity 0.15s;
+        font-family: inherit;
       }
-
-      .btn-primary {
-        background: var(--color-primary);
-        color: white;
+      .btn-submit:hover {
+        opacity: 0.88;
       }
-
-      .btn-danger {
-        background: #dc3545;
-        color: white;
-      }
-
-      .add-btn {
-        background: var(--color-primary);
-        color: white;
-        padding: 10px 14px;
-        border-radius: 6px;
-        border: none;
-        cursor: pointer;
-        margin-bottom: 15px;
-      }
-
-      /* ===== TABLE (THEME MATCHED) ===== */
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        background: var(--color-bg1);
-        color: var(--color-white);
-        border-radius: 10px;
-        overflow: hidden;
-      }
-
-      th,
-      td {
-        padding: 12px;
-        border-bottom: 1px solid var(--color-bg2);
-      }
-
-      th {
+      .btn-cancel {
         background: var(--color-bg2);
-        text-align: left;
         color: var(--color-white);
+        font-size: 14px;
+        padding: 10px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.15s;
+        font-family: inherit;
       }
-
-      /* ===== ACTION BUTTONS ===== */
-      .edit {
-        background: #2196f3;
-        color: white;
+      .btn-cancel:hover {
+        opacity: 1;
+      }
+      #confirmDialog {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .confirm-card {
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 28px;
+        width: 340px;
+        text-align: center;
+        color: var(--color-white);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+      }
+      .confirm-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+      }
+      .confirm-card h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+      .confirm-card p {
+        font-size: 13px;
+        opacity: 0.55;
+        margin-bottom: 22px;
+        line-height: 1.5;
+      }
+      .confirm-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .confirm-actions button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
         border: none;
-        padding: 6px 10px;
-        border-radius: 5px;
+        font-family: inherit;
+        transition: opacity 0.15s;
+      }
+      #confirmYes {
+        background: #dc3545;
+        color: #fff;
+      }
+      #confirmYes:hover {
+        opacity: 0.88;
+      }
+      #confirmNo {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      #toastContainer {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--color-white);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        min-width: 220px;
+        animation: toastIn 0.25s ease;
+      }
+      .toast i {
+        font-size: 17px;
+      }
+      .toast.success {
+        border-left: 3px solid var(--color-primary);
+      }
+      .toast.success i {
+        color: var(--color-primary);
+      }
+      .toast.error {
+        border-left: 3px solid #f44336;
+      }
+      .toast.error i {
+        color: #f44336;
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .chips-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+        min-height: 40px;
+        background: var(--color-bg2);
+        border-radius: 8px;
+        padding: 8px;
+      }
+      .chip {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .chip i {
         cursor: pointer;
       }
-
-      .delete {
-        background: #f44336;
+      .custom-select {
+        position: relative;
+      }
+      #childrenSearch {
+        width: 100%;
+        padding: 10px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
         color: white;
-        border: none;
-        padding: 6px 10px;
-        border-radius: 5px;
+      }
+      .dropdown-list {
+        position: absolute;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        margin-top: 5px;
+        display: none;
+        z-index: 10;
+      }
+      .dropdown-item {
+        padding: 10px;
         cursor: pointer;
+        font-size: 13px;
+        transition: background 0.15s;
+      }
+      .dropdown-item:hover {
+        background: var(--color-bg2);
+      }
+      .sidebar {
+        width: 260px;
+        background: var(--color-bg1);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        left: 0;
+        top: 0;
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
+        padding: 0 20px 24px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .menu {
+        list-style: none;
+        padding: 20px 0;
+        margin: 0;
+      }
+
+      .menu li {
+        margin-bottom: 4px;
+      }
+      .sidebar .menu li {
+        padding: 0px;
+      }
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+      }
+
+      .menu li a:hover,
+      .menu li.active a {
+        opacity: 1;
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .menu li a i {
+        font-size: 18px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .logo,
+        .sidebar .menu li a span {
+          display: none;
+        }
+
+        .sidebar .menu li a i {
+          margin: 0 auto;
+        }
+
+        .main {
+          margin-left: 70px;
+          max-width: calc(100% - 70px);
+          padding: 20px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .child-selector {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        #childSelect {
+          width: 100%;
+        }
+
+        .child-info-card {
+          flex-direction: column;
+          text-align: center;
+        }
       }
     </style>
   </head>
-
   <body>
     <div class="dashboard">
       <aside class="sidebar">
-        <h2 class="logo">TinyScholars</h2>
+        <h2 class="logo" style="text-align: left">TinyScholars</h2>
+
         <ul class="menu">
           <li>
-            <a href="/dashboard-admin"
-              ><i class="uil uil-home"></i> Dashboard</a
-            >
+            <a href="/dashboard-admin">
+              <i class="uil uil-home"></i>
+              <span>Dashboard</span>
+            </a>
           </li>
+
+          <!-- <li>
+      <a href="/manage-student">
+        <i class="uil uil-users-alt"></i>
+        <span>Students</span>
+      </a>
+    </li> -->
+
           <li>
-            <a href="/manage-student"
-              ><i class="uil uil-users-alt"></i> Students</a
-            >
+            <a href="/manage-teacher">
+              <i class="uil uil-user"></i>
+              <span>Teachers</span>
+            </a>
           </li>
-          <li>
-            <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
-          </li>
+
+          <!-- <li>
+      <a href="/manage-parent">
+        <i class="uil uil-users-alt"></i>
+        <span>Parents</span>
+      </a>
+    </li> -->
+
           <li class="active">
-            <a><i class="uil uil-users-alt"></i> Parents</a>
+            <a href="/ManageFamilyMembers.html">
+              <i class="uil uil-users-alt"></i>
+              <span>Family Members</span>
+            </a>
           </li>
+
           <li>
-            <a href="/manage-levels"><i class="uil uil-layers"></i> Levels</a>
+            <a href="/manage-levels">
+              <i class="uil uil-layers"></i>
+              <span>Levels</span>
+            </a>
           </li>
+
+          <!-- <li>
+      <a href="/manage-subjects">
+        <i class="uil uil-book-open"></i>
+        <span>Subjects</span>
+      </a>
+    </li> -->
+
           <li>
-            <a href="/manage-subjects"
-              ><i class="uil uil-book-open"></i> Subjects</a
-            >
-          </li>
-          <li>
-            <a href="/logout"><i class="uil uil-signout"></i> Logout</a>
+            <a href="/index">
+              <i class="uil uil-signout"></i>
+              <span>Logout</span>
+            </a>
           </li>
         </ul>
       </aside>
-
       <main class="main">
-        <h1>Manage Parents</h1>
-
-        <button class="add-btn" onclick="showForm()">
-          <i class="uil uil-plus"></i> Add Parent
-        </button>
-
-        <!-- MODAL FORM -->
-        <div id="parentForm">
-          <div class="form-card" onclick="event.stopPropagation()">
-            <h3 id="formTitle">Add Parent</h3>
-
-            <input type="text" id="name" placeholder="Name" />
-            <input type="email" id="email" placeholder="Email" />
-            <input type="password" id="password" placeholder="Password" />
-            <input
-              type="text"
-              id="children"
-              placeholder="Children IDs (comma-separated)"
-            />
-
-            <button id="submitBtn" class="btn btn-primary">Submit</button>
-            <button onclick="hideForm()" class="btn btn-danger">Cancel</button>
+        <div class="page-header">
+          <div>
+            <h1>Manage Parents</h1>
+            <p>View and manage parent accounts linked to students</p>
+          </div>
+          <button class="add-btn" onclick="openAddForm()">
+            <i class="uil uil-plus"></i> Add Parent
+          </button>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon blue"><i class="uil uil-users-alt"></i></div>
+            <div>
+              <div class="stat-label">Total Parents</div>
+              <div class="stat-val" id="statTotal">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green"><i class="uil uil-link"></i></div>
+            <div>
+              <div class="stat-label">Children Linked</div>
+              <div class="stat-val" id="statChildren">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i class="uil uil-user-times"></i>
+            </div>
+            <div>
+              <div class="stat-label">Unlinked Parents</div>
+              <div class="stat-val" id="statUnlinked">0</div>
+            </div>
           </div>
         </div>
-
-        <!-- TABLE -->
-        <div class="table-container">
-          <table id="parentsTable">
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <div class="search-box">
+              <i class="uil uil-search"></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search by name, email or child..."
+                onkeyup="filterTable()"
+              />
+            </div>
+            <span class="row-count" id="rowCount"></span>
+          </div>
+          <table>
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>Parent</th>
                 <th>Email</th>
+                <th>Phones</th>
                 <th>Children</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="tableBody"></tbody>
           </table>
         </div>
       </main>
     </div>
 
+    <div id="parentForm" onclick="hideForm()">
+      <div class="form-card" onclick="event.stopPropagation()">
+        <div class="form-header">
+          <h3 id="formTitle">Add Parent</h3>
+          <button class="close-btn" onclick="hideForm()">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="form-body">
+          <div class="field">
+            <label>Full Name <span style="color: #f44336">*</span></label>
+            <input id="name" placeholder="e.g. Sarah Johnson" />
+            <div class="error-message" id="nameError">Name is required</div>
+          </div>
+          <div class="field">
+            <label>Email Address <span style="color: #f44336">*</span></label>
+            <input id="email" type="email" placeholder="e.g. sarah@email.com" />
+            <div class="error-message" id="emailError">
+              Valid email is required
+            </div>
+          </div>
+          <div class="field" id="passwordField">
+            <label>Password <span style="color: #f44336">*</span></label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Create a password (min 6 characters)"
+            />
+            <div class="error-message" id="passwordError">
+              Password is required (min 12 characters)
+            </div>
+          </div>
+          <div class="field">
+            <label>Phone Numbers</label>
+            <div id="phoneList"></div>
+            <button type="button" class="add-phone-btn" onclick="addPhone()">
+              <i class="uil uil-plus"></i> Add Phone Number
+            </button>
+          </div>
+          <!-- <div class="field">
+            <label>Linked Children</label>
+            <div id="selectedChildren" class="chips-container"></div>
+            <div class="custom-select">
+              <input
+                type="text"
+                id="childrenSearch"
+                placeholder="Search and add children..."
+                onfocus="openDropdown()"
+                onkeyup="filterChildrenDropdown()"
+              />
+              <div id="childrenDropdown" class="dropdown-list"></div>
+            </div>
+          </div> -->
+        </div>
+        <div class="form-footer">
+          <button class="btn-cancel" onclick="hideForm()">Cancel</button>
+          <button id="submitBtn" class="btn-submit">Save Parent</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="confirmDialog">
+      <div class="confirm-card">
+        <div class="confirm-icon"><i class="uil uil-trash-alt"></i></div>
+        <h3>Delete this parent?</h3>
+        <p>
+          This action cannot be undone. The parent account will be permanently
+          removed.
+        </p>
+        <div class="confirm-actions">
+          <button id="confirmNo">Keep</button>
+          <button id="confirmYes">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
     <script>
-      const API = "http://localhost:8080/api/admin/parents";
+      const API_BASE = "http://localhost:8080/api/admin";
+      const PARENTS_API = "/parents";
+      const STUDENTS_API = "/students";
 
       let editParentId = null;
-      let isSaving = false;
+      let allParents = [];
+      let allStudents = [];
+      let selectedChildren = [];
 
-      const form = {
-        name: document.getElementById("name"),
-        email: document.getElementById("email"),
-        password: document.getElementById("password"),
-        children: document.getElementById("children"),
-        submitBtn: document.getElementById("submitBtn"),
-        tbody: document.querySelector("#parentsTable tbody"),
-      };
+      const $ = (id) => document.getElementById(id);
 
-      // ===== MODAL =====
+      function showToast(message, type = "success") {
+        const icons = {
+          success: "uil-check-circle",
+          error: "uil-exclamation-circle",
+          warning: "uil-exclamation-triangle",
+        };
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="uil ${icons[type]}"></i><span>${message}</span>`;
+        $("toastContainer").appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
+      }
+
+      function askConfirm(cb) {
+        $("confirmDialog").style.display = "flex";
+        $("confirmYes").onclick = () => {
+          $("confirmDialog").style.display = "none";
+          cb();
+        };
+        $("confirmNo").onclick = () => {
+          $("confirmDialog").style.display = "none";
+        };
+      }
+
+      async function apiCall(endpoint, method = "GET", body = null) {
+        const options = {
+          method,
+          headers: { "Content-Type": "application/json" },
+        };
+        if (body) options.body = JSON.stringify(body);
+        const response = await fetch(API_BASE + endpoint, options);
+        if (!response.ok) throw new Error(await response.text());
+        const contentType = response.headers.get("content-type");
+        return contentType?.includes("application/json")
+          ? response.json()
+          : response.text();
+      }
+      function addPhone(value = "", type = "MOBILE") {
+        const row = document.createElement("div");
+        row.className = "phone-row";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "phone-input";
+        input.placeholder = "Enter phone number";
+        input.value = value;
+
+        const select = document.createElement("select");
+        select.className = "phone-select";
+
+        const types = ["MOBILE", "HOME", "WORK"];
+
+        types.forEach((t) => {
+          const option = document.createElement("option");
+          option.value = t;
+          option.textContent = t;
+          if (t === type) option.selected = true;
+          select.appendChild(option);
+        });
+
+        const leftWrapper = document.createElement("div");
+        leftWrapper.className = "phone-left";
+        leftWrapper.appendChild(input);
+        leftWrapper.appendChild(select);
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "phone-remove-btn";
+        removeBtn.innerHTML = `<i class="uil uil-times"></i>`;
+        removeBtn.onclick = () => {
+          row.classList.add("remove-anim");
+          setTimeout(() => row.remove(), 150);
+        };
+
+        row.appendChild(leftWrapper);
+        row.appendChild(removeBtn);
+
+        $("phoneList").appendChild(row);
+      }
+
+      function getPhones() {
+        return [...document.querySelectorAll("#phoneList .phone-row")]
+          .filter((row) => row.isConnected)
+          .map((row) => {
+            const input = row.querySelector(".phone-input");
+            const select = row.querySelector(".phone-select");
+
+            const number = input?.value?.trim();
+
+            if (!number) return null;
+
+            return {
+              phoneNumber: number,
+              phoneType: select?.value || "MOBILE",
+            };
+          })
+          .filter(Boolean);
+      }
+      async function loadStudents() {
+        try {
+          allStudents = await apiCall(STUDENTS_API);
+        } catch {
+          allStudents = [];
+          showToast("Could not load students", "error");
+        }
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function (m) {
+          if (m === "&") return "&amp;";
+          if (m === "<") return "&lt;";
+          if (m === ">") return "&gt;";
+          return m;
+        });
+      }
+
+      function openAddForm() {
+        editParentId = null;
+        selectedChildren = [];
+
+        $("name").value = "";
+        $("email").value = "";
+        $("password").value = "";
+        $("phoneList").innerHTML = "";
+        addPhone();
+        $("formTitle").innerText = "Add Parent";
+        $("submitBtn").innerText = "Save Parent";
+        $("passwordField").style.display = "block";
+
+        document
+          .querySelectorAll(".error-message")
+          .forEach((el) => el.classList.remove("show"));
+        document
+          .querySelectorAll(".field input, .field select")
+          .forEach((el) => el.classList.remove("error"));
+
+        showForm();
+      }
+
       function showForm() {
-        document.getElementById("parentForm").style.display = "flex";
+        $("parentForm").style.display = "flex";
       }
 
       function hideForm() {
-        document.getElementById("parentForm").style.display = "none";
-        clearForm();
-        document.getElementById("formTitle").innerText = "Add Parent";
+        $("parentForm").style.display = "none";
       }
 
-      document.getElementById("parentForm").addEventListener("click", hideForm);
+      function validateForm() {
+        let isValid = true;
+        const name = $("name").value.trim();
+        const email = $("email").value.trim();
+        const password = $("password").value;
 
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") hideForm();
-      });
+        if (!name) {
+          $("nameError").classList.add("show");
+          $("name").classList.add("error");
+          isValid = false;
+        } else {
+          $("nameError").classList.remove("show");
+          $("name").classList.remove("error");
+        }
 
-      function clearForm() {
-        form.name.value = "";
-        form.email.value = "";
-        form.password.value = "";
-        form.children.value = "";
-        editParentId = null;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+          $("emailError").classList.add("show");
+          $("email").classList.add("error");
+          isValid = false;
+        } else {
+          $("emailError").classList.remove("show");
+          $("email").classList.remove("error");
+        }
+
+        if (!editParentId && (!password || password.length < 6)) {
+          $("passwordError").classList.add("show");
+          $("password").classList.add("error");
+          isValid = false;
+        } else {
+          $("passwordError").classList.remove("show");
+          $("password").classList.remove("error");
+        }
+
+        return isValid;
       }
 
-      // ===== VALIDATION =====
-      function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      function initials(name) {
+        return (name || "?")
+          .split(" ")
+          .map((w) => w[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
       }
 
-      function parseChildren(input) {
-        if (!input) return [];
-        return input
-          .split(",")
-          .map((i) => i.trim())
-          .filter(Boolean)
-          .map((id) => ({ id }));
+      function updateStats() {
+        $("statTotal").innerText = allParents.length;
+        const totalChildren = allParents.reduce(
+          (sum, p) => sum + (p.children?.length || 0),
+          0,
+        );
+        $("statChildren").innerText = totalChildren;
+        const unlinkedCount = allParents.filter(
+          (p) => !p.children?.length,
+        ).length;
+        $("statUnlinked").innerText = unlinkedCount;
       }
 
-      // ===== SAVE =====
+      function renderTable(parentsToRender) {
+        const tbody = $("tableBody");
+        tbody.innerHTML = "";
+        $("rowCount").innerText =
+          `${parentsToRender.length} parent${parentsToRender.length !== 1 ? "s" : ""}`;
+
+        if (!parentsToRender.length) {
+          tbody.innerHTML =
+            '<tr class="empty-row"><td colspan="5"><i class="uil uil-user"></i>No parents found</td></tr>';
+          return;
+        }
+        parentsToRender.forEach((p) => {
+          const tr = document.createElement("tr");
+          const chips = p.children?.length
+            ? p.children
+                .map(
+                  (c) =>
+                    `<span class="chip"><i class="uil uil-user"></i>${escapeHtml(c.name)}</span>`,
+                )
+                .join("")
+            : "<span style='opacity:.35'>-</span>";
+          const phones = p.phones?.length
+            ? p.phones
+                .map(
+                  (ph) =>
+                    `<span class="chip">
+            ${escapeHtml(ph.phoneNumber)} (${escapeHtml(ph.phoneType || "MOBILE")})
+          </span>`,
+                )
+                .join("")
+            : "<span style='opacity:.35'>-</span>";
+          tr.innerHTML = `
+  <td><span class="id-badge">#${p.id}</span></td>
+
+  <td>
+    <div class="cell-name">
+      <div class="avatar">${initials(p.name)}</div>
+      <strong>${escapeHtml(p.name)}</strong>
+    </div>
+  </td>
+
+  <td style="opacity:.6">${escapeHtml(p.email)}</td>
+
+  <td>${phones}</td>
+
+  <td>${chips}</td>
+
+  <td>
+    <div class="action-btns">
+      <button class="btn-edit" onclick="editParent(${p.id})">Edit</button>
+      <button class="btn-delete" onclick="askDelete(${p.id})">Delete</button>
+    </div>
+  </td>
+`;
+
+          tbody.appendChild(tr);
+        });
+      }
+
+      function filterTable() {
+        const searchTerm = $("searchInput").value.toLowerCase();
+
+        if (!searchTerm) {
+          renderTable(allParents);
+          return;
+        }
+
+        const filtered = allParents.filter(
+          (parent) =>
+            parent.name.toLowerCase().includes(searchTerm) ||
+            parent.email.toLowerCase().includes(searchTerm) ||
+            parent.children?.some((child) =>
+              child.name.toLowerCase().includes(searchTerm),
+            ),
+        );
+
+        renderTable(filtered);
+      }
+
+      async function loadParents() {
+        try {
+          allParents = await apiCall(PARENTS_API);
+
+          allParents = allParents.map((parent) => ({
+            ...parent,
+            phones: Array.isArray(parent.phones) ? parent.phones : [],
+          }));
+
+          console.log("Parents loaded:", allParents);
+
+          updateStats();
+          renderTable(allParents);
+        } catch (err) {
+          console.error(err);
+          allParents = [];
+          updateStats();
+          renderTable([]);
+          showToast("Could not load parents", "error");
+        }
+      }
+
       async function saveParent() {
-        if (isSaving) return;
-
-        const name = form.name.value.trim();
-        const email = form.email.value.trim();
-        const password = form.password.value.trim();
-
-        if (!name || !email || (!editParentId && !password)) {
-          return alert("Name, Email, Password required");
+        if (!validateForm()) {
+          showToast("Please fix the errors in the form", "error");
+          return;
         }
 
-        if (!isValidEmail(email)) {
-          return alert("Invalid email");
-        }
+        const name = $("name").value.trim();
+        const email = $("email").value.trim();
+        const password = $("password").value;
+        const phones = getPhones();
 
         const payload = {
           name,
           email,
-          ...(password && { password }),
-          children: parseChildren(form.children.value),
+          phones,
         };
 
+        if (!editParentId) {
+          payload.password = password;
+        } else {
+          payload.password = "";
+        }
         try {
-          isSaving = true;
-          form.submitBtn.innerText = "Saving...";
-          form.submitBtn.disabled = true;
-
-          const res = await fetch(
-            `${API}${editParentId ? "/" + editParentId : ""}`,
-            {
-              method: editParentId ? "PUT" : "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            },
-          );
-
-          if (!res.ok) throw new Error(await res.text());
+          let createdParent;
+          if (editParentId) {
+            await apiCall(`${PARENTS_API}/${editParentId}`, "PUT", payload);
+            showToast("Parent updated successfully");
+          } else {
+            createdParent = await apiCall(PARENTS_API, "POST", payload);
+            showToast("Parent created successfully");
+          }
 
           hideForm();
           await loadParents();
+          await loadStudents();
         } catch (err) {
-          alert("Error: " + err.message);
-        } finally {
-          isSaving = false;
-          form.submitBtn.innerText = "Submit";
-          form.submitBtn.disabled = false;
+          console.error(err);
+          showToast(err.message || "Error saving parent", "error");
         }
       }
 
-      form.submitBtn.addEventListener("click", saveParent);
+      async function editParent(id) {
+        const parent = allParents.find((p) => p.id === id);
 
-      // ===== LOAD =====
-      async function loadParents() {
-        try {
-          const res = await fetch(API);
-          if (!res.ok) throw new Error("Failed loading parents");
-
-          const parents = await res.json();
-          renderTable(parents);
-        } catch (err) {
-          alert(err.message);
-        }
-      }
-
-      // ===== RENDER =====
-      function renderTable(parents) {
-        form.tbody.innerHTML = "";
-
-        if (!parents.length) {
-          form.tbody.innerHTML = `
-            <tr>
-              <td colspan="5" style="text-align:center;">No parents found</td>
-            </tr>`;
+        if (!parent) {
+          showToast("Parent not found", "error");
           return;
         }
 
-        parents.forEach((p) => {
-          const children = p.children?.length
-            ? p.children.map((c) => c.id).join(", ")
-            : "-";
+        editParentId = id;
 
-          const row = document.createElement("tr");
+        $("name").value = parent.name || "";
+        $("email").value = parent.email || "";
 
-          row.innerHTML = `
-            <td>${p.id}</td>
-            <td>${p.name}</td>
-            <td>${p.email}</td>
-            <td>${children}</td>
-            <td>
-              <button class="edit" onclick="editParent(${p.id})">Edit</button>
-              <button class="delete" onclick="deleteParent(${p.id})">Delete</button>
-            </td>
-          `;
+        $("passwordField").style.display = "none";
+        $("formTitle").innerText = "Edit Parent";
+        $("submitBtn").innerText = "Update Parent";
 
-          form.tbody.appendChild(row);
+        const phoneList = $("phoneList");
+        phoneList.innerHTML = "";
+        if (Array.isArray(parent.phones) && parent.phones.length > 0) {
+          parent.phones.forEach((phone) => {
+            addPhone(phone?.phoneNumber ?? "", phone?.phoneType ?? "MOBILE");
+          });
+        } else {
+          addPhone();
+        }
+
+        document
+          .querySelectorAll(".error-message")
+          .forEach((el) => el.classList.remove("show"));
+
+        document
+          .querySelectorAll(".field input, .field select")
+          .forEach((el) => el.classList.remove("error"));
+
+        showForm();
+      }
+      function askDelete(id) {
+        askConfirm(async () => {
+          try {
+            await apiCall(`${PARENTS_API}/${id}`, "DELETE");
+            showToast("Parent deleted successfully");
+            await loadParents();
+          } catch {
+            showToast("Error deleting parent", "error");
+          }
         });
       }
 
-      // ===== EDIT =====
-      function editParent(id) {
-        const row = [...form.tbody.rows].find(
-          (r) => r.cells[0].innerText == id,
-        );
-        if (!row) return;
+      $("submitBtn").onclick = saveParent;
 
-        editParentId = id;
-
-        form.name.value = row.cells[1].innerText;
-        form.email.value = row.cells[2].innerText;
-        form.password.value = "";
-        form.children.value =
-          row.cells[3].innerText === "-" ? "" : row.cells[3].innerText;
-
-        document.getElementById("formTitle").innerText = "Edit Parent";
-        showForm();
-      }
-
-      // ===== DELETE =====
-      async function deleteParent(id) {
-        if (!confirm("Delete this parent?")) return;
-
-        try {
-          const res = await fetch(`${API}/${id}`, { method: "DELETE" });
-          if (!res.ok) throw new Error(await res.text());
-
-          await loadParents();
-        } catch (err) {
-          alert("Delete failed: " + err.message);
-        }
-      }
-
-      window.onload = loadParents;
+      window.onload = async () => {
+        addPhone();
+        await loadStudents();
+        await loadParents();
+      };
     </script>
   </body>
 </html>

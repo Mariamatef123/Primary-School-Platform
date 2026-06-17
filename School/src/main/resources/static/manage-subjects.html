@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manage Subjects</title>
+    <title>Manage Subjects - TinyScholars</title>
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/manage-student.css" />
     <link
@@ -11,42 +11,678 @@
       href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
     />
     <style>
-      .btn {
-        padding: 9px 14px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        color: #fff;
-        margin: 8px;
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+      input::placeholder,
+      select::placeholder,
+      textarea::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+        opacity: 1;
+      }
+      .page-header h1 {
+        margin: 0;
+      }
+      .page-header p {
+        font-size: 13px;
+        color: var(--color-white);
+        opacity: 0.5;
+        margin: 4px 0 0;
+      }
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .stat-icon.blue {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+      .stat-icon.green {
+        background: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+      }
+      .stat-icon.orange {
+        background: rgba(255, 152, 0, 0.15);
+        color: #ff9800;
+      }
+      .stat-icon.purple {
+        background: rgba(108, 99, 255, 0.15);
+        color: #6c63ff;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: var(--color-white);
+        opacity: 0.5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .stat-val {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--color-white);
+        line-height: 1.2;
       }
       .add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
         background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
       }
-      .edit-btn {
-        background: #2196f3;
+      .add-btn:hover {
+        opacity: 0.88;
       }
-      .delete-btn {
-        background: #f44336;
+      .add-btn:active {
+        transform: scale(0.98);
       }
-      #formBox {
-        display: none;
+      .table-wrap {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .table-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .term-filter {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         background: var(--color-bg2);
-        padding: 15px;
-        border-radius: 10px;
-        margin: 15px 0;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 6px 12px;
       }
-      #formBox input,
-      #formBox select {
-        padding: 8px;
-        margin: 5px 0;
-        width: 220px;
+      .term-filter i {
+        color: var(--color-white);
+        opacity: 0.5;
+        font-size: 16px;
+      }
+      .term-filter select {
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--color-white);
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .term-filter select option {
+        background: var(--color-bg1);
+      }
+      .search-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 7px 12px;
+        transition: border-color 0.15s;
+      }
+      .search-box:focus-within {
+        border-color: var(--color-primary);
+      }
+      .search-box i {
+        color: var(--color-white);
+        opacity: 0.4;
+        font-size: 16px;
+      }
+      .search-box input {
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--color-white);
+        font-size: 13px;
+        width: 200px;
+      }
+      .search-box input::placeholder {
+        color: var(--color-white);
+        opacity: 0.35;
+      }
+      .row-count {
+        font-size: 12px;
+        color: var(--color-white);
+        opacity: 0.45;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--color-white);
+      }
+      thead th {
+        background: var(--color-bg2);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 11px 16px;
+        text-align: center;
+        color: var(--color-white);
+        opacity: 0.6;
+      }
+      tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: background 0.12s;
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: var(--color-bg2);
+      }
+      td {
+        padding: 13px 16px;
+        vertical-align: middle;
+        font-size: 14px;
+        text-align: center;
+      }
+      .cell-name {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        justify-content: center;
+      }
+      .id-badge {
+        display: inline-block;
+        background: var(--color-bg2);
+        color: var(--color-white);
+        opacity: 0.6;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin: 2px;
+      }
+      .chip.green {
+        background: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+      }
+      .chip.term1 {
+        background: rgba(108, 99, 255, 0.2);
+        color: #6c63ff;
+      }
+      .chip.term2 {
+        background: rgba(255, 152, 0, 0.2);
+        color: #ff9800;
+      }
+      .action-btns {
+        display: flex;
+        gap: 6px;
+        justify-content: center;
+      }
+      .btn-edit,
+      .btn-delete {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 11px;
+        border: none;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+      .btn-edit:active,
+      .btn-delete:active {
+        transform: scale(0.97);
+      }
+      .btn-edit {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+      .btn-delete {
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+      }
+      .btn-edit:hover {
+        background: rgba(33, 150, 243, 0.28);
+      }
+      .btn-delete:hover {
+        background: rgba(244, 67, 54, 0.28);
+      }
+      .empty-row td {
+        text-align: center;
+        padding: 52px;
+        color: var(--color-white);
+        opacity: 0.35;
+      }
+      .empty-row i {
+        font-size: 38px;
+        display: block;
+        margin-bottom: 10px;
+      }
+      #subjectForm {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        animation: fadeBg 0.2s;
+      }
+      @keyframes fadeBg {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .form-card {
+        background: var(--color-bg1);
+        border-radius: 14px;
+        width: 480px;
+        max-width: 95vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+        color: var(--color-white);
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .form-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .form-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+      }
+      .close-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: none;
+        background: var(--color-bg2);
+        color: var(--color-white);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        opacity: 0.7;
+        transition:
+          opacity 0.15s,
+          background 0.15s;
+      }
+      .close-btn:hover {
+        opacity: 1;
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+      .form-body {
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0.55;
+      }
+      .field input,
+      .field select,
+      .field textarea {
+        width: 100%;
+        padding: 10px 12px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        color: var(--color-white);
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.15s;
+        font-family: inherit;
+      }
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        border-color: var(--color-primary);
+      }
+      .field select option {
+        background: var(--color-bg2);
+      }
+      .form-footer {
+        display: flex;
+        gap: 10px;
+        padding: 16px 22px;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .btn-submit {
+        flex: 1;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: opacity 0.15s;
+        font-family: inherit;
+      }
+      .btn-submit:hover {
+        opacity: 0.88;
+      }
+      .btn-cancel {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        font-size: 14px;
+        padding: 10px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.15s;
+      }
+      .btn-cancel:hover {
+        opacity: 1;
+      }
+      #confirmDialog {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .confirm-card {
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 28px;
+        width: 340px;
+        text-align: center;
+        color: var(--color-white);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+      }
+      .confirm-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+      }
+      .confirm-card h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+      .confirm-card p {
+        font-size: 13px;
+        opacity: 0.55;
+        margin-bottom: 22px;
+        line-height: 1.5;
+      }
+      .confirm-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .confirm-actions button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        font-family: inherit;
+        transition: opacity 0.15s;
+      }
+      #confirmYes {
+        background: #dc3545;
+        color: #fff;
+      }
+      #confirmYes:hover {
+        opacity: 0.88;
+      }
+      #confirmNo {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      #toastContainer {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--color-white);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        min-width: 220px;
+        animation: toastIn 0.25s ease;
+      }
+      .toast i {
+        font-size: 17px;
+      }
+      .toast.success {
+        border-left: 3px solid var(--color-primary);
+      }
+      .toast.success i {
+        color: var(--color-primary);
+      }
+      .toast.error {
+        border-left: 3px solid #f44336;
+      }
+      .toast.error i {
+        color: #f44336;
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .sidebar {
+        width: 260px;
+        background: var(--color-bg1);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        left: 0;
+        top: 0;
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
+        padding: 0 20px 24px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .menu {
+        list-style: none;
+        padding: 20px 0;
+        margin: 0;
+      }
+
+      .menu li {
+        margin-bottom: 4px;
+      }
+      .sidebar .menu li {
+        padding: 0px;
+      }
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+      }
+
+      .menu li a:hover,
+      .menu li.active a {
+        opacity: 1;
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .menu li a i {
+        font-size: 18px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .logo,
+        .sidebar .menu li a span {
+          display: none;
+        }
+
+        .sidebar .menu li a i {
+          margin: 0 auto;
+        }
+
+        .main {
+          margin-left: 70px;
+          max-width: calc(100% - 70px);
+          padding: 20px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .child-selector {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        #childSelect {
+          width: 100%;
+        }
+
+        .child-info-card {
+          flex-direction: column;
+          text-align: center;
+        }
       }
     </style>
   </head>
   <body>
     <div class="dashboard">
       <aside class="sidebar">
-        <h2 class="logo">TinyScholars</h2>
+        <h2 class="logo" style="text-align: left">TinyScholars</h2>
         <ul class="menu">
           <li>
             <a href="/dashboard-admin"
@@ -54,280 +690,656 @@
             >
           </li>
           <li>
-            <a href="/manage-student"
-              ><i class="uil uil-users-alt"></i> Students</a
-            >
-          </li>
-          <li>
             <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
           </li>
           <li>
-            <a href="/manage-parent"
-              ><i class="uil uil-users-alt"></i> Parents</a
-            >
-          </li href="/manage-levels" >
-          <li><a href="/manage-levels"><i class="uil uil-layers"></i> Levels</a></li>
-          <li class="active">
-            <a href="/manage-subjects" 
-              ><i class="uil uil-book-open"></i> Subjects</a
+            <a href="/ManageFamilyMembers.html"
+              ><i class="uil uil-users-alt"></i> Family Members</a
             >
           </li>
+          <li class="active">
+            <a href="/manage-levels"><i class="uil uil-layers"></i> Levels</a>
+          </li>
           <li>
-            <a href="/logout"><i class="uil uil-signout"></i> Logout</a>
+            <a href="/index"><i class="uil uil-signout"></i> Logout</a>
           </li>
         </ul>
       </aside>
 
       <main class="main">
-        <h1>Manage Subjects</h1>
-        <button class="btn add-btn" onclick="showForm()">+ Add Subject</button>
-
-        <!-- Form -->
-        <div id="formBox">
-          <input type="number" id="subjectCode" placeholder="Subject Code" />
-          <input type="text" id="subjectName" placeholder="Subject Name" />
-          <select id="levelSelect"></select>
-          <select id="teacherSelect"></select>
-          <br />
-          <button class="btn add-btn" onclick="saveSubject()">Save</button>
-          <button class="btn delete-btn" onclick="hideForm()">Cancel</button>
+        <div class="page-header">
+          <div>
+            <h1>Manage Subjects</h1>
+            <p>
+              View and manage subjects, their levels, terms and assigned
+              teachers
+            </p>
+          </div>
+          <button class="add-btn" id="addSubjectBtn">
+            <i class="uil uil-plus"></i> Add Subject
+          </button>
         </div>
 
-        <!-- Table -->
-        <div class="table-container">
-          <table id="subjectsTable" cellpadding="5" cellspacing="0">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon blue"><i class="uil uil-book-open"></i></div>
+            <div>
+              <div class="stat-label">Total Subjects</div>
+              <div class="stat-val" id="statTotal">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green"><i class="uil uil-layers"></i></div>
+            <div>
+              <div class="stat-label">Levels Covered</div>
+              <div class="stat-val" id="statLevels">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <i class="uil uil-calendar-alt"></i>
+            </div>
+            <div>
+              <div class="stat-label">Term 1 Subjects</div>
+              <div class="stat-val" id="statTerm1">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i class="uil uil-calendar-alt"></i>
+            </div>
+            <div>
+              <div class="stat-label">Term 2 Subjects</div>
+              <div class="stat-val" id="statTerm2">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <div class="filter-group">
+              <div class="term-filter">
+                <i class="uil uil-filter"></i
+                ><select id="termFilterSelect">
+                  <option value="ALL">📚 All Terms</option>
+                  <option value="TERM_1">📖 Term 1</option>
+                  <option value="TERM_2">📘 Term 2</option>
+                </select>
+              </div>
+              <div class="search-box">
+                <i class="uil uil-search"></i
+                ><input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Search by code, subject or teacher..."
+                />
+              </div>
+            </div>
+            <span class="row-count" id="rowCount"></span>
+          </div>
+          <table>
             <thead>
               <tr>
                 <th>Code</th>
                 <th>Subject</th>
                 <th>Level</th>
+                <th>Term</th>
                 <th>Teacher</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="tableBody"></tbody>
           </table>
         </div>
       </main>
     </div>
+
+    <div id="subjectForm">
+      <div class="form-card" onclick="event.stopPropagation()">
+        <div class="form-header">
+          <h3 id="formTitle">Add Subject</h3>
+          <button class="close-btn" id="closeFormBtn">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="form-body">
+          <div class="field">
+            <label>Subject Code</label
+            ><input id="subjectCode" type="number" placeholder="e.g. 101" />
+          </div>
+          <div class="field">
+            <label>Subject Name</label
+            ><input id="subjectName" placeholder="e.g. Mathematics" />
+          </div>
+          <div class="field">
+            <label>Level</label
+            ><select id="levelSelect"></select>
+          </div>
+          <div class="field">
+            <label>Term <span style="color: #ff9800">(Required)</span></label
+            ><select id="termSelect">
+              <option value="">Select Term</option>
+              <option value="TERM_1">📖 Term 1</option>
+              <option value="TERM_2">📘 Term 2</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Teacher (Optional)</label
+            ><select id="teacherSelect">
+              <option value="">None / Unassigned</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-cancel" id="cancelFormBtn">Cancel</button
+          ><button id="submitBtn" class="btn-submit">Save Subject</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="confirmDialog">
+      <div class="confirm-card">
+        <div class="confirm-icon"><i class="uil uil-trash-alt"></i></div>
+        <h3>Delete this subject?</h3>
+        <p>
+          This action cannot be undone. The subject will be permanently removed.
+        </p>
+        <div class="confirm-actions">
+          <button id="confirmNo">Keep</button
+          ><button id="confirmYes">Delete</button>
+        </div>
+      </div>
+    </div>
+    <div id="toastContainer"></div>
+
     <script>
+      const API = "http://localhost:8080/api/admin/subjects";
+      const LEVELS_API = "http://localhost:8080/api/admin/levels";
+      const TEACHERS_API = "http://localhost:8080/api/admin/teachers";
+
       let editSubjectId = null;
-      let levels = [];
-      let teachers = [];
-      let allSubjects = []; // 1. CRITICAL: Store all subjects for uniqueness check
+      let originalSubjectData = null;
+      let allSubjects = [];
+      let allLevels = [];
+      let allTeachers = [];
+      let currentTermFilter = "ALL";
+      let currentSearchQuery = "";
 
-      function showForm() {
-        document.getElementById("formBox").style.display = "block";
-        populateDropdowns();
+      const MAX_SUBJECTS_PER_TERM = 7;
+      const $ = (id) => document.getElementById(id);
+
+      function toast(msg, type = "success") {
+        const icons = {
+          success: "uil-check-circle",
+          error: "uil-exclamation-circle",
+        };
+        const div = document.createElement("div");
+        div.className = "toast " + type;
+        div.innerHTML = `<i class="uil ${icons[type]}"></i><span>${msg}</span>`;
+        $("toastContainer").appendChild(div);
+        setTimeout(() => div.remove(), 3500);
       }
 
-      function hideForm() {
-        document.getElementById("formBox").style.display = "none";
-        clearForm();
-      }
-
-      function clearForm() {
-        document.getElementById("subjectCode").value = "";
-        document.getElementById("subjectName").value = "";
-        document.getElementById("levelSelect").value = "";
-        document.getElementById("teacherSelect").value = "";
-        editSubjectId = null;
+      function askConfirm(cb) {
+        $("confirmDialog").style.display = "flex";
+        $("confirmYes").onclick = () => {
+          $("confirmDialog").style.display = "none";
+          cb();
+        };
+        $("confirmNo").onclick = () => {
+          $("confirmDialog").style.display = "none";
+        };
       }
 
       async function loadLevels() {
         try {
-          const res = await fetch("http://localhost:8080/api/admin/levels");
-          if (!res.ok) throw new Error("Failed to load levels");
-          levels = await res.json();
+          const res = await fetch(LEVELS_API);
+          if (!res.ok) throw new Error();
+          allLevels = await res.json();
         } catch (err) {
           console.error(err);
-          alert(err.message);
+          toast("Could not load levels", "error");
+          allLevels = [];
         }
       }
 
       async function loadTeachers() {
         try {
-          const res = await fetch("http://localhost:8080/api/admin/teachers");
-          if (!res.ok) throw new Error("Failed to load teachers");
-          teachers = await res.json();
+          const res = await fetch(TEACHERS_API);
+          if (!res.ok) throw new Error();
+          allTeachers = await res.json();
         } catch (err) {
           console.error(err);
-          alert(err.message);
+          toast("Could not load teachers", "error");
+          allTeachers = [];
         }
       }
 
-      function populateDropdowns() {
-        const levelSelect = document.getElementById("levelSelect");
-        const teacherSelect = document.getElementById("teacherSelect");
+      function getAvailableTeachers() {
+        const assignedTeacherIds = new Set();
 
-        levelSelect.innerHTML = '<option value="">Select Level</option>';
-        levels.forEach((l) => {
-          const option = document.createElement("option");
-          option.value = l.id;
-          option.textContent = l.name;
-          levelSelect.appendChild(option);
+        allSubjects.forEach((subject) => {
+          if (subject.teacherId) {
+            assignedTeacherIds.add(subject.teacherId);
+          }
         });
 
-        teacherSelect.innerHTML = '<option value="">Select Teacher</option>';
-        teachers.forEach((t) => {
-          const option = document.createElement("option");
-          option.value = t.id;
-          // Use 'name' if available, otherwise combine first/last name
-          option.textContent =
-            t.name || `${t.firstName || ""} ${t.lastName || ""}`;
-          teacherSelect.appendChild(option);
+        return allTeachers.filter(
+          (teacher) => !assignedTeacherIds.has(teacher.id),
+        );
+      }
+      function getCurrentTeacherForEdit(currentTeacherId) {
+        if (!editSubjectId || !currentTeacherId) return null;
+        return allTeachers.find((t) => t.id === currentTeacherId);
+      }
+
+      function getAvailableLevelsForTerm(term, currentSubjectId = null) {
+        if (!term) return allLevels;
+        return allLevels.filter((level) => {
+          const termSubjectCount = allSubjects.filter(
+            (s) =>
+              (s.levelId || s.level?.id) === level.id &&
+              s.term === term &&
+              s.id !== currentSubjectId,
+          ).length;
+          return termSubjectCount < MAX_SUBJECTS_PER_TERM;
         });
       }
 
-      // Load Subjects - UPDATED to store subjects globally
+      function populateLevelDropdown(
+        selectedLevelId = null,
+        selectedTerm = null,
+      ) {
+        const levelSelect = $("levelSelect");
+        let availableLevels = allLevels;
+        if (selectedTerm && selectedTerm !== "") {
+          availableLevels = getAvailableLevelsForTerm(
+            selectedTerm,
+            editSubjectId,
+          );
+        }
+        levelSelect.innerHTML = '<option value="">Select Level</option>';
+        availableLevels.forEach((l) => {
+          const opt = document.createElement("option");
+          opt.value = l.id;
+          const term1Count = allSubjects.filter(
+            (s) =>
+              (s.levelId || s.level?.id) === l.id &&
+              s.term === "TERM_1" &&
+              s.id !== editSubjectId,
+          ).length;
+          const term2Count = allSubjects.filter(
+            (s) =>
+              (s.levelId || s.level?.id) === l.id &&
+              s.term === "TERM_2" &&
+              s.id !== editSubjectId,
+          ).length;
+          opt.textContent = `${l.name} (Term1: ${term1Count}/${MAX_SUBJECTS_PER_TERM} | Term2: ${term2Count}/${MAX_SUBJECTS_PER_TERM})`;
+          levelSelect.appendChild(opt);
+        });
+        if (
+          selectedLevelId &&
+          levelSelect.querySelector(`option[value="${selectedLevelId}"]`)
+        ) {
+          levelSelect.value = selectedLevelId;
+        }
+      }
+
+      function populateTeacherDropdown(selectedTeacherId = null) {
+        const teacherSelect = $("teacherSelect");
+        const availableTeachers = getAvailableTeachers();
+        const currentTeacher = getCurrentTeacherForEdit(selectedTeacherId);
+
+        teacherSelect.innerHTML = '<option value="">None / Unassigned</option>';
+
+        if (editSubjectId && currentTeacher) {
+          const opt = document.createElement("option");
+          opt.value = currentTeacher.id;
+          const teacherName =
+            currentTeacher.name ||
+            `${currentTeacher.firstName || ""} ${currentTeacher.lastName || ""}`.trim();
+          opt.textContent = `${teacherName} (Current Assignment)`;
+          teacherSelect.appendChild(opt);
+        }
+
+        availableTeachers.forEach((t) => {
+          if (editSubjectId && currentTeacher && t.id === currentTeacher.id)
+            return;
+
+          const opt = document.createElement("option");
+          opt.value = t.id;
+          const teacherName =
+            t.name ||
+            `${t.firstName || ""} ${t.lastName || ""}`.trim() ||
+            `Teacher #${t.id}`;
+          opt.textContent = teacherName;
+          teacherSelect.appendChild(opt);
+        });
+
+        if (
+          selectedTeacherId &&
+          teacherSelect.querySelector(`option[value="${selectedTeacherId}"]`)
+        ) {
+          teacherSelect.value = selectedTeacherId;
+        }
+      }
+
+      function clearForm() {
+        $("subjectCode").value = "";
+        $("subjectName").value = "";
+        $("levelSelect").innerHTML = '<option value="">Select Level</option>';
+        $("termSelect").value = "";
+        $("teacherSelect").innerHTML =
+          '<option value="">None / Unassigned</option>';
+        editSubjectId = null;
+        originalSubjectData = null;
+        $("formTitle").innerText = "Add Subject";
+        $("submitBtn").innerText = "Save Subject";
+      }
+
+      function openAddModal() {
+        clearForm();
+        populateLevelDropdown(null, null);
+        populateTeacherDropdown(null);
+        $("subjectForm").style.display = "flex";
+      }
+
+      function openEditModal(subject) {
+        editSubjectId = subject.id;
+        originalSubjectData = {
+          id: subject.id,
+          code: subject.code,
+          name: subject.name,
+          term: subject.term,
+          levelId: subject.levelId || subject.level?.id,
+          teacherId: subject.teacherId || subject.teacher?.id || null,
+        };
+        $("subjectCode").value = subject.code || "";
+        $("subjectName").value = subject.name || "";
+        $("termSelect").value = subject.term || "";
+        $("formTitle").innerText = "Edit Subject";
+        $("submitBtn").innerText = "Update Subject";
+        populateLevelDropdown(originalSubjectData.levelId, subject.term);
+        populateTeacherDropdown(originalSubjectData.teacherId);
+        $("subjectForm").style.display = "flex";
+      }
+
+      function onTermChange() {
+        const selectedTerm = $("termSelect").value;
+        const currentLevelId = $("levelSelect").value;
+        populateLevelDropdown(currentLevelId || null, selectedTerm);
+      }
+
+      function closeModal() {
+        $("subjectForm").style.display = "none";
+        clearForm();
+      }
+
+      function updateStats(data) {
+        $("statTotal").innerText = data.length;
+        const uniqueLevels = new Set(
+          data
+            .filter((s) => s.levelId || s.level?.id)
+            .map((s) => s.levelId || s.level?.id)
+            .filter((id) => id),
+        );
+        $("statLevels").innerText = uniqueLevels.size;
+        $("statTerm1").innerText = data.filter(
+          (s) => s.term === "TERM_1",
+        ).length;
+        $("statTerm2").innerText = data.filter(
+          (s) => s.term === "TERM_2",
+        ).length;
+      }
+
       async function loadSubjects() {
         try {
-          const res = await fetch("http://localhost:8080/api/admin/subjects");
-          if (!res.ok) throw new Error("Failed to load subjects");
-
-          // Store the data
+          const res = await fetch(API);
+          if (!res.ok) throw new Error();
           allSubjects = await res.json();
-
-          const tbody = document.querySelector("#subjectsTable tbody");
-          tbody.innerHTML = "";
-
-          allSubjects.forEach((s) => {
-            // Use the stored array
-            const row = tbody.insertRow();
-            row.dataset.id = s.id;
-            row.innerHTML = `
-                    <td>${s.code}</td>
-                    <td>${s.name}</td>
-                    <td>${s.level?.name || "-"}</td>
-                    <td>${s.teacher?.name || "-"}</td>
-                    <td>
-                        <button class="btn edit-btn" onclick="editSubject(${
-                          s.id
-                        })">Edit</button>
-                        <button class="btn delete-btn" onclick="deleteSubject(${
-                          s.id
-                        })">Delete</button>
-                    </td>
-                `;
-          });
         } catch (err) {
           console.error(err);
-          alert(err.message);
+          allSubjects = [];
+          toast("Could not load subjects", "error");
         }
+        updateStats(allSubjects);
+        applyFiltersAndRender();
       }
 
-      // 2. NEW: Uniqueness Check Function for Code
-      function isCodeUnique(newCode, currentId) {
-        // Find if any existing subject has the same code but a different ID (for editing)
-        const duplicate = allSubjects.find(
-          (subject) => subject.code === newCode && subject.id !== currentId,
+      function applyFiltersAndRender() {
+        let filtered = [...allSubjects];
+        if (currentTermFilter !== "ALL")
+          filtered = filtered.filter((s) => s.term === currentTermFilter);
+        if (currentSearchQuery.trim()) {
+          const q = currentSearchQuery.toLowerCase();
+          filtered = filtered.filter(
+            (s) =>
+              String(s.code).toLowerCase().includes(q) ||
+              (s.name || "").toLowerCase().includes(q) ||
+              (s.levelName || s.level?.name || "").toLowerCase().includes(q) ||
+              (s.teacherName || s.teacher?.name || "")
+                .toLowerCase()
+                .includes(q),
+          );
+        }
+        renderTable(filtered);
+      }
+
+      function filterByTerm() {
+        currentTermFilter = $("termFilterSelect").value;
+        applyFiltersAndRender();
+      }
+      function filterTable() {
+        currentSearchQuery = $("searchInput").value;
+        applyFiltersAndRender();
+      }
+
+      function getTermDisplay(term) {
+        if (term === "TERM_1")
+          return '<span class="chip term1"><i class="uil uil-calendar-alt"></i> Term 1</span>';
+        if (term === "TERM_2")
+          return '<span class="chip term2"><i class="uil uil-calendar-alt"></i> Term 2</span>';
+        return '<span class="chip" style="background: rgba(244, 67, 54, 0.15); color: #f44336;"><i class="uil uil-exclamation-circle"></i> No Term</span>';
+      }
+
+      function renderTable(data) {
+        const tbody = $("tableBody");
+        tbody.innerHTML = "";
+        $("rowCount").innerText = data.length
+          ? `${data.length} subject${data.length === 1 ? "" : "s"}`
+          : "";
+        if (!data.length) {
+          tbody.innerHTML = `<tr class="empty-row"><td colspan="6"><i class="uil uil-book-open"></i>No subjects found</td></tr>`;
+          return;
+        }
+        data.forEach((s) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><span class="id-badge">#${s.code}</span></td>
+            <td><div class="cell-name"><strong>${escapeHtml(s.name)}</strong></div></td>
+            <td>${s.levelName || s.level?.name ? `<span class="chip green"><i class="uil uil-layers"></i>${escapeHtml(s.levelName || s.level?.name)}</span>` : "<span style='opacity:.35'>Not Assigned</span>"}</td>
+            <td>${getTermDisplay(s.term)}</td>
+            <td>${s.teacherName || s.teacher?.name ? `<span class="chip"><i class="uil uil-user"></i>${escapeHtml(s.teacherName || s.teacher?.name)}</span>` : "<span style='opacity:.35'>Unassigned</span>"}</td>
+            <td><div class="action-btns"><button class="btn-edit" data-id="${s.id}"><i class="uil uil-edit"></i> Edit</button><button class="btn-delete" data-id="${s.id}"><i class="uil uil-trash-alt"></i> Delete</button></div></td>
+          `;
+          tbody.appendChild(tr);
+        });
+        document.querySelectorAll(".btn-edit").forEach((btn) =>
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            editSubject(parseInt(btn.dataset.id));
+          }),
         );
-        return !duplicate;
+        document.querySelectorAll(".btn-delete").forEach((btn) =>
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            askDelete(parseInt(btn.dataset.id));
+          }),
+        );
       }
 
-      // Edit Subject - Added logic to find subject from global array if available
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, (m) =>
+          m === "&" ? "&amp;" : m === "<" ? "&lt;" : m === ">" ? "&gt;" : m,
+        );
+      }
+
+      function isCodeUniqueForAdd(code) {
+        return !allSubjects.find((sub) => sub.code === code);
+      }
+      function validateCodeForEdit(newCode) {
+        if (!originalSubjectData) return true;
+        if (newCode === originalSubjectData.code) return true;
+        return !allSubjects.find(
+          (sub) => sub.code === newCode && sub.id !== editSubjectId,
+        );
+      }
+
       async function editSubject(id) {
         try {
-          let s = allSubjects.find((sub) => sub.id === id);
-
-          if (!s) {
-            const res = await fetch(
-              `http://localhost:8080/api/admin/subjects/${id}`,
-            );
-            if (!res.ok) throw new Error(await res.text());
-            s = await res.json();
+          let subject = allSubjects.find((sub) => sub.id === id);
+          if (!subject) {
+            const res = await fetch(`${API}/${id}`);
+            if (!res.ok) throw new Error();
+            subject = await res.json();
           }
-
-          editSubjectId = s.id;
-          document.getElementById("subjectCode").value = s.code || "";
-          document.getElementById("subjectName").value = s.name;
-          await loadLevels();
-          await loadTeachers();
-          populateDropdowns();
-          document.getElementById("levelSelect").value = s.level?.id || "";
-          document.getElementById("teacherSelect").value = s.teacher?.id || "";
-          showForm();
+          if (allLevels.length === 0) await loadLevels();
+          if (allTeachers.length === 0) await loadTeachers();
+          openEditModal(subject);
         } catch (err) {
           console.error(err);
-          alert("Failed to fetch subject: " + err.message);
+          toast("Failed to load subject details", "error");
         }
       }
 
-      // Save Subject - UPDATED with Code Uniqueness Check
-      async function saveSubject() {
-        const code = parseInt(document.getElementById("subjectCode").value);
-        const name = document.getElementById("subjectName").value.trim();
-        const levelId = parseInt(document.getElementById("levelSelect").value);
-        const teacherId = parseInt(
-          document.getElementById("teacherSelect").value,
-        );
-
-        // 3. CLIENT-SIDE UNIQUENESS CHECK FOR CODE
-        if (!isCodeUnique(code, editSubjectId)) {
-          return alert(`Subject Code '${code}' already exists.`);
+      function buildUpdatePayload() {
+        if (!editSubjectId || !originalSubjectData) {
+          return {
+            code: parseInt($("subjectCode").value),
+            name: $("subjectName").value.trim(),
+            term: $("termSelect").value,
+            level: { id: parseInt($("levelSelect").value) },
+            teacher: parseInt($("teacherSelect").value)
+              ? { id: parseInt($("teacherSelect").value) }
+              : null,
+          };
         }
-        // END CLIENT-SIDE CHECK
+        const payload = {};
+        const newCode = parseInt($("subjectCode").value);
+        const newName = $("subjectName").value.trim();
+        const newTerm = $("termSelect").value;
+        const newLevelId = parseInt($("levelSelect").value);
+        const newTeacherId = parseInt($("teacherSelect").value) || null;
+        if (newCode !== originalSubjectData.code) payload.code = newCode;
+        if (newName !== originalSubjectData.name) payload.name = newName;
+        if (newTerm !== originalSubjectData.term) payload.term = newTerm;
+        if (newLevelId !== originalSubjectData.levelId)
+          payload.level = { id: newLevelId };
+        const originalTeacherId = originalSubjectData.teacherId || null;
+        if (newTeacherId !== originalTeacherId)
+          payload.teacher = newTeacherId ? { id: newTeacherId } : null;
+        return payload;
+      }
 
-        const payload = {
-          code,
-          name,
-          level: { id: levelId },
-          teacher: { id: teacherId },
-        };
-
+      async function saveSubject() {
+        const code = parseInt($("subjectCode").value);
+        const name = $("subjectName").value.trim();
+        const levelId = parseInt($("levelSelect").value);
+        const term = $("termSelect").value;
+        if (!code || !name || !levelId)
+          return toast(
+            "Please fill required fields (Code, Name, Level)",
+            "error",
+          );
+        if (!term)
+          return toast("Please select a Term (Term 1 or Term 2)", "error");
+        if (editSubjectId) {
+          if (!validateCodeForEdit(code))
+            return toast(
+              `Subject Code '${code}' is already used by another subject`,
+              "error",
+            );
+        } else {
+          if (!isCodeUniqueForAdd(code))
+            return toast(`Subject Code '${code}' already exists`, "error");
+        }
+        let payload, method, url;
+        if (editSubjectId) {
+          payload = buildUpdatePayload();
+          method = "PUT";
+          url = `${API}/${editSubjectId}`;
+          if (Object.keys(payload).length === 0) {
+            toast("No changes detected", "success");
+            closeModal();
+            return;
+          }
+        } else {
+          payload = {
+            code,
+            name,
+            term,
+            level: { id: levelId },
+            teacher: parseInt($("teacherSelect").value)
+              ? { id: parseInt($("teacherSelect").value) }
+              : null,
+          };
+          method = "POST";
+          url = API;
+        }
         try {
-          const url = editSubjectId
-            ? `http://localhost:8080/api/admin/subjects/${editSubjectId}`
-            : `http://localhost:8080/api/admin/subjects`;
-          const method = editSubjectId ? "PUT" : "POST";
-
           const res = await fetch(url, {
             method,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
-
           const text = await res.text();
           if (!res.ok) {
-            // Fallback check for backend constraint violations (e.g., uniqueness)
-            if (
-              text.includes("Duplicate entry") ||
-              text.includes("already exists")
-            ) {
-              return alert(
-                `Failed to save subject: Code or Name already exists (Backend validation).`,
-              );
-            }
+            if (text.includes("Duplicate") || text.includes("exists"))
+              return toast("Code or name already exists", "error");
             throw new Error(text);
           }
-
-          hideForm();
-          // Reloads subjects and updates the global list
-          await loadSubjects();
-        } catch (err) {
-          console.error(err);
-          alert("Failed to save subject: " + err.message);
-        }
-      }
-
-      // Delete Subject
-      async function deleteSubject(id) {
-        if (!confirm("Delete this subject?")) return;
-        try {
-          const res = await fetch(
-            `http://localhost:8080/api/admin/subjects/${id}`,
-            { method: "DELETE" },
+          toast(
+            editSubjectId
+              ? "Subject updated successfully"
+              : "Subject added successfully",
           );
-          const text = await res.text();
-          if (!res.ok) throw new Error(text);
+          closeModal();
           await loadSubjects();
         } catch (err) {
           console.error(err);
-          alert("Failed to delete subject: " + err.message);
+          toast("Error saving subject", "error");
         }
       }
 
-      // On load
+      function askDelete(id) {
+        askConfirm(async () => {
+          try {
+            const res = await fetch(`${API}/${id}`, { method: "DELETE" });
+            if (!res.ok) throw new Error();
+            toast("Subject deleted successfully");
+            await loadSubjects();
+          } catch (err) {
+            toast("Error deleting subject", "error");
+          }
+        });
+      }
+
+      $("addSubjectBtn").onclick = openAddModal;
+      $("closeFormBtn").onclick = closeModal;
+      $("cancelFormBtn").onclick = closeModal;
+      $("submitBtn").onclick = saveSubject;
+      $("termFilterSelect").onchange = filterByTerm;
+      $("searchInput").oninput = filterTable;
+      $("termSelect").onchange = onTermChange;
+      $("subjectForm").onclick = (e) => {
+        if (e.target === $("subjectForm")) closeModal();
+      };
+      $("confirmDialog").onclick = (e) => {
+        if (e.target === $("confirmDialog"))
+          $("confirmDialog").style.display = "none";
+      };
+
       window.onload = async () => {
         await loadLevels();
         await loadTeachers();

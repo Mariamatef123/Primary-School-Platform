@@ -1,5 +1,6 @@
 package com.first.first_app.Builder;
 
+import com.first.first_app.Enum.AssessmentType;
 import com.first.first_app.Model.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public interface AssessmentBuilder {
     AssessmentBuilder assignToTeacher(Teacher teacher);
 
     AssessmentBuilder withQuestions(List<Question> questions);
+    AssessmentBuilder isSummerExam(boolean isSummerExam);
 
     Assessment build();
 }

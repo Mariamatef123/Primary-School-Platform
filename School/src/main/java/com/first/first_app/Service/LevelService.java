@@ -1,5 +1,6 @@
 package com.first.first_app.Service;
 
+import com.first.first_app.DTO.LevelDTO;
 import com.first.first_app.Model.Level;
 import com.first.first_app.Model.Subject;
 import com.first.first_app.Repo.LevelRepo;
@@ -7,6 +8,7 @@ import com.first.first_app.Repo.SubjectRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LevelService {
@@ -19,7 +21,7 @@ public class LevelService {
         this.subjectRepo = subjectRepo;
     }
 
-    // check if exceed the no of level that req or not
+
     public Level createLevel(Level level) {
 
         long currentLevelCount = levelRepo.count();
@@ -32,16 +34,24 @@ public class LevelService {
         return levelRepo.save(level);
     }
 
-    public List<Level> getAllLevels() {
-        return levelRepo.findAll();
-    }
 
     public Level getLevelById(int levelId) {
         return levelRepo.findById(levelId)
                 .orElseThrow(() -> new IllegalArgumentException("Level not found with ID: " + levelId));
     }
+public List<LevelDTO> getAllLevels() {
+    List<Level> levels = levelRepo.findAll();
+    return levels.stream()
+            .map(LevelDTO::new)
+            .collect(Collectors.toList());
+}
 
-    // check if exists and not exceed the no of subjects in that level and save it
+public LevelDTO getLevelByIdAsDTO(int levelId) {
+    Level level = levelRepo.findById(levelId)
+            .orElseThrow(() -> new RuntimeException("Level not found"));
+    return new LevelDTO(level);
+}
+
     public Level assignSubjectToLevel(int levelId, int subjectId) {
         Level level = getLevelById(levelId);
         Subject subject = subjectRepo.findById(subjectId)
@@ -52,16 +62,16 @@ public class LevelService {
             return level;
         }
 
-        if (level.getSubjects().size() >= Level.SUBJECT_COUNT) {
+        if (level.getSubjects().size() >= Level.SUBJECTS_PER_TERM) {
             throw new IllegalArgumentException(
-                    "Maximum number of subjects (" + Level.SUBJECT_COUNT + ") reached for Level ID: " + levelId);
+                    "Maximum number of subjects (" + Level.SUBJECTS_PER_TERM + ") reached for Level ID: " + levelId);
         }
 
         level.addSubject(subject);
         return levelRepo.save(level);
     }
 
-    // check if exists remove the subject from level and save
+
     public Level removeSubjectFromLevel(int levelId, int subjectId) {
         Level level = getLevelById(levelId);
         Subject subject = subjectRepo.findById(subjectId)

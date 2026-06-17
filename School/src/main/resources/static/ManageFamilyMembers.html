@@ -1,0 +1,2218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Family Members - TinyScholars</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/manage-student.css" />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+
+      .page-header h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--color-white);
+        letter-spacing: -0.3px;
+      }
+
+      .page-header p {
+        font-size: 13px;
+        color: var(--color-white);
+        opacity: 0.5;
+        margin: 4px 0 0;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .stat-card {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.2s;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .stat-card:hover {
+        border-color: rgba(108, 99, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .stat-icon.blue {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+
+      .stat-icon.green {
+        background: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+      }
+
+      .stat-icon.orange {
+        background: rgba(255, 152, 0, 0.15);
+        color: #ff9800;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        color: var(--color-white);
+        opacity: 0.5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-val {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--color-white);
+        line-height: 1.2;
+      }
+
+      .add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .stat-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+
+      .stat-arrow {
+        font-size: 22px;
+        color: #888;
+        transition: 0.2s ease;
+      }
+
+      .stat-card:hover .stat-arrow {
+        transform: translateX(4px);
+        color: #000;
+      }
+      .add-btn:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+      }
+
+      .families-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 20px;
+      }
+
+      .family-card {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+
+      .family-card:hover {
+        border-color: rgba(108, 99, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .fc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px;
+        cursor: pointer;
+        background: #323987;
+        user-select: none;
+      }
+
+      .fc-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .fc-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 40,
+          var(--color-primary) 20
+        );
+        color: var(--color-primary);
+        font-size: 14px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .fc-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--color-white);
+      }
+
+      .fc-meta {
+        font-size: 11px;
+        color: var(--color-white);
+        opacity: 0.5;
+        margin-top: 3px;
+      }
+
+      .fc-chevron {
+        color: var(--color-white);
+        opacity: 0.5;
+        font-size: 18px;
+        transition: transform 0.2s;
+      }
+
+      .fc-chevron.open {
+        transform: rotate(180deg);
+      }
+
+      .fc-body {
+        display: none;
+        padding: 16px 18px;
+      }
+
+      .fc-body.open {
+        display: block;
+      }
+
+      .section-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--color-white);
+        opacity: 0.4;
+        margin-bottom: 8px;
+        margin-top: 14px;
+      }
+
+      .section-label:first-child {
+        margin-top: 0;
+      }
+
+      .member-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--color-bg2);
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-bottom: 6px;
+        transition: all 0.2s;
+      }
+
+      .member-row:hover {
+        background: rgba(35, 43, 69, 0.8);
+      }
+
+      .member-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+      }
+
+      .member-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .member-dot.parent {
+        background: var(--color-primary);
+        box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+      }
+
+      .member-dot.child {
+        background: #4caf50;
+        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+      }
+
+      .member-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--color-white);
+      }
+
+      .member-email {
+        font-size: 10px;
+        opacity: 0.5;
+        margin-top: 2px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 4px;
+      }
+
+      .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 4px 8px;
+        border: none;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .btn-icon i {
+        font-size: 11px;
+      }
+
+      .btn-edit {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+
+      .btn-edit:hover {
+        background: rgba(33, 150, 243, 0.28);
+      }
+
+      .btn-unlink {
+        background: rgba(255, 152, 0, 0.12);
+        color: #ff9800;
+      }
+
+      .btn-unlink:hover {
+        background: rgba(255, 152, 0, 0.25);
+      }
+
+      .btn-delete-permanent {
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+      }
+
+      .btn-delete-permanent:hover {
+        background: rgba(244, 67, 54, 0.28);
+      }
+
+      .add-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .add-row button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 7px 10px;
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        background: none;
+        color: var(--color-white);
+        opacity: 0.6;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 11px;
+        font-weight: 500;
+        transition: all 0.15s;
+      }
+
+      .add-row button:hover {
+        opacity: 1;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        background: rgba(108, 99, 255, 0.05);
+      }
+
+      .card-footer {
+        padding: 10px 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .btn-danger {
+        background: rgba(244, 67, 54, 0.1);
+        color: #f44336;
+        border: 1px solid rgba(244, 67, 54, 0.2);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.15s;
+      }
+
+      .btn-danger:hover {
+        background: rgba(244, 67, 54, 0.2);
+        transform: translateY(-1px);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--color-white);
+        opacity: 0.35;
+      }
+
+      .empty-state i {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 12px;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--color-bg1);
+        border-radius: 14px;
+        width: 500px;
+        max-width: 90vw;
+        max-height: 85vh;
+        overflow-y: auto;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: modalSlideIn 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-container.small {
+        width: 380px;
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .modal-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        color: var(--color-white);
+      }
+
+      .modal-close {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: none;
+        background: var(--color-bg2);
+        color: var(--color-white);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        transition: all 0.15s;
+      }
+
+      .modal-close:hover {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+
+      .modal-body {
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .form-field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0.55;
+        margin-bottom: 6px;
+        color: var(--color-white);
+      }
+
+      .form-field input,
+      .form-field select {
+        width: 100%;
+        padding: 10px 12px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        color: var(--color-white);
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.15s;
+        font-family: inherit;
+      }
+
+      .form-field input:focus,
+      .form-field select:focus {
+        border-color: var(--color-primary);
+      }
+
+      .form-field input::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .tab-btn {
+        flex: 1;
+        padding: 9px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: none;
+        border-radius: 8px;
+        color: var(--color-white);
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .tab-btn.active {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+      }
+
+      .phone-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .phone-row {
+        display: flex;
+        gap: 6px;
+      }
+
+      .phone-row input {
+        flex: 1;
+        padding: 10px 12px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        color: var(--color-white);
+        font-size: 14px;
+      }
+
+      .remove-phone {
+        width: 36px;
+        height: 36px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        cursor: pointer;
+        color: var(--color-white);
+        transition: all 0.15s;
+      }
+
+      .remove-phone:hover {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+
+      .add-phone-btn {
+        width: 100%;
+        padding: 8px;
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        background: none;
+        color: var(--color-white);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.15s;
+        margin-top: 4px;
+      }
+
+      .add-phone-btn:hover {
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+      }
+
+      .modal-footer {
+        display: flex;
+        gap: 10px;
+        padding: 14px 22px;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .btn-submit {
+        flex: 1;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .btn-submit:hover {
+        opacity: 0.88;
+      }
+
+      .btn-cancel {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        font-size: 14px;
+        padding: 10px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.15s;
+      }
+
+      .btn-cancel:hover {
+        opacity: 1;
+      }
+
+      /* Search dropdown */
+      .search-wrapper {
+        position: relative;
+      }
+
+      .search-wrapper input {
+        width: 100%;
+        padding: 10px 12px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        color: var(--color-white);
+        font-size: 13px;
+      }
+
+      .dropdown-list {
+        position: absolute;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        margin-top: 5px;
+        z-index: 20;
+        display: none;
+      }
+
+      .dropdown-item {
+        padding: 10px 12px;
+        cursor: pointer;
+        font-size: 13px;
+        color: var(--color-white);
+        transition: background 0.12s;
+      }
+
+      .dropdown-item:hover {
+        background: var(--color-bg2);
+      }
+
+      .selected-info {
+        background: var(--color-bg2);
+        border-radius: 8px;
+        padding: 10px;
+        font-size: 13px;
+        display: none;
+      }
+
+      /* Confirm Dialog */
+      .confirm-dialog {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 1100;
+      }
+
+      .confirm-dialog.show {
+        display: flex;
+      }
+
+      .confirm-card {
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 28px;
+        width: 340px;
+        text-align: center;
+        color: var(--color-white);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: modalSlideIn 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+      }
+
+      .confirm-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+      }
+
+      .confirm-card h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      .confirm-card p {
+        font-size: 13px;
+        opacity: 0.55;
+        margin-bottom: 22px;
+        white-space: pre-line;
+      }
+
+      .confirm-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .confirm-actions button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.15s;
+      }
+
+      .confirm-yes {
+        background: #dc3545;
+        color: #fff;
+      }
+
+      .confirm-no {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      /* Toast */
+      .toast-container {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--color-white);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        min-width: 220px;
+        animation: toastIn 0.25s ease;
+      }
+
+      .toast.success {
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .toast.success i {
+        color: var(--color-primary);
+      }
+
+      .toast.error {
+        border-left: 3px solid #f44336;
+      }
+
+      .toast.error i {
+        color: #f44336;
+      }
+
+      .toast.warning {
+        border-left: 3px solid #ff9800;
+      }
+
+      .toast.warning i {
+        color: #ff9800;
+      }
+
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: var(--color-white);
+        opacity: 0.5;
+      }
+
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--color-bg1);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--color-bg2);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-primary);
+      }
+
+      .family-badge {
+        font-size: 9px;
+        opacity: 0.6;
+        margin-left: 5px;
+      }
+      .sidebar {
+        width: 260px;
+        background: var(--color-bg1);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        left: 0;
+        top: 0;
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
+        padding: 0 20px 24px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .menu {
+        list-style: none;
+        padding: 20px 0;
+        margin: 0;
+      }
+
+      .menu li {
+        margin-bottom: 4px;
+      }
+      .sidebar .menu li {
+        padding: 0px;
+      }
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+      }
+
+      .menu li a:hover,
+      .menu li.active a {
+        opacity: 1;
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .menu li a i {
+        font-size: 18px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .logo,
+        .sidebar .menu li a span {
+          display: none;
+        }
+
+        .sidebar .menu li a i {
+          margin: 0 auto;
+        }
+
+        .main {
+          margin-left: 70px;
+          max-width: calc(100% - 70px);
+          padding: 20px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .child-selector {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        #childSelect {
+          width: 100%;
+        }
+
+        .child-info-card {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <aside class="sidebar">
+        <h2 class="logo" style="text-align: left">TinyScholars</h2>
+
+        <ul class="menu">
+          <li>
+            <a href="/dashboard-admin">
+              <i class="uil uil-home"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+
+          <!-- <li>
+      <a href="/manage-student">
+        <i class="uil uil-users-alt"></i>
+        <span>Students</span>
+      </a>
+    </li> -->
+
+          <li>
+            <a href="/manage-teacher">
+              <i class="uil uil-user"></i>
+              <span>Teachers</span>
+            </a>
+          </li>
+
+          <!-- <li>
+      <a href="/manage-parent">
+        <i class="uil uil-users-alt"></i>
+        <span>Parents</span>
+      </a>
+    </li> -->
+
+          <li class="active">
+            <a href="/ManageFamilyMembers.html">
+              <i class="uil uil-users-alt"></i>
+              <span>Family Members</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/manage-levels">
+              <i class="uil uil-layers"></i>
+              <span>Levels</span>
+            </a>
+          </li>
+
+          <!-- <li>
+      <a href="/manage-subjects">
+        <i class="uil uil-book-open"></i>
+        <span>Subjects</span>
+      </a>
+    </li> -->
+
+          <li>
+            <a href="/index">
+              <i class="uil uil-signout"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main">
+        <div class="page-header">
+          <div>
+            <h1>Family Members</h1>
+            <p>
+              Manage families, parents and linked children (up to 2 parents per
+              family)
+            </p>
+          </div>
+          <button class="add-btn" onclick="openCreateFamilyModal()">
+            <i class="uil uil-plus"></i> Add Family
+          </button>
+        </div>
+
+        <div class="stats-row">
+          <div
+            class="stat-card"
+            onclick="window.location.href = '/ManageFamilyMembers.html'"
+          >
+            <div class="stat-icon blue">
+              <i class="uil uil-home"></i>
+            </div>
+            <div class="stat-content">
+              <div>
+                <div class="stat-label">Total Families</div>
+                <div class="stat-val" id="statFamilies">0</div>
+              </div>
+              <i class="bi bi-arrow-right stat-arrow"></i>
+            </div>
+          </div>
+
+          <div
+            class="stat-card"
+            onclick="window.location.href = '/manage-student'"
+          >
+            <div class="stat-icon green">
+              <i class="uil uil-users-alt"></i>
+            </div>
+            <div class="stat-content">
+              <div>
+                <div class="stat-label">Total Children</div>
+                <div class="stat-val" id="statChildren">0</div>
+              </div>
+              <i class="bi bi-arrow-right stat-arrow"></i>
+            </div>
+          </div>
+
+          <div
+            class="stat-card"
+            onclick="window.location.href = '/manage-parent'"
+          >
+            <div class="stat-icon orange">
+              <i class="uil uil-user-times"></i>
+            </div>
+            <div class="stat-content">
+              <div>
+                <div class="stat-label">Total Parents</div>
+                <div class="stat-val" id="statParents">0</div>
+              </div>
+              <i class="bi bi-arrow-right stat-arrow"></i>
+            </div>
+          </div>
+        </div>
+
+        <div id="loadingIndicator" class="loading" style="display: none">
+          <i class="uil uil-spinner-alt uil-spin"></i> Loading families...
+        </div>
+        <div class="families-grid" id="familiesGrid"></div>
+      </main>
+    </div>
+
+    <!-- Create Family Modal -->
+    <div id="createFamilyModal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>Add Family</h3>
+          <button class="modal-close" onclick="closeModal('createFamilyModal')">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-field">
+            <label>Family Name</label>
+            <input id="familyName" placeholder="e.g. Johnson Family" />
+          </div>
+          <p style="font-size: 12px; opacity: 0.4">
+            This creates a family group. Add parents (up to 2) and children
+            after.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal('createFamilyModal')">
+            Cancel
+          </button>
+          <button class="btn-submit" onclick="createFamily()">
+            Create Family
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Parent Modal -->
+    <div id="parentModal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 id="parentModalTitle">Add Parent</h3>
+          <button class="modal-close" onclick="closeModal('parentModal')">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="tabs">
+            <button class="tab-btn active" onclick="switchParentTab('new')">
+              Create New
+            </button>
+            <button class="tab-btn" onclick="switchParentTab('existing')">
+              Link Existing
+            </button>
+          </div>
+
+          <div id="newParentForm">
+            <div class="form-field">
+              <label>Full Name</label
+              ><input id="parentName" placeholder="e.g. Sarah Johnson" />
+            </div>
+            <div class="form-field">
+              <label>Email</label
+              ><input
+                id="parentEmail"
+                type="email"
+                placeholder="sarah@email.com"
+              />
+            </div>
+            <div class="form-field">
+              <label>Password</label
+              ><input
+                id="parentPassword"
+                type="password"
+                placeholder="Create password"
+              />
+            </div>
+            <div class="form-field">
+              <label>Phone Numbers</label>
+              <div id="parentPhoneList" class="phone-list"></div>
+              <button
+                type="button"
+                class="add-phone-btn"
+                onclick="addPhoneField('parentPhoneList')"
+              >
+                <i class="uil uil-plus"></i> Add Phone
+              </button>
+            </div>
+          </div>
+
+          <div id="existingParentForm" style="display: none">
+            <div class="form-field">
+              <label>Search unassigned parent</label>
+              <div class="search-wrapper">
+                <input
+                  id="parentSearch"
+                  placeholder="Type name or email..."
+                  oninput="filterExistingParents()"
+                />
+                <div id="parentDropdown" class="dropdown-list"></div>
+              </div>
+            </div>
+            <div id="selectedParentInfo" class="selected-info">
+              Selected: <span id="selectedParentName"></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal('parentModal')">
+            Cancel
+          </button>
+          <button class="btn-submit" onclick="saveParent()">Save Parent</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Parent Modal -->
+    <div id="editParentModal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>Edit Parent</h3>
+          <button class="modal-close" onclick="closeModal('editParentModal')">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-field">
+            <label>Full Name</label><input id="editParentName" />
+          </div>
+          <div class="form-field">
+            <label>Email</label><input id="editParentEmail" type="email" />
+          </div>
+          <div class="form-field">
+            <label>New Password (leave blank to keep current)</label>
+            <input
+              id="editParentPassword"
+              type="password"
+              placeholder="Enter new password if you want to change"
+            />
+            <small style="font-size: 10px; opacity: 0.5"
+              >Leave empty to keep existing password</small
+            >
+          </div>
+          <div class="form-field">
+            <label>Phone Numbers</label>
+            <div id="editPhoneList" class="phone-list"></div>
+            <button
+              type="button"
+              class="add-phone-btn"
+              onclick="addPhoneField('editPhoneList')"
+            >
+              <i class="uil uil-plus"></i> Add Phone
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal('editParentModal')">
+            Cancel
+          </button>
+          <button class="btn-submit" onclick="updateParent()">Update</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>Edit Student</h3>
+          <button class="modal-close" onclick="closeModal('editStudentModal')">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-field">
+            <label>Full Name</label>
+            <input id="editStudentName" placeholder="e.g. Tom Johnson" />
+          </div>
+          <div class="form-field">
+            <label>Email</label>
+            <input
+              id="editStudentEmail"
+              type="email"
+              placeholder="tom@email.com"
+            />
+          </div>
+          <div class="form-field">
+            <label>New Password (leave blank to keep current)</label>
+            <input
+              id="editStudentPassword"
+              type="password"
+              placeholder="Enter new password if you want to change"
+            />
+            <small style="font-size: 10px; opacity: 0.5"
+              >Leave empty to keep existing password</small
+            >
+          </div>
+          <div class="form-field">
+            <label>Date of Birth</label>
+            <input id="editStudentDob" type="date" />
+          </div>
+          <div class="form-field">
+            <label>SSN</label>
+            <input id="editStudentSsn" placeholder="e.g. 123-45-6789" />
+          </div>
+          <div class="form-field">
+            <label>Level</label>
+            <select id="editStudentLevel">
+              <option value="">— select level —</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal('editStudentModal')">
+            Cancel
+          </button>
+          <button class="btn-submit" onclick="updateStudent()">Update</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Child Modal -->
+    <div id="childModal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3>Add Child</h3>
+          <button class="modal-close" onclick="closeModal('childModal')">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="tabs">
+            <button class="tab-btn active" onclick="switchChildTab('new')">
+              Create New
+            </button>
+            <button class="tab-btn" onclick="switchChildTab('existing')">
+              Link Existing
+            </button>
+          </div>
+
+          <div id="newChildForm">
+            <div class="form-field">
+              <label>Full Name</label
+              ><input id="childName" placeholder="e.g. Tom Johnson" />
+            </div>
+            <div class="form-field">
+              <label>Email</label
+              ><input
+                id="childEmail"
+                type="email"
+                placeholder="tom@email.com"
+              />
+            </div>
+            <div class="form-field">
+              <label>Password</label
+              ><input
+                id="childPassword"
+                type="password"
+                placeholder="Create password"
+              />
+            </div>
+            <div class="form-field">
+              <label>Date of Birth</label><input id="childDob" type="date" />
+            </div>
+            <div class="form-field">
+              <label>SSN</label
+              ><input id="childSsn" placeholder="e.g. 123-45-6789" />
+            </div>
+            <div class="form-field">
+              <label>Level</label
+              ><select id="childLevel">
+                <option value="">— select level —</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="existingChildForm" style="display: none">
+            <div class="form-field">
+              <label>Search unassigned student</label>
+              <div class="search-wrapper">
+                <input
+                  id="childSearch"
+                  placeholder="Type student name..."
+                  oninput="filterExistingStudents()"
+                />
+                <div id="childDropdown" class="dropdown-list"></div>
+              </div>
+            </div>
+            <div id="selectedChildInfo" class="selected-info">
+              Selected: <span id="selectedChildName"></span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal('childModal')">
+            Cancel
+          </button>
+          <button class="btn-submit" onclick="saveChild()">Add Child</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="confirmDialog" class="confirm-dialog">
+      <div class="confirm-card">
+        <div class="confirm-icon"><i class="uil uil-trash-alt"></i></div>
+        <h3 id="confirmTitle">Are you sure?</h3>
+        <p id="confirmMessage">This action cannot be undone.</p>
+        <div class="confirm-actions">
+          <button class="confirm-no" onclick="closeConfirm()">Cancel</button>
+          <button class="confirm-yes" onclick="executeConfirm()">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+      const API_BASE = "http://localhost:8080/api/admin";
+
+      let families = [];
+      let allParents = [];
+      let allStudents = [];
+      let allLevels = [];
+      let currentFamilyId = null;
+      let currentParentId = null;
+      let currentStudentId = null;
+      let currentParentTab = "new";
+      let currentChildTab = "new";
+      let selectedExistingParent = null;
+      let selectedExistingChild = null;
+      let confirmCallback = null;
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function showToast(message, type = "success") {
+        const icons = {
+          success: "uil-check-circle",
+          error: "uil-exclamation-circle",
+          warning: "uil-exclamation-triangle",
+        };
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="uil ${icons[type]}"></i><span>${message}</span>`;
+        $("toastContainer").appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
+      }
+
+      function showLoading(show) {
+        $("loadingIndicator").style.display = show ? "block" : "none";
+      }
+      function openModal(modalId) {
+        $(modalId).classList.add("show");
+      }
+      function closeModal(modalId) {
+        $(modalId).classList.remove("show");
+      }
+
+      function openConfirm(title, message, callback) {
+        $("confirmTitle").innerText = title;
+        $("confirmMessage").innerHTML = message;
+        confirmCallback = callback;
+        $("confirmDialog").classList.add("show");
+      }
+
+      function closeConfirm() {
+        $("confirmDialog").classList.remove("show");
+        confirmCallback = null;
+      }
+      function executeConfirm() {
+        if (confirmCallback) confirmCallback();
+        closeConfirm();
+      }
+
+      function getInitials(name) {
+        if (!name) return "?";
+        return name
+          .split(" ")
+          .map((w) => w[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function (m) {
+          if (m === "&") return "&amp;";
+          if (m === "<") return "&lt;";
+          if (m === ">") return "&gt;";
+          return m;
+        });
+      }
+
+      async function apiCall(endpoint, method = "GET", body = null) {
+        const options = {
+          method,
+          headers: { "Content-Type": "application/json" },
+        };
+        if (body) options.body = JSON.stringify(body);
+        const response = await fetch(API_BASE + endpoint, options);
+        if (!response.ok) throw new Error(await response.text());
+        const contentType = response.headers.get("content-type");
+        return contentType?.includes("application/json")
+          ? response.json()
+          : response.text();
+      }
+
+      async function loadAllData() {
+        showLoading(true);
+        try {
+          [families, allParents, allStudents, allLevels] = await Promise.all([
+            apiCall("/families"),
+            apiCall("/parents"),
+            apiCall("/students"),
+            apiCall("/levels"),
+          ]);
+          populateLevels();
+          populateEditLevels();
+          renderFamilies();
+          updateStats();
+        } catch (error) {
+          showToast("Failed to load data: " + error.message, "error");
+        }
+        showLoading(false);
+      }
+
+      function populateLevels() {
+        const select = $("childLevel");
+        select.innerHTML = '<option value="">— select level —</option>';
+        allLevels.forEach((level) => {
+          const option = document.createElement("option");
+          option.value = level.id;
+          option.textContent = level.name || "Level " + level.id;
+          select.appendChild(option);
+        });
+      }
+
+      function populateEditLevels() {
+        const select = $("editStudentLevel");
+        select.innerHTML = '<option value="">— select level —</option>';
+        allLevels.forEach((level) => {
+          const option = document.createElement("option");
+          option.value = level.id;
+          option.textContent = level.name || "Level " + level.id;
+          select.appendChild(option);
+        });
+      }
+
+      function updateStats() {
+        $("statFamilies").innerText = families.length;
+        const totalChildren = allStudents?.length || 0;
+        $("statChildren").innerText = totalChildren;
+        const totalParents = allParents?.length || 0;
+        $("statParents").innerText = totalParents;
+      }
+
+      function getUnassignedParents() {
+        const assignedParentIds = new Set();
+        families.forEach((family) => {
+          (family.parents || []).forEach((parent) => {
+            assignedParentIds.add(parent.id);
+          });
+        });
+        return allParents.filter((parent) => !assignedParentIds.has(parent.id));
+      }
+
+      function getUnassignedStudents() {
+        const assignedStudentIds = new Set();
+        families.forEach((family) => {
+          (family.children || []).forEach((child) => {
+            assignedStudentIds.add(child.id);
+          });
+        });
+        return allStudents.filter(
+          (student) => !assignedStudentIds.has(student.id),
+        );
+      }
+
+      function renderFamilies() {
+        const grid = $("familiesGrid");
+        if (!families.length) {
+          grid.innerHTML = `<div class="empty-state"><i class="uil uil-home"></i><div>No families yet.<br>Click "Add Family" to get started.</div></div>`;
+          return;
+        }
+
+        grid.innerHTML = families
+          .map((family) => {
+            const familyId = family.familyId;
+            const children = family.children || [];
+            const parents = family.parents || [];
+            const parentCount = parents.length;
+
+            const parentRows =
+              parents.length > 0
+                ? parents
+                    .map(
+                      (parent) => `
+            <div class="member-row">
+              <div class="member-info">
+                <div class="member-dot parent"></div>
+                <div>
+                  <div class="member-name">${escapeHtml(parent.name || "—")}</div>
+                  <div class="member-email">${escapeHtml(parent.email || "")}</div>
+                </div>
+              </div>
+              <div class="action-buttons">
+                <button class="btn-icon btn-edit" onclick="openEditParentModal(${parent.id}, ${familyId})" title="Edit Parent"><i class="uil uil-edit"></i></button>
+                <button class="btn-icon btn-unlink" onclick="unlinkParent(${familyId}, ${parent.id}, '${escapeHtml(parent.name || "").replace(/'/g, "\\'")}')" title="Remove from Family"><i class="uil uil-link-broken"></i></button>
+                <button class="btn-icon btn-delete-permanent" onclick="deleteParentPermanent(${parent.id}, '${escapeHtml(parent.name || "").replace(/'/g, "\\'")}')" title="Delete Permanently"><i class="uil uil-trash-alt"></i></button>
+              </div>
+            </div>
+          `,
+                    )
+                    .join("")
+                : '<div style="font-size:12px; opacity:0.4; padding:8px 0;">No parents linked</div>';
+
+            const childRows =
+              children.length > 0
+                ? children
+                    .map((child) => {
+                      return `
+            <div class="member-row">
+              <div class="member-info">
+                <div class="member-dot child"></div>
+                <div>
+                  <div class="member-name">${escapeHtml(child.name || "—")}</div>
+                  <div class="member-email">${escapeHtml(child.email || "")}</div>
+                </div>
+              </div>
+              <div class="action-buttons">
+                <button class="btn-icon btn-edit" onclick="openEditStudentModal(${child.id}, ${familyId})" title="Edit Student"><i class="uil uil-edit"></i></button>
+                <button class="btn-icon btn-unlink" onclick="unlinkChild(${familyId}, ${child.id}, '${escapeHtml(child.name || "").replace(/'/g, "\\'")}')" title="Remove from Family"><i class="uil uil-link-broken"></i></button>
+                <button class="btn-icon btn-delete-permanent" onclick="deleteChildPermanent(${child.id}, '${escapeHtml(child.name || "").replace(/'/g, "\\'")}')" title="Delete Permanently"><i class="uil uil-trash-alt"></i></button>
+              </div>
+            </div>`;
+                    })
+                    .join("")
+                : '<div style="font-size:12px; opacity:0.4; padding:8px 0;">No children linked</div>';
+
+            const canAddParent = parentCount < 2;
+            const addParentButton = canAddParent
+              ? `<button onclick="openAddParentModal(${familyId})"><i class="uil uil-user-plus"></i> Add Parent</button>`
+              : `<button disabled style="opacity:0.3; cursor:not-allowed;" title="Maximum 2 parents per family"><i class="uil uil-user-plus"></i> Max Parents Reached</button>`;
+
+            return `
+            <div class="family-card">
+              <div class="fc-header" onclick="toggleCard(this)">
+                <div class="fc-title">
+                  <div class="fc-avatar">${getInitials(family.familyName)}</div>
+                  <div>
+                    <div class="fc-name">${escapeHtml(family.familyName)}</div>
+                    <div class="fc-meta"><i class="uil uil-user"></i> ${parentCount}/2 parents | <i class="uil uil-users-alt"></i> ${children.length} children</div>
+                  </div>
+                </div>
+                <i class="uil uil-angle-down fc-chevron"></i>
+              </div>
+              <div class="fc-body">
+                <div class="section-label"><i class="uil uil-user"></i> Parents (${parentCount}/2)</div>
+                ${parentRows}
+                <div class="add-row">${addParentButton}</div>
+                <div class="section-label" style="margin-top:14px"><i class="uil uil-users-alt"></i> Children</div>
+                ${childRows}
+                <div class="add-row"><button onclick="openAddChildModal(${familyId})"><i class="uil uil-user-plus"></i> Add Child</button></div>
+              </div>
+              <div class="card-footer">
+                <button class="btn-danger" onclick="deleteFamily(${familyId}, '${escapeHtml(family.familyName || "").replace(/'/g, "\\'")}')"><i class="uil uil-trash-alt"></i> Delete Family</button>
+              </div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      function toggleCard(header) {
+        const body = header.nextElementSibling;
+        const chevron = header.querySelector(".fc-chevron");
+        body.classList.toggle("open");
+        chevron.classList.toggle("open");
+      }
+
+      function openCreateFamilyModal() {
+        $("familyName").value = "";
+        openModal("createFamilyModal");
+      }
+      async function createFamily() {
+        const name = $("familyName").value.trim();
+        if (!name) return showToast("Enter a family name", "error");
+        try {
+          await apiCall("/families", "POST", { familyName: name });
+          showToast("Family created successfully");
+          closeModal("createFamilyModal");
+          await loadAllData();
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      }
+
+      function deleteFamily(familyId, name) {
+        openConfirm(
+          `Delete "${name}"?`,
+          "This will delete the family record permanently.",
+          async () => {
+            try {
+              await apiCall(`/families/${familyId}`, "DELETE");
+              showToast("Family deleted successfully");
+              await loadAllData();
+            } catch (error) {
+              showToast(error.message, "error");
+            }
+          },
+        );
+      }
+
+      function switchParentTab(tab) {
+        currentParentTab = tab;
+        const tabs = document.querySelectorAll("#parentModal .tab-btn");
+        tabs[0].classList.toggle("active", tab === "new");
+        tabs[1].classList.toggle("active", tab === "existing");
+        $("newParentForm").style.display = tab === "new" ? "block" : "none";
+        $("existingParentForm").style.display =
+          tab === "existing" ? "block" : "none";
+        if (tab === "existing") {
+          selectedExistingParent = null;
+          $("selectedParentInfo").style.display = "none";
+          $("parentSearch").value = "";
+          filterExistingParents();
+        }
+      }
+
+      function openAddParentModal(familyId) {
+        const family = families.find((f) => f.familyId === familyId);
+        if ((family?.parents || []).length >= 2) {
+          showToast(
+            "This family already has the maximum of 2 parents",
+            "error",
+          );
+          return;
+        }
+        currentFamilyId = familyId;
+        switchParentTab("new");
+        $("parentName").value = "";
+        $("parentEmail").value = "";
+        $("parentPassword").value = "";
+        $("parentPhoneList").innerHTML = "";
+        addPhoneField("parentPhoneList");
+        $("parentModalTitle").innerText = "Add Parent";
+        openModal("parentModal");
+      }
+
+      async function saveParent() {
+        if (currentParentTab === "new") {
+          const name = $("parentName").value.trim();
+          const email = $("parentEmail").value.trim();
+          const password = $("parentPassword").value;
+          if (!name || !email || !password)
+            return showToast("Fill all required fields", "error");
+          const phones = getPhones("parentPhoneList");
+          try {
+            const created = await apiCall("/parents", "POST", {
+              name,
+              email,
+              password,
+              phones,
+            });
+            const parentId = created.id || created;
+            await apiCall(
+              `/families/${currentFamilyId}/parents/${parentId}`,
+              "POST",
+            );
+            showToast("Parent created & linked");
+            closeModal("parentModal");
+            await loadAllData();
+          } catch (error) {
+            showToast(error.message, "error");
+          }
+        } else {
+          if (!selectedExistingParent)
+            return showToast("Select a parent first", "error");
+          try {
+            await apiCall(
+              `/families/${currentFamilyId}/parents/${selectedExistingParent.id}`,
+              "POST",
+            );
+            showToast("Parent linked successfully");
+            closeModal("parentModal");
+            await loadAllData();
+          } catch (error) {
+            showToast(error.message, "error");
+          }
+        }
+      }
+
+      function openEditParentModal(parentId, familyId) {
+        currentParentId = parentId;
+        currentFamilyId = familyId;
+        const parent = allParents.find((p) => p.id === parentId) || {};
+        $("editParentName").value = parent.name || "";
+        $("editParentEmail").value = parent.email || "";
+        const passwordField = document.querySelector(
+          "#editParentModal input[type='password']",
+        );
+        if (passwordField) passwordField.value = "";
+        $("editPhoneList").innerHTML = "";
+        (parent.phones || []).forEach((phone) =>
+          addPhoneField("editPhoneList", phone.phoneNumber),
+        );
+        if (!parent.phones?.length) addPhoneField("editPhoneList");
+        openModal("editParentModal");
+      }
+
+      async function updateParent() {
+        const name = $("editParentName").value.trim();
+        const email = $("editParentEmail").value.trim();
+        const password = $("editParentPassword").value.trim();
+        if (!name || !email)
+          return showToast("Name and email required", "error");
+        const phones = getPhones("editPhoneList");
+        const updates = { name, email, phones };
+        if (password) updates.password = password;
+        else {
+          updates.password = "";
+        }
+        try {
+          await apiCall(`/parents/${currentParentId}`, "PUT", updates);
+          showToast("Parent updated successfully");
+          closeModal("editParentModal");
+          await loadAllData();
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      }
+
+      async function unlinkParent(familyId, parentId, name) {
+        openConfirm(
+          `Remove ${name} from family?`,
+          "Parent will be unlinked but not deleted.",
+          async () => {
+            try {
+              await apiCall(
+                `/families/${familyId}/parents/${parentId}`,
+                "DELETE",
+              );
+              showToast("Parent removed from family");
+              await loadAllData();
+            } catch (error) {
+              showToast(error.message, "error");
+            }
+          },
+        );
+      }
+
+      async function deleteParentPermanent(parentId, name) {
+        openConfirm(
+          `Delete "${name}" permanently?`,
+          "This will permanently delete the parent account. This action cannot be undone.",
+          async () => {
+            try {
+              await apiCall(`/parents/${parentId}`, "DELETE");
+              showToast("Parent deleted permanently");
+              await loadAllData();
+            } catch (error) {
+              showToast(error.message, "error");
+            }
+          },
+        );
+      }
+
+      function openEditStudentModal(studentId, familyId) {
+        currentStudentId = studentId;
+        currentFamilyId = familyId;
+        const student = allStudents.find((s) => s.id === studentId) || {};
+
+        $("editStudentName").value = student.name || "";
+        $("editStudentEmail").value = student.email || "";
+        $("editStudentPassword").value = "";
+        $("editStudentDob").value = student.dateOfBirth || "";
+        $("editStudentSsn").value = student.ssn || "";
+        $("editStudentLevel").value = student.level?.id || "";
+
+        openModal("editStudentModal");
+      }
+
+      async function updateStudent() {
+        const name = $("editStudentName").value.trim();
+        const email = $("editStudentEmail").value.trim();
+        const password = $("editStudentPassword").value.trim();
+        const dateOfBirth = $("editStudentDob").value;
+        const ssn = $("editStudentSsn").value.trim();
+        const levelId = parseInt($("editStudentLevel").value);
+
+        if (!name || !email || !levelId || !dateOfBirth || !ssn) {
+          return showToast("Please fill all required fields", "error");
+        }
+
+        const updates = {
+          name,
+          email,
+          dateOfBirth,
+          ssn,
+          levelId,
+          role: "STUDENT",
+        };
+
+        if (password) updates.password = password;
+        else {
+          updates.password = "";
+        }
+        try {
+          await apiCall(`/students/${currentStudentId}`, "PUT", updates);
+          showToast("Student updated successfully");
+          closeModal("editStudentModal");
+          await loadAllData();
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      }
+
+      function switchChildTab(tab) {
+        currentChildTab = tab;
+        const tabs = document.querySelectorAll("#childModal .tab-btn");
+        tabs[0].classList.toggle("active", tab === "new");
+        tabs[1].classList.toggle("active", tab === "existing");
+        $("newChildForm").style.display = tab === "new" ? "block" : "none";
+        $("existingChildForm").style.display =
+          tab === "existing" ? "block" : "none";
+        if (tab === "existing") {
+          selectedExistingChild = null;
+          $("selectedChildInfo").style.display = "none";
+          $("childSearch").value = "";
+          filterExistingStudents();
+        }
+      }
+
+      function openAddChildModal(familyId) {
+        const family = families.find((f) => f.familyId === familyId);
+        if ((family?.parents || []).length === 0) {
+          openConfirm(
+            "No Parents in Family",
+            "This family has no parents. Children need to be linked to at least one parent.\n\nDo you want to add a parent first?",
+            () => {
+              closeModal("childModal");
+              openAddParentModal(familyId);
+            },
+          );
+          return;
+        }
+        currentFamilyId = familyId;
+        switchChildTab("new");
+        $("childName").value = "";
+        $("childEmail").value = "";
+        $("childPassword").value = "";
+        $("childDob").value = "";
+        $("childSsn").value = "";
+        $("childLevel").value = "";
+        selectedExistingChild = null;
+        $("selectedChildInfo").style.display = "none";
+        $("childSearch").value = "";
+        openModal("childModal");
+      }
+
+      async function linkChildToFamily(parentIds, studentId, familyName) {
+        let successCount = 0;
+        let errorMessages = [];
+
+        for (const parentId of parentIds) {
+          try {
+            await apiCall(`/parents/${parentId}/students/${studentId}`, "POST");
+            successCount++;
+          } catch (error) {
+            errorMessages.push(error.message);
+          }
+        }
+
+        if (successCount === parentIds.length) {
+          showToast(
+            `Child linked successfully to all ${parentIds.length} parent(s)`,
+            "success",
+          );
+          closeModal("childModal");
+          await loadAllData();
+        } else if (successCount > 0) {
+          showToast(
+            `Partially linked: ${successCount}/${parentIds.length} parents linked`,
+            "warning",
+          );
+          closeModal("childModal");
+          await loadAllData();
+        } else {
+          showToast(
+            `Failed to link child: ${errorMessages.join(", ")}`,
+            "error",
+          );
+        }
+      }
+
+      async function saveChild() {
+        const family = families.find((f) => f.familyId === currentFamilyId);
+        const parentIds = (family?.parents || []).map((p) => p.id);
+        const familyName = family?.familyName || "this family";
+
+        if (currentChildTab === "new") {
+          const name = $("childName").value.trim();
+          const email = $("childEmail").value.trim();
+          const password = $("childPassword").value;
+          const levelId = parseInt($("childLevel").value);
+          if (!name || !email || !password || !levelId)
+            return showToast("Fill all required fields", "error");
+          const payload = {
+            name,
+            email,
+            password,
+            dateOfBirth: $("childDob").value,
+            ssn: $("childSsn").value.trim(),
+            levelId,
+            role: "STUDENT",
+            parentIds: parentIds,
+          };
+          try {
+            const created = await apiCall("/students", "POST", payload);
+            const studentId = created.id || created;
+            let linkErrors = [];
+            for (const parentId of parentIds) {
+              try {
+                await apiCall(
+                  `/parents/${parentId}/students/${studentId}`,
+                  "POST",
+                );
+              } catch (error) {
+                linkErrors.push(error.message);
+              }
+            }
+            if (linkErrors.length === 0) {
+              showToast("Student created & linked to all parents", "success");
+              closeModal("childModal");
+              await loadAllData();
+            } else if (linkErrors.length < parentIds.length) {
+              showToast(
+                `Student created but only linked to ${parentIds.length - linkErrors.length}/${parentIds.length} parents`,
+                "warning",
+              );
+              closeModal("childModal");
+              await loadAllData();
+            } else {
+              showToast(
+                `Failed to link student: ${linkErrors.join(", ")}`,
+                "error",
+              );
+              await apiCall(`/students/${studentId}`, "DELETE");
+              closeModal("childModal");
+              await loadAllData();
+            }
+          } catch (error) {
+            showToast(error.message, "error");
+          }
+        } else {
+          if (!selectedExistingChild)
+            return showToast("Select a student first", "error");
+          if (!parentIds.length)
+            return showToast(
+              "Family has no parents. Add a parent first.",
+              "error",
+            );
+          await linkChildToFamily(
+            parentIds,
+            selectedExistingChild.id,
+            familyName,
+          );
+        }
+      }
+
+      async function unlinkChild(familyId, studentId, name) {
+        const family = families.find((f) => f.familyId === familyId);
+        const parentIds = (family?.parents || []).map((p) => p.id);
+        if (!parentIds.length)
+          return showToast("No parents on this family", "error");
+        openConfirm(
+          `Remove ${name} from family?`,
+          "Child will be unlinked from this family but not deleted.",
+          async () => {
+            try {
+              for (const parentId of parentIds) {
+                await apiCall(
+                  `/parents/${parentId}/students/${studentId}`,
+                  "DELETE",
+                );
+              }
+              showToast("Child removed from family");
+              await loadAllData();
+            } catch (error) {
+              showToast(error.message, "error");
+            }
+          },
+        );
+      }
+
+      async function deleteChildPermanent(childId, name) {
+        openConfirm(
+          `Delete "${name}" permanently?`,
+          "This will permanently delete the child account. This action cannot be undone.",
+          async () => {
+            try {
+              await apiCall(`/students/${childId}`, "DELETE");
+              showToast("Child deleted permanently");
+              await loadAllData();
+            } catch (error) {
+              showToast(error.message, "error");
+            }
+          },
+        );
+      }
+
+      function addPhoneField(containerId, value = "") {
+        const container = $(containerId);
+        const row = document.createElement("div");
+        row.className = "phone-row";
+        row.innerHTML = `<input placeholder="Phone number" value="${escapeHtml(value)}"><button type="button" class="remove-phone" onclick="this.parentElement.remove()"><i class="uil uil-times"></i></button>`;
+        container.appendChild(row);
+      }
+
+      function getPhones(containerId) {
+        const inputs = $(containerId).querySelectorAll("input");
+        return Array.from(inputs)
+          .map((i) => i.value.trim())
+          .filter((v) => v)
+          .map((num) => ({ phoneNumber: num, phoneType: "MOBILE" }));
+      }
+
+      function filterExistingParents() {
+        const query = $("parentSearch").value.toLowerCase();
+        const unassignedParents = getUnassignedParents();
+        const filtered = unassignedParents.filter(
+          (p) =>
+            p.name?.toLowerCase().includes(query) ||
+            p.email?.toLowerCase().includes(query),
+        );
+        const dropdown = $("parentDropdown");
+        if (!filtered.length) {
+          dropdown.innerHTML =
+            '<div class="dropdown-item" style="opacity:0.5">No unassigned parents available</div>';
+        } else {
+          dropdown.innerHTML = filtered
+            .slice(0, 30)
+            .map(
+              (p) => `
+            <div class="dropdown-item" onclick="selectExistingParent(${p.id}, '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
+              ${escapeHtml(p.name)} <span style="font-size:11px; opacity:0.5">${escapeHtml(p.email)}</span>
+            </div>
+          `,
+            )
+            .join("");
+        }
+        dropdown.style.display = "block";
+      }
+
+      function selectExistingParent(id, name) {
+        selectedExistingParent = allParents.find((p) => p.id === id);
+        $("selectedParentName").innerText = name;
+        $("selectedParentInfo").style.display = "block";
+        $("parentSearch").value = name;
+        $("parentDropdown").style.display = "none";
+      }
+
+      function filterExistingStudents() {
+        const query = $("childSearch").value.toLowerCase();
+        const unassignedStudents = getUnassignedStudents();
+        const filtered = unassignedStudents.filter(
+          (s) =>
+            s.name?.toLowerCase().includes(query) ||
+            s.email?.toLowerCase().includes(query),
+        );
+        const dropdown = $("childDropdown");
+        if (!filtered.length) {
+          dropdown.innerHTML =
+            '<div class="dropdown-item" style="opacity:0.5">No unassigned students available</div>';
+        } else {
+          dropdown.innerHTML = filtered
+            .slice(0, 30)
+            .map((s) => {
+              return `
+              <div class="dropdown-item" onclick="selectExistingStudent(${s.id}, '${escapeHtml(s.name).replace(/'/g, "\\'")}')">
+                <div><strong>${escapeHtml(s.name)}</strong> <span style="font-size:11px; opacity:0.5">(${escapeHtml(s.email)})</span></div>
+              </div>`;
+            })
+            .join("");
+        }
+        dropdown.style.display = "block";
+      }
+
+      function selectExistingStudent(id, name) {
+        selectedExistingChild = allStudents.find((s) => s.id === id);
+        $("selectedChildName").innerHTML = escapeHtml(name);
+        $("selectedChildInfo").style.display = "block";
+        $("childSearch").value = name;
+        $("childDropdown").style.display = "none";
+      }
+
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".search-wrapper")) {
+          document
+            .querySelectorAll(".dropdown-list")
+            .forEach((d) => (d.style.display = "none"));
+        }
+      });
+
+      document.querySelectorAll(".modal-overlay").forEach((overlay) => {
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) overlay.classList.remove("show");
+        });
+      });
+
+      loadAllData();
+    </script>
+  </body>
+</html>

@@ -1,127 +1,961 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Child Profiles · TinyScholars</title>
-
+    <title>My Children - TinyScholars</title>
     <link
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
     />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/dashboard-parent.css" />
-
     <style>
-      .children-container {
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--color-bg);
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      .dashboard {
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 260px;
+        background: var(--color-bg1);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        left: 0;
+        top: 0;
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
+        padding: 0 20px 24px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .menu {
+        list-style: none;
+        padding: 20px 0;
+        margin: 0;
+      }
+
+      .menu li {
+        margin-bottom: 4px;
+      }
+      .sidebar .menu li {
+        padding: 0px;
+      }
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+      }
+
+      .menu li a:hover,
+      .menu li.active a {
+        opacity: 1;
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .menu li a i {
+        font-size: 18px;
+      }
+
+      /* Main */
+      .main {
+        flex: 1;
+        margin-left: 260px;
+        padding: 32px 40px;
+        max-width: calc(100% - 260px);
+        min-height: 100vh;
+      }
+      .page-header {
+        margin-bottom: 32px;
+      }
+      .page-header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--color-white);
+        letter-spacing: -0.3px;
+      }
+      .page-header p {
+        font-size: 13px;
+        color: var(--color-white);
+        opacity: 0.5;
+        margin: 6px 0 0;
+      }
+
+      /* Stats */
+      .stats-row {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap: 20px;
-        margin-top: 20px;
+        margin-bottom: 32px;
       }
-
-      .child-card {
-        background: #fff;
+      .stat-card {
+        background: var(--color-bg1);
+        border-radius: 16px;
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+      }
+      .stat-card:hover {
+        border-color: rgba(108, 99, 255, 0.3);
+        transform: translateY(-2px);
+      }
+      .stat-icon {
+        width: 48px;
+        height: 48px;
         border-radius: 12px;
-        padding: 15px;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
+        background: rgba(108, 99, 255, 0.15);
+        color: #6c63ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+      }
+      .stat-content {
+        flex: 1;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: var(--color-white);
+        opacity: 0.5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--color-white);
+        line-height: 1.2;
       }
 
+      /* Children Grid */
+      .children-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+      }
+
+      /* Child Card */
+      .child-card {
+        background: var(--color-bg1);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
       .child-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        border-color: rgba(108, 99, 255, 0.3);
+        transform: translateY(-4px);
+      }
+      .card-header {
+        background: linear-gradient(
+          135deg,
+          rgba(108, 99, 255, 0.15),
+          rgba(108, 99, 255, 0.05)
+        );
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .child-avatar {
+        width: 60px;
+        height: 60px;
+        background: var(--color-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .child-info {
+        flex: 1;
+      }
+      .child-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--color-white);
+        margin-bottom: 6px;
+      }
+      .child-level {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(108, 99, 255, 0.15);
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        color: #6c63ff;
+      }
+      .card-body {
+        padding: 20px;
+      }
+      .info-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--color-white);
+        opacity: 0.6;
+      }
+      .info-label i {
+        font-size: 14px;
+        color: #6c63ff;
+      }
+      .info-value {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-white);
+      }
+      .subjects-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(76, 175, 80, 0.15);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        color: #4caf50;
+      }
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .status-PASSED {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+      }
+      .status-ACTIVE {
+        background: rgba(33, 150, 243, 0.2);
+        color: #2196f3;
+      }
+      .status-SUMMER_EXAM {
+        background: rgba(255, 152, 0, 0.2);
+        color: #ff9800;
+      }
+      .status-FAILED {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+      .status-PENDING {
+        background: rgba(158, 158, 158, 0.2);
+        color: #9e9e9e;
       }
 
-      .child-card h3 {
-        margin: 0 0 5px 0;
-        color: black;
+      /* Card Buttons */
+      .card-btns {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .view-btn {
+        flex: 1;
+        padding: 10px;
+        background: rgba(108, 99, 255, 0.15);
+        border: 1px solid rgba(108, 99, 255, 0.3);
+        border-radius: 10px;
+        color: #6c63ff;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .view-btn:hover {
+        background: rgba(108, 99, 255, 0.25);
+        transform: translateY(-1px);
+      }
+      .view-btn.results {
+        background: rgba(76, 175, 80, 0.12);
+        border-color: rgba(76, 175, 80, 0.3);
+        color: #4caf50;
+      }
+      .view-btn.results:hover {
+        background: rgba(76, 175, 80, 0.22);
       }
 
-      .child-card p {
-        margin: 3px 0;
-        color: #555;
-      }
-
+      /* Modal */
       .modal {
         display: none;
         position: fixed;
-        z-index: 10;
+        z-index: 1000;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: black;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
       }
-
       .modal-content {
-        background: #fff;
-        margin: 50px auto;
-        padding: 20px;
-        border-radius: 10px;
+        background: var(--color-bg1);
+        margin: 4% auto;
+        padding: 0;
+        border-radius: 20px;
         width: 90%;
-        max-width: 700px;
+        max-width: 750px;
+        max-height: 85vh;
+        overflow-y: auto;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        animation: modalSlideIn 0.3s ease;
       }
-
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        background: linear-gradient(
+          135deg,
+          rgba(108, 99, 255, 0.1),
+          rgba(108, 99, 255, 0.05)
+        );
+      }
+      .modal-header h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--color-white);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .modal-header h2 i {
+        color: #6c63ff;
+        font-size: 20px;
+      }
       .close {
-        float: right;
         font-size: 28px;
+        font-weight: 500;
         cursor: pointer;
+        color: var(--color-white);
+        opacity: 0.7;
+        transition: all 0.2s;
+      }
+      .close:hover {
+        opacity: 1;
+      }
+      .modal-body {
+        padding: 20px 24px;
       }
 
+      /* Subjects modal */
       .subject-item {
-        background: #f0f0f0;
-        margin: 5px 0;
-        padding: 10px;
-        border-radius: 8px;
+        background: var(--color-bg2);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition: all 0.2s;
+      }
+      .subject-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
         cursor: pointer;
         transition: background 0.2s;
       }
-
-      .subject-item:hover {
-        background: #e0e0e0;
+      .subject-header:hover {
+        background: rgba(108, 99, 255, 0.05);
       }
-
-      .assessments {
-        margin-top: 5px;
-        padding-left: 15px;
+      .subject-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-white);
       }
-
+      .subject-title i {
+        color: #6c63ff;
+        font-size: 18px;
+      }
+      .subject-chevron {
+        color: var(--color-white);
+        opacity: 0.5;
+        transition: transform 0.2s;
+      }
+      .subject-chevron.open {
+        transform: rotate(180deg);
+      }
+      .assessments-list {
+        display: none;
+        padding: 12px 16px;
+        background: rgba(0, 0, 0, 0.2);
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .assessments-list.open {
+        display: block;
+      }
       .assessment-item {
-        background: #fff;
-        margin: 3px 0;
-        padding: 5px 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        background: var(--color-bg1);
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border-left: 3px solid #6c63ff;
+      }
+      .assessment-item:last-child {
+        margin-bottom: 0;
+      }
+      .assessment-name {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--color-white);
+      }
+      .assessment-name i {
+        font-size: 14px;
+        color: #6c63ff;
+      }
+      .assessment-score {
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .score-high {
+        color: #4caf50;
+      }
+      .score-medium {
+        color: #ff9800;
+      }
+      .score-low {
+        color: #f44336;
+      }
+      .term-badge-pill {
+        background: rgba(108, 99, 255, 0.15);
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 10px;
+        margin-left: 8px;
+        color: var(--color-white);
+      }
+
+      /* Results Modal */
+      .res-level {
+        background: var(--color-bg2);
+        border-radius: 14px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(108, 99, 255, 0.2);
+      }
+      .res-level-header {
+        background: linear-gradient(
+          135deg,
+          rgba(108, 99, 255, 0.15),
+          rgba(108, 99, 255, 0.05)
+        );
+        padding: 14px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .res-level-header:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(108, 99, 255, 0.2),
+          rgba(108, 99, 255, 0.08)
+        );
+      }
+      .res-level-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .res-level-title i {
+        color: #6c63ff;
+        font-size: 20px;
+      }
+      .res-level-title strong {
+        font-size: 16px;
+        color: var(--color-white);
+      }
+      .res-level-meta {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .res-lv-pct {
+        font-size: 18px;
+        font-weight: 700;
+        color: #ffc107;
+      }
+      .res-lv-badge {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .res-lv-badge.passed {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+      }
+      .res-lv-badge.in-progress {
+        background: rgba(33, 150, 243, 0.2);
+        color: #2196f3;
+      }
+      .res-lv-badge.failed {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+      .res-lv-chevron {
+        color: var(--color-white);
+        opacity: 0.5;
+        font-size: 18px;
+        transition: transform 0.3s;
+      }
+      .res-lv-chevron.open {
+        transform: rotate(180deg);
+      }
+      .res-level-body {
+        display: none;
+        padding: 14px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .res-level-body.open {
+        display: block;
+      }
+
+      /* Term block */
+      .res-term {
+        background: rgba(108, 99, 255, 0.05);
+        border-radius: 10px;
+        margin-bottom: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .res-term:last-child {
+        margin-bottom: 0;
+      }
+      .res-term-header {
+        padding: 12px 16px;
+        background: rgba(108, 99, 255, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .res-term-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .res-term-title i {
+        color: #ffc107;
+        font-size: 16px;
+      }
+      .res-term-title strong {
+        font-size: 14px;
+        color: var(--color-white);
+      }
+      .res-term-meta {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .res-term-badge {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+      }
+      .res-term-badge.passed {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+      }
+      .res-term-badge.failed {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+      .res-term-badge.summer {
+        background: rgba(255, 152, 0, 0.2);
+        color: #ff9800;
+      }
+      .res-term-pct {
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffc107;
+      }
+      .res-term-chevron {
+        color: var(--color-white);
+        opacity: 0.5;
+        font-size: 14px;
+        transition: transform 0.3s;
+      }
+      .res-term-chevron.open {
+        transform: rotate(180deg);
+      }
+      .res-term-body {
+        display: none;
+        padding: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .res-term-body.open {
+        display: block;
+      }
+
+      /* Term2 legend */
+      .term2-legend {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 10px;
+        padding: 6px 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        font-size: 11px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        flex-wrap: wrap;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--color-white);
+      }
+      .legend-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .legend-dot.t1 {
+        background: #64b5f6;
+      }
+      .legend-dot.t2 {
+        background: #81c784;
+      }
+
+      /* Results table */
+      .res-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .res-table th,
+      .res-table td {
+        padding: 8px 6px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        color: var(--color-white);
+      }
+      .res-table th {
+        font-size: 10px;
+        opacity: 0.6;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .res-table tr:last-child td {
+        border-bottom: none;
+      }
+      .subj-passed {
+        color: #4caf50;
+        font-weight: 600;
+      }
+      .subj-failed {
+        color: #f44336;
+        font-weight: 600;
+      }
+      .score-split {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .score-split .t1s {
+        font-size: 11px;
+        color: #64b5f6;
+      }
+      .score-split .t2s {
+        font-size: 11px;
+        color: #81c784;
+      }
+      .score-split .slbl {
+        font-size: 10px;
+        opacity: 0.6;
+        min-width: 18px;
+        display: inline-block;
+      }
+      .pbar-wrap {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        height: 5px;
+        width: 60px;
+        overflow: hidden;
+      }
+      .pbar {
+        height: 100%;
+        border-radius: 10px;
+      }
+      .pbar.high {
+        background: #4caf50;
+      }
+      .pbar.medium {
+        background: #ff9800;
+      }
+      .pbar.low {
+        background: #f44336;
+      }
+
+      /* Term footer */
+      .res-term-footer {
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px dashed rgba(108, 99, 255, 0.3);
+        display: flex;
+        justify-content: flex-end;
+        gap: 16px;
+        font-size: 12px;
+        flex-wrap: wrap;
+      }
+      .res-term-footer span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--color-white);
+      }
+
+      /* Loading / empty */
+      .loading-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--color-white);
+        opacity: 0.6;
+      }
+      .loading-state i {
+        font-size: 32px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+      }
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--color-white);
+        opacity: 0.5;
+      }
+      .empty-state i {
+        font-size: 40px;
+        display: block;
+        margin-bottom: 12px;
+      }
+
+      /* Toast */
+      .toast-container {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--color-white);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        min-width: 220px;
+        animation: toastIn 0.25s ease;
+      }
+      .toast.success {
         border-left: 3px solid #4caf50;
-        border-radius: 5px;
+      }
+      .toast.success i {
+        color: #4caf50;
+      }
+      .toast.error {
+        border-left: 3px solid #f44336;
+      }
+      .toast.error i {
+        color: #f44336;
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+        .sidebar .logo,
+        .sidebar .menu li a span {
+          display: none;
+        }
+        .sidebar .menu li a i {
+          margin: 0 auto;
+        }
+        .main {
+          margin-left: 70px;
+          max-width: calc(100% - 70px);
+          padding: 20px;
+        }
+        .stats-row {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .children-grid {
+          grid-template-columns: 1fr;
+        }
+        .card-btns {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
+
   <body>
     <div class="dashboard">
-      <!-- SIDEBAR -->
       <aside class="sidebar">
-        <h2 class="logo">TinyScholars</h2>
+        <h2 class="logo" style="text-align: left">TinyScholars</h2>
         <ul class="menu">
           <li>
             <a href="/dashboard-parent"
-              ><i class="uil uil-home"></i> Dashboard</a
+              ><i class="uil uil-home"></i><span>Dashboard</span></a
             >
           </li>
-          <li class="active"><i class="uil uil-user"></i> My Children</li>
+          <li class="active">
+            <a href="/view-child"
+              ><i class="uil uil-user"></i><span>My Children</span></a
+            >
+          </li>
           <li>
-            <a href="/"><i class="uil uil-signout"></i> Logout</a>
+            <a href="/index"
+              ><i class="uil uil-signout"></i><span>Logout</span></a
+            >
           </li>
         </ul>
       </aside>
 
-      <!-- MAIN CONTENT -->
       <main class="main">
-        <h1>My Children</h1>
-        <div id="childrenContainer" class="children-container">
-          <!-- Children cards will be appended here -->
+        <div class="page-header">
+          <h1>My Children</h1>
+          <p>View and manage your children's academic progress</p>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="uil uil-users-alt"></i></div>
+            <div class="stat-content">
+              <div class="stat-label">Total Children</div>
+              <div class="stat-value" id="totalChildren">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="uil uil-book-open"></i></div>
+            <div class="stat-content">
+              <div class="stat-label">Total Subjects</div>
+              <div class="stat-value" id="totalSubjects">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="uil uil-file-alt"></i></div>
+            <div class="stat-content">
+              <div class="stat-label">Total Assessments</div>
+              <div class="stat-value" id="totalAssessments">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="childrenContainer" class="children-grid">
+          <div class="loading-state">
+            <i class="uil uil-spinner-alt"></i>
+            <p>Loading children...</p>
+          </div>
         </div>
       </main>
     </div>
@@ -129,122 +963,533 @@
     <!-- Subjects Modal -->
     <div id="subjectsModal" class="modal">
       <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Subjects & Assessments</h2>
-        <div id="subjectsContainer"></div>
+        <div class="modal-header">
+          <h2><i class="uil uil-book-open"></i> Subjects &amp; Assessments</h2>
+          <span class="close" data-modal="subjectsModal">&times;</span>
+        </div>
+        <div class="modal-body" id="subjectsContainer">
+          <div class="loading-state">
+            <i class="uil uil-spinner-alt"></i>
+            <p>Loading subjects...</p>
+          </div>
+        </div>
       </div>
     </div>
 
+    <!-- Results Modal -->
+    <div id="resultsModal" class="modal">
+      <div class="modal-content" style="max-width: 800px">
+        <div class="modal-header">
+          <h2>
+            <i class="uil uil-chart-growth"></i> All Term Results —
+            <span id="resultsModalName"></span>
+          </h2>
+          <span class="close" data-modal="resultsModal">&times;</span>
+        </div>
+        <div class="modal-body" id="resultsContainer">
+          <div class="loading-state">
+            <i class="uil uil-spinner-alt"></i>
+            <p>Loading results...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
     <script>
       const parentId = localStorage.getItem("userId");
-      let childrenData = [];
+      const API = "http://localhost:8080";
 
-      if (!parentId) alert("Missing parentId");
+      function $(id) {
+        return document.getElementById(id);
+      }
 
-      async function loadChildren() {
+      function showToast(msg, type = "success") {
+        const icons = {
+          success: "uil-check-circle",
+          error: "uil-exclamation-circle",
+        };
+        const t = document.createElement("div");
+        t.className = `toast ${type}`;
+        t.innerHTML = `<i class="uil ${icons[type]}"></i><span>${msg}</span>`;
+        $("toastContainer").appendChild(t);
+        setTimeout(() => t.remove(), 3500);
+      }
+
+      function escHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, (m) =>
+          m === "&" ? "&amp;" : m === "<" ? "&lt;" : "&gt;",
+        );
+      }
+
+      function getInitials(name) {
+        if (!name) return "?";
+        return name
+          .split(" ")
+          .map((w) => w[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+      }
+
+      function scoreClass(pct) {
+        if (pct >= 70) return "high";
+        if (pct >= 50) return "medium";
+        return "low";
+      }
+
+      function fmt(val) {
+        const n = typeof val === "number" ? val : 0;
+        return Number.isInteger(n)
+          ? String(n)
+          : n.toFixed(1).replace(/\.0$/, "");
+      }
+
+      /* Close modals */
+      document.querySelectorAll(".close").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          $(btn.dataset.modal).style.display = "none";
+        });
+      });
+      window.addEventListener("click", (e) => {
+        if (e.target.classList.contains("modal"))
+          e.target.style.display = "none";
+      });
+
+      /* Toggle helpers (results modal) */
+      window.toggleResLevel = function (id) {
+        document
+          .querySelector(`.res-level-body[data-lv="${id}"]`)
+          ?.classList.toggle("open");
+        document
+          .querySelector(`.res-lv-chevron[data-lv="${id}"]`)
+          ?.classList.toggle("open");
+      };
+      window.toggleResTerm = function (id) {
+        document
+          .querySelector(`.res-term-body[data-tk="${id}"]`)
+          ?.classList.toggle("open");
+        document
+          .querySelector(`.res-term-chevron[data-tk="${id}"]`)
+          ?.classList.toggle("open");
+      };
+      window.toggleSubject = function (header) {
+        header.nextElementSibling.classList.toggle("open");
+        header.querySelector(".subject-chevron").classList.toggle("open");
+      };
+
+      /* ═══════════════════════════════════════════════
+         RESULTS MODAL (Only shows completed terms)
+      ════════════════════════════════════════════════ */
+      async function showResults(child) {
+        $("resultsModalName").innerText = child.name || "";
+        $("resultsContainer").innerHTML =
+          '<div class="loading-state"><i class="uil uil-spinner-alt"></i><p>Loading results...</p></div>';
+        $("resultsModal").style.display = "block";
+
         try {
           const res = await fetch(
-            `http://localhost:8080/api/parents/${parentId}/children`
+            `${API}/students/${child.id}/all-terms-all-levels`,
           );
+          if (!res.ok) throw new Error("Failed to fetch results");
+          const data = await res.json();
+
+          const allTerms = data.allTermsResults || [];
+
+          /* Group by level, filter only completed terms */
+          const levelMap = new Map();
+          for (const tr of allTerms) {
+            if (!tr.hasCompleted) continue;
+            if (!levelMap.has(tr.levelId)) {
+              levelMap.set(tr.levelId, {
+                levelId: tr.levelId,
+                levelName: tr.levelName,
+                levelNumber: tr.levelNumber,
+                isCurrentLevel: tr.isCurrentLevel || false,
+                terms: [],
+              });
+            }
+            levelMap.get(tr.levelId).terms.push(tr);
+          }
+
+          const sortedLevels = Array.from(levelMap.values()).sort(
+            (a, b) => a.levelNumber - b.levelNumber,
+          );
+
+          if (sortedLevels.length === 0) {
+            $("resultsContainer").innerHTML = `
+              <div class="empty-state">
+                <i class="uil uil-history-alt"></i>
+                <p>No completed terms yet.</p>
+                <p style="font-size:12px;margin-top:6px;">Results appear here once a term is finished.</p>
+              </div>`;
+            return;
+          }
+
+          let html = "";
+
+          for (const level of sortedLevels) {
+            const completedTerms = level.terms
+              .slice()
+              .sort((a, b) => a.termNumber - b.termNumber);
+            if (completedTerms.length === 0) continue;
+
+            let lvTotal = 0,
+              lvMax = 0;
+            for (const t of completedTerms) {
+              lvTotal += t.grandTotal || 0;
+              lvMax += t.maxGrandTotal || 0;
+            }
+            const lvPct = lvMax > 0 ? (lvTotal / lvMax) * 100 : 0;
+            const lvStatus = level.isCurrentLevel
+              ? "In Progress"
+              : lvPct >= 60
+                ? "Passed"
+                : "Failed";
+            const lvStatusClass = level.isCurrentLevel
+              ? "in-progress"
+              : lvPct >= 60
+                ? "passed"
+                : "failed";
+            const lvKey = `lv_${level.levelId}`;
+
+            html += `
+              <div class="res-level">
+                <div class="res-level-header" onclick="toggleResLevel('${lvKey}')">
+                  <div class="res-level-title">
+                    <i class="uil uil-graduation-cap"></i>
+                    <strong>Level ${level.levelNumber} — ${escHtml(level.levelName)}</strong>
+                    ${level.isCurrentLevel ? `<span style="background:#2196f3;color:#fff;padding:1px 8px;border-radius:12px;font-size:10px;">Current</span>` : ""}
+                  </div>
+                  <div class="res-level-meta">
+                    <span class="res-lv-badge ${lvStatusClass}">${lvStatus}</span>
+                    <span class="res-lv-pct">${lvPct.toFixed(1)}%</span>
+                    <span style="font-size:11px;color:var(--color-white);opacity:0.6;">${completedTerms.length} term${completedTerms.length !== 1 ? "s" : ""}</span>
+                    <i class="uil uil-angle-down res-lv-chevron" data-lv="${lvKey}"></i>
+                  </div>
+                </div>
+                <div class="res-level-body" data-lv="${lvKey}">`;
+
+            for (const term of completedTerms) {
+              const isTerm2 = term.term === "TERM_2";
+              const tk = `${level.levelId}_${term.term}`;
+              const tStatusClass =
+                term.overallStatus === "Passed"
+                  ? "passed"
+                  : term.overallStatus === "Failed but Has Summer Exam"
+                    ? "summer"
+                    : "failed";
+              const tIcon =
+                term.overallStatus === "Passed"
+                  ? "✅"
+                  : term.overallStatus === "Failed but Has Summer Exam"
+                    ? "⚠️"
+                    : "❌";
+
+              const term2Legend = isTerm2
+                ? `
+                <div class="term2-legend">
+                  <span class="legend-item"><span class="legend-dot t1"></span> Term 1 scores</span>
+                  <span class="legend-item"><span class="legend-dot t2"></span> Term 2 scores</span>
+                  <span style="opacity:0.5;font-size:10px;">Out of 200 (100 T1 + 100 T2)</span>
+                </div>`
+                : "";
+
+              /* Table header */
+              const thead = isTerm2
+                ? `<tr><th>Subject</th><th>T1 / T2</th><th>Combined</th><th>Progress</th><th>Status</th></tr>`
+                : `<tr><th>Subject</th><th>Assignments</th><th>Exams</th><th>Total</th><th>Progress</th><th>Status</th></tr>`;
+
+              /* Table rows */
+              let tbody = "";
+              for (const subj of term.subjects || []) {
+                const sc = scoreClass(subj.percentage || 0);
+                const pct = subj.percentage || 0;
+                const stCls =
+                  subj.status === "Passed" ? "subj-passed" : "subj-failed";
+
+                if (isTerm2) {
+                  const t1 = subj.term1Total || 0;
+                  const t2 = subj.term2Total || 0;
+                  tbody += `
+                    <tr>
+                      <td><strong>${escHtml(subj.subjectName)}</strong></td>
+                      <td>
+                        <div class="score-split">
+                          <span class="t1s"><span class="slbl">T1</span>${fmt(t1)}/100</span>
+                          <span class="t2s"><span class="slbl">T2</span>${fmt(t2)}/100</span>
+                        </div>
+                      </td>
+                      <td><strong>${fmt(t1 + t2)}</strong><span style="font-size:10px;opacity:0.5;">/200</span></td>
+                      <td>
+                        <div class="pbar-wrap"><div class="pbar ${sc}" style="width:${Math.min(pct, 100)}%"></div></div>
+                        <span style="font-size:10px;">${pct.toFixed(1)}%</span>
+                      </td>
+                      <td class="${stCls}">${subj.status === "Passed" ? "✓" : "✗"} ${subj.status}</td>
+                    </tr>`;
+                } else {
+                  tbody += `
+                    <tr>
+                      <td><strong>${escHtml(subj.subjectName)}</strong></td>
+                      <td>${fmt(subj.assignmentTotal)}</td>
+                      <td>${fmt(subj.examTotal)}</td>
+                      <td><strong>${fmt(subj.totalScore)}</strong><span style="font-size:10px;opacity:0.5;">/100</span></td>
+                      <td>
+                        <div class="pbar-wrap"><div class="pbar ${sc}" style="width:${Math.min(pct, 100)}%"></div></div>
+                        <span style="font-size:10px;">${pct.toFixed(1)}%</span>
+                       </td>
+                      <td class="${stCls}">${subj.status === "Passed" ? "✓" : "✗"} ${subj.status}</td>
+                    </tr>`;
+                }
+              }
+
+              html += `
+                <div class="res-term">
+                  <div class="res-term-header" onclick="toggleResTerm('${tk}')">
+                    <div class="res-term-title">
+                      <i class="uil uil-calendar-alt"></i>
+                      <strong>${escHtml(term.termDisplay)}</strong>
+                      ${isTerm2 ? `<span style="font-size:10px;opacity:0.6;color:#64b5f6;">(T1+T2)</span>` : ""}
+                      ${term.completedDate ? `<span style="font-size:10px;opacity:0.5;">• ${new Date(term.completedDate).toLocaleDateString()}</span>` : ""}
+                    </div>
+                    <div class="res-term-meta">
+                      <span class="res-term-badge ${tStatusClass}">${tIcon} ${escHtml(term.overallStatus)}</span>
+                      <span class="res-term-pct">${(term.overallPercentage || 0).toFixed(1)}%</span>
+                      <span style="font-size:11px;color:var(--color-white);opacity:0.6;">🏆 ${fmt(term.grandTotal)}/${fmt(term.maxGrandTotal)}</span>
+                      <i class="uil uil-angle-down res-term-chevron" data-tk="${tk}"></i>
+                    </div>
+                  </div>
+                  <div class="res-term-body" data-tk="${tk}">
+                    ${term2Legend}
+                    <table class="res-table">
+                      <thead>${thead}</thead>
+                      <tbody>${tbody}</tbody>
+                     </table>
+                    <div class="res-term-footer">
+                      <span><i class="uil uil-chart-line"></i> ${(term.overallPercentage || 0).toFixed(1)}%</span>
+                      <span><i class="uil uil-trophy"></i> ${fmt(term.grandTotal)} / ${fmt(term.maxGrandTotal)}</span>
+                      ${
+                        term.failedSubjectsCount > 0
+                          ? `<span style="color:#f44336;"><i class="uil uil-exclamation-triangle"></i> Failed: ${term.failedSubjectsCount}</span>`
+                          : `<span style="color:#4caf50;"><i class="uil uil-check-circle"></i> All passed</span>`
+                      }
+                    </div>
+                  </div>
+                </div>`;
+            }
+
+            html += `</div></div>`;
+          }
+
+          $("resultsContainer").innerHTML = html;
+        } catch (err) {
+          console.error(err);
+          $("resultsContainer").innerHTML = `
+            <div class="empty-state">
+              <i class="uil uil-exclamation-triangle"></i>
+              <p>Failed to load results</p>
+              <p style="font-size:12px;margin-top:6px;">${escHtml(err.message)}</p>
+            </div>`;
+          showToast("Error loading results: " + err.message, "error");
+        }
+      }
+
+      /* ═══════════════════════════════════════════════
+         SUBJECTS MODAL
+      ════════════════════════════════════════════════ */
+      async function showSubjects(child) {
+        $("subjectsContainer").innerHTML =
+          '<div class="loading-state"><i class="uil uil-spinner-alt"></i><p>Loading subjects...</p></div>';
+        $("subjectsModal").style.display = "block";
+
+        try {
+          let subjectsHtml = "";
+
+          for (const subj of child.subjects || []) {
+            let assessmentsHtml = "";
+
+            if (subj.assessments && subj.assessments.length > 0) {
+              for (const a of subj.assessments) {
+                const assessmentId = a.assessmentId || a.id;
+                let scoreDisplay = "Not taken";
+                let percentage = 0;
+                const maxScore = a.numOfQues || 1;
+
+                if (assessmentId) {
+                  try {
+                    const scoreRes = await fetch(
+                      `${API}/api/parents/${parentId}/children/${child.id}/assessments/${assessmentId}/score`,
+                    );
+                    const scoreData = scoreRes.ok
+                      ? await scoreRes.json()
+                      : null;
+                    if (scoreData?.taken && scoreData?.score != null) {
+                      const sv = scoreData.score;
+                      percentage = Math.round((sv / maxScore) * 100);
+                      scoreDisplay = `${sv} / ${maxScore} (${percentage}%)`;
+                    } else {
+                      scoreDisplay = "Not started";
+                    }
+                  } catch {
+                    scoreDisplay = "Error loading";
+                  }
+                } else {
+                  scoreDisplay = "ID missing";
+                }
+
+                const sc = scoreClass(percentage);
+                const ico =
+                  a.type === "ASSIGNMENT" ? "uil-file-alt" : "uil-edit";
+                assessmentsHtml += `
+                  <div class="assessment-item">
+                    <div class="assessment-name"><i class="uil ${ico}"></i><span>${escHtml(a.title)}</span></div>
+                    <div class="assessment-score score-${sc}">${scoreDisplay}</div>
+                  </div>`;
+              }
+            } else {
+              assessmentsHtml =
+                '<div class="assessment-item"><div class="assessment-name">No assessments available</div></div>';
+            }
+
+            const termPill = subj.term
+              ? `<span class="term-badge-pill">${subj.term === "TERM_1" ? "📖 Term 1" : "📘 Term 2"}</span>`
+              : "";
+
+            subjectsHtml += `
+              <div class="subject-item">
+                <div class="subject-header" onclick="toggleSubject(this)">
+                  <div class="subject-title">
+                    <i class="uil uil-book-open"></i>
+                    <span>${escHtml(subj.name)}</span>
+                    ${termPill}
+                  </div>
+                  <i class="uil uil-angle-down subject-chevron"></i>
+                </div>
+                <div class="assessments-list">${assessmentsHtml}</div>
+              </div>`;
+          }
+
+          $("subjectsContainer").innerHTML =
+            subjectsHtml ||
+            `
+            <div class="empty-state">
+              <i class="uil uil-book-open"></i>
+              <p>No subjects enrolled</p>
+              <p style="font-size:12px;">Contact your school administrator for subject enrollment.</p>
+            </div>`;
+        } catch (err) {
+          console.error(err);
+          $("subjectsContainer").innerHTML = `
+            <div class="empty-state">
+              <i class="uil uil-exclamation-triangle"></i>
+              <p>Error loading subjects: ${escHtml(err.message)}</p>
+            </div>`;
+          showToast("Error loading subjects: " + err.message, "error");
+        }
+      }
+
+      /* ═══════════════════════════════════════════════
+         LOAD CHILDREN
+      ════════════════════════════════════════════════ */
+      async function loadChildren() {
+        if (!parentId) {
+          showToast("Missing parentId. Please login again.", "error");
+          return;
+        }
+
+        try {
+          const res = await fetch(`${API}/api/parents/${parentId}/children`);
           if (!res.ok) throw new Error("Failed to fetch children");
           const children = await res.json();
-          childrenData = children;
 
-          const container = document.getElementById("childrenContainer");
+          $("totalChildren").innerText = children.length;
+          let totalSubjects = 0,
+            totalAssessments = 0;
+          children.forEach((c) => {
+            totalSubjects += c.subjects?.length || 0;
+            c.subjects?.forEach((s) => {
+              totalAssessments += s.assessments?.length || 0;
+            });
+          });
+          $("totalSubjects").innerText = totalSubjects;
+          $("totalAssessments").innerText = totalAssessments;
+
+          const container = $("childrenContainer");
           container.innerHTML = "";
+
+          if (!children || children.length === 0) {
+            container.innerHTML = `
+              <div class="empty-state" style="grid-column:1/-1;">
+                <i class="uil uil-user-times"></i>
+                <p>No children found</p>
+                <p style="font-size:12px;">Contact your school administrator to add children to your account.</p>
+              </div>`;
+            return;
+          }
 
           children.forEach((child) => {
             const card = document.createElement("div");
-            card.classList.add("child-card");
-            card.innerHTML = `
-            <h3>${child.name}</h3>
-            <p>Level: ${child.level?.name || "--"}</p>
-            <p>ID: ${child.id}</p>
-            <p>Email: ${child.email}</p>
-            <p><strong>Subjects: ${child.subjects?.length || 0}</strong></p>
+            card.className = "child-card";
+            const initials = getInitials(child.name);
+            const subjectCount = child.subjects?.length || 0;
+            const statusClass = `status-${child.status || "PENDING"}`;
 
-          `;
-            card.addEventListener("click", () => showSubjects(child));
+            card.innerHTML = `
+              <div class="card-header">
+                <div class="child-avatar">${initials}</div>
+                <div class="child-info">
+                  <div class="child-name">${escHtml(child.name)}</div>
+                  <div class="child-level"><i class="uil uil-graduation-cap"></i> Level: ${escHtml(child.levelName || "Not assigned")}</div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="info-row">
+                  <div class="info-label"><i class="uil uil-envelope"></i>Email</div>
+                  <div class="info-value">${escHtml(child.email || "—")}</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="uil uil-calendar-alt"></i>Age</div>
+                  <div class="info-value">${child.age || "—"} years</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="uil uil-chart-line"></i>Status</div>
+                  <div class="info-value"><span class="status-badge ${statusClass}">${child.status || "PENDING"}</span></div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label"><i class="uil uil-book-open"></i>Subjects</div>
+                  <div class="info-value"><span class="subjects-badge"><i class="uil uil-book-open"></i>${subjectCount} Subjects</span></div>
+                </div>
+                <div class="card-btns">
+                  <button class="view-btn btn-subj"><i class="uil uil-eye"></i>Subjects &amp; Assessments</button>
+                  <button class="view-btn results btn-res"><i class="uil uil-chart-growth"></i>Term Results</button>
+                </div>
+              </div>`;
+
+            card.querySelector(".btn-subj").addEventListener("click", (e) => {
+              e.stopPropagation();
+              showSubjects(child);
+            });
+            card.querySelector(".btn-res").addEventListener("click", (e) => {
+              e.stopPropagation();
+              showResults(child);
+            });
             container.appendChild(card);
           });
         } catch (err) {
           console.error(err);
-          alert("Error loading children: " + err.message);
+          showToast("Error loading children: " + err.message, "error");
+          $("childrenContainer").innerHTML = `
+            <div class="empty-state" style="grid-column:1/-1;">
+              <i class="uil uil-exclamation-triangle"></i>
+              <p>Failed to load children</p>
+              <p style="font-size:12px;">Please try again later.</p>
+            </div>`;
         }
       }
 
       loadChildren();
-
-      const modal = document.getElementById("subjectsModal");
-      const closeModal = document.querySelector(".close");
-      const subjectsContainer = document.getElementById("subjectsContainer");
-
-      async function showSubjects(child) {
-        subjectsContainer.innerHTML = "";
-        for (const subj of child.subjects || []) {
-          const subjDiv = document.createElement("div");
-          subjDiv.classList.add("subject-item");
-          subjDiv.textContent = subj.name;
-
-          const assessDiv = document.createElement("div");
-          assessDiv.classList.add("assessments");
-          assessDiv.style.display = "none";
-
-          for (const a of subj.assessments || []) {
-            const aDiv = document.createElement("div");
-            aDiv.classList.add("assessment-item");
-            aDiv.textContent = `${a.title} - Loading...`;
-
-            const assessmentId = a.id || a._id || a.assessmentId;
-            if (!assessmentId) {
-              aDiv.textContent = `${a.title} - ID missing`;
-              assessDiv.appendChild(aDiv);
-              continue;
-            }
-
-            try {
-              const scoreRes = await fetch(
-                `http://localhost:8080/api/parents/${parentId}/children/${child.id}/assessments/${assessmentId}/score`
-              );
-              const scoreData = scoreRes.ok ? await scoreRes.json() : null;
-              const score =
-                scoreData?.score != null && scoreData?.taken
-                  ? scoreData.score
-                  : "--";
-              const numQ = a.numOfQues ?? "-";
-              const percent =
-                scoreData?.score != null && scoreData?.taken && a.numOfQues
-                  ? Math.round((scoreData.score / a.numOfQues) * 100) + "%"
-                  : "--%";
-
-              aDiv.textContent = `${a.title} - Score: ${score} / ${numQ} (${percent})`;
-            } catch (err) {
-              console.error(err);
-              aDiv.textContent = `${a.title} - --`;
-            }
-
-            assessDiv.appendChild(aDiv);
-          }
-
-          subjDiv.addEventListener("click", () => {
-            assessDiv.style.display =
-              assessDiv.style.display === "none" ? "block" : "none";
-          });
-
-          subjectsContainer.appendChild(subjDiv);
-          subjectsContainer.appendChild(assessDiv);
-        }
-
-        modal.style.display = "block";
-      }
-
-      closeModal.addEventListener("click", () => {
-        modal.style.display = "none";
-      });
-
-      window.addEventListener("click", (e) => {
-        if (e.target === modal) modal.style.display = "none";
-      });
     </script>
   </body>
 </html>

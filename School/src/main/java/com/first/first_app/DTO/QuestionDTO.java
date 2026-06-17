@@ -2,7 +2,7 @@ package com.first.first_app.DTO;
 
 import java.util.List;
 
-import com.first.first_app.Model.CorrectChoice;
+import com.first.first_app.Enum.CorrectChoice;
 
 public class QuestionDTO {
         private int id; 

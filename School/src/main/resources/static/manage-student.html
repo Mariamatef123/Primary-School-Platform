@@ -10,309 +10,1147 @@
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
     />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+      input::placeholder,
+      select::placeholder,
+      textarea::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+        opacity: 1;
+      }
+      .page-header h1 {
+        margin: 0;
+      }
+      .page-header p {
+        font-size: 13px;
+        color: var(--color-white);
+        opacity: 0.5;
+        margin: 4px 0 0;
+      }
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .stat-card {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .stat-icon.blue {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+      .stat-icon.green {
+        background: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+      }
+      .stat-icon.orange {
+        background: rgba(255, 152, 0, 0.15);
+        color: #ff9800;
+      }
+      .stat-icon.purple {
+        background: rgba(156, 39, 176, 0.15);
+        color: #9c27b0;
+      }
+      .stat-label {
+        font-size: 11px;
+        color: var(--color-white);
+        opacity: 0.5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .stat-val {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--color-white);
+        line-height: 1.2;
+      }
+      .add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+      .add-btn:hover {
+        opacity: 0.88;
+      }
+      .add-btn:active {
+        transform: scale(0.98);
+      }
+      .table-wrap {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .table-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .search-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 7px 12px;
+        transition: border-color 0.15s;
+      }
+      .search-box:focus-within {
+        border-color: var(--color-primary);
+      }
+      .search-box i {
+        color: var(--color-white);
+        opacity: 0.4;
+        font-size: 16px;
+      }
+      .search-box input {
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--color-white);
+        font-size: 13px;
+        width: 200px;
+      }
+      .search-box input::placeholder {
+        color: var(--color-white);
+        opacity: 0.35;
+      }
+      .row-count {
+        font-size: 12px;
+        color: var(--color-white);
+        opacity: 0.45;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        color: var(--color-white);
+      }
+      thead th {
+        background: var(--color-bg2);
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 11px 16px;
+        text-align: left;
+        color: var(--color-white);
+        opacity: 0.6;
+      }
+      tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: background 0.12s;
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: var(--color-bg2);
+      }
+      td {
+        padding: 13px 16px;
+        vertical-align: middle;
+        font-size: 14px;
+      }
+      .cell-name {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+      }
+      .avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        opacity: 0.85;
+      }
+      .id-badge {
+        display: inline-block;
+        background: var(--color-bg2);
+        color: var(--color-white);
+        opacity: 0.6;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin: 2px;
+      }
+      .action-btns {
+        display: flex;
+        gap: 6px;
+      }
+      .btn-edit,
+      .btn-delete {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 11px;
+        border: none;
+        border-radius: 7px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+      .btn-edit:active,
+      .btn-delete:active {
+        transform: scale(0.97);
+      }
+      .btn-edit {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+      .btn-delete {
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+      }
+      .btn-edit:hover {
+        background: rgba(33, 150, 243, 0.28);
+      }
+      .btn-delete:hover {
+        background: rgba(244, 67, 54, 0.28);
+      }
+      .empty-row td {
+        text-align: center;
+        padding: 52px;
+        color: var(--color-white);
+        opacity: 0.35;
+      }
+      .empty-row i {
+        font-size: 38px;
+        display: block;
+        margin-bottom: 10px;
+      }
+      #studentFormModal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        animation: fadeBg 0.2s;
+      }
+      @keyframes fadeBg {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .form-card {
+        background: var(--color-bg1);
+        border-radius: 14px;
+        width: 500px;
+        max-width: 95vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+        color: var(--color-white);
+      }
+      @keyframes slideUp {
+        from {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      .form-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .form-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+      }
+      .close-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: none;
+        background: var(--color-bg2);
+        color: var(--color-white);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        opacity: 0.7;
+        transition:
+          opacity 0.15s,
+          background 0.15s;
+      }
+      .close-btn:hover {
+        opacity: 1;
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+      .form-body {
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0.55;
+        margin-bottom: 0;
+      }
+      .field input,
+      .field select {
+        width: 100%;
+        padding: 10px 12px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        color: var(--color-white);
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.15s;
+        font-family: inherit;
+      }
+      .field input:focus,
+      .field select:focus {
+        border-color: var(--color-primary);
+      }
+      .field select option {
+        background: var(--color-bg2);
+      }
+      .form-footer {
+        display: flex;
+        gap: 10px;
+        padding: 16px 22px;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .btn-submit {
+        flex: 1;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: opacity 0.15s;
+        font-family: inherit;
+      }
+      .btn-submit:hover {
+        opacity: 0.88;
+      }
+      .btn-cancel {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        font-size: 14px;
+        padding: 10px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.15s;
+        font-family: inherit;
+      }
+      .btn-cancel:hover {
+        opacity: 1;
+      }
+      #confirmDialog {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .confirm-card {
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 28px;
+        width: 340px;
+        text-align: center;
+        color: var(--color-white);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+      }
+      .confirm-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+      }
+      .confirm-card h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+      .confirm-card p {
+        font-size: 13px;
+        opacity: 0.55;
+        margin-bottom: 22px;
+        line-height: 1.5;
+      }
+      .confirm-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .confirm-actions button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        font-family: inherit;
+        transition: opacity 0.15s;
+      }
+      #confirmYes {
+        background: #dc3545;
+        color: #fff;
+      }
+      #confirmYes:hover {
+        opacity: 0.88;
+      }
+      #confirmNo {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      #toastContainer {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--color-white);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        min-width: 220px;
+        animation: toastIn 0.25s ease;
+      }
+      .toast i {
+        font-size: 17px;
+      }
+      .toast.success {
+        border-left: 3px solid var(--color-primary);
+      }
+      .toast.success i {
+        color: var(--color-primary);
+      }
+      .toast.error {
+        border-left: 3px solid #f44336;
+      }
+      .toast.error i {
+        color: #f44336;
+      }
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .sidebar {
+        width: 260px;
+        background: var(--color-bg1);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        left: 0;
+        top: 0;
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
+        padding: 0 20px 24px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .menu {
+        list-style: none;
+        padding: 20px 0;
+        margin: 0;
+      }
+
+      .menu li {
+        margin-bottom: 4px;
+      }
+      .sidebar .menu li {
+        padding: 0px;
+      }
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+      }
+
+      .menu li a:hover,
+      .menu li.active a {
+        opacity: 1;
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .menu li a i {
+        font-size: 18px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .logo,
+        .sidebar .menu li a span {
+          display: none;
+        }
+
+        .sidebar .menu li a i {
+          margin: 0 auto;
+        }
+
+        .main {
+          margin-left: 70px;
+          max-width: calc(100% - 70px);
+          padding: 20px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .child-selector {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        #childSelect {
+          width: 100%;
+        }
+
+        .child-info-card {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+    </style>
   </head>
 
   <body>
     <div class="dashboard">
       <aside class="sidebar">
-        <h2 class="logo">TinyScholars</h2>
+        <h2 class="logo" style="text-align: left">TinyScholars</h2>
+
         <ul class="menu">
           <li>
-            <a href="/dashboard-admin"
-              ><i class="uil uil-home"></i> Dashboard</a
-            >
+            <a href="/dashboard-admin">
+              <i class="uil uil-home"></i>
+              <span>Dashboard</span>
+            </a>
           </li>
+
+          <!-- <li>
+      <a href="/manage-student">
+        <i class="uil uil-users-alt"></i>
+        <span>Students</span>
+      </a>
+    </li> -->
+
+          <li>
+            <a href="/manage-teacher">
+              <i class="uil uil-user"></i>
+              <span>Teachers</span>
+            </a>
+          </li>
+
+          <!-- <li>
+      <a href="/manage-parent">
+        <i class="uil uil-users-alt"></i>
+        <span>Parents</span>
+      </a>
+    </li> -->
+
           <li class="active">
-            <a><i class="uil uil-users-alt"></i> Students</a>
-          </li>
-          <li>
-            <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
-          </li>
-          <li>
-            <a href="/manage-parent"
-              ><i class="uil uil-users-alt"></i> Parents</a
-            >
+            <a href="/ManageFamilyMembers.html">
+              <i class="uil uil-users-alt"></i>
+              <span>Family Members</span>
+            </a>
           </li>
 
           <li>
-            <a href="/manage-levels"><i class="uil uil-layers"></i> Levels</a>
+            <a href="/manage-levels">
+              <i class="uil uil-layers"></i>
+              <span>Levels</span>
+            </a>
           </li>
+
+          <!-- <li>
+      <a href="/manage-subjects">
+        <i class="uil uil-book-open"></i>
+        <span>Subjects</span>
+      </a>
+    </li> -->
+
           <li>
-            <a href="/manage-subjects"
-              ><i class="uil uil-book-open"></i> Subjects</a
-            >
-          </li>
-          <li>
-            <a href="/logout"><i class="uil uil-signout"></i> Logout</a>
+            <a href="/index">
+              <i class="uil uil-signout"></i>
+              <span>Logout</span>
+            </a>
           </li>
         </ul>
       </aside>
-
       <main class="main">
-        <h1>Manage Students</h1>
-
-        <button class="add-btn" onclick="showForm()">
-          <i class="uil uil-plus"></i> Add Student
-        </button>
-
-        <!-- STUDENT FORM -->
-        <div
-          id="studentForm"
-          style="
-            display: none;
-            margin-bottom: 20px;
-            background: var(--color-bg2);
-            padding: 15px;
-            border-radius: 8px;
-          "
-        >
-          <input
-            type="text"
-            id="studentName"
-            placeholder="Name"
-            style="padding: 8px; margin: 5px"
-          />
-          <select id="level" style="padding: 8px; margin: 5px"></select>
-          <input
-            type="date"
-            id="dateOfBirth"
-            style="padding: 8px; margin: 5px"
-          />
-          <input
-            type="text"
-            id="ssn"
-            placeholder="SSN"
-            style="padding: 8px; margin: 5px"
-          />
-          <input
-            type="email"
-            id="email"
-            placeholder="Email"
-            style="padding: 8px; margin: 5px"
-          />
-          <input
-            type="password"
-            id="password"
-            placeholder="Password (leave blank to keep unchanged)"
-            style="padding: 8px; margin: 5px"
-          />
-          <select id="role" style="padding: 8px; margin: 5px">
-            <option value="STUDENT">Student</option>
-          </select>
-
-          <button
-            id="submitBtn"
-            style="
-              padding: 8px;
-              margin: 5px;
-              background: var(--color-primary);
-              color: white;
-            "
-          >
-            Submit
-          </button>
-          <button
-            onclick="hideForm()"
-            style="
-              padding: 8px;
-              margin: 5px;
-              background: var(--color-danger);
-              color: white;
-            "
-          >
-            Cancel
+        <div class="page-header">
+          <div>
+            <h1>Manage Students</h1>
+            <p>
+              View and manage student accounts and their academic information
+            </p>
+          </div>
+          <button class="add-btn" onclick="openAddForm()">
+            <i class="uil uil-plus"></i> Add Student
           </button>
         </div>
 
-        <!-- STUDENT TABLE -->
-        <div class="table-container">
-          <table id="studentsTable">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon blue"><i class="uil uil-users-alt"></i></div>
+            <div>
+              <div class="stat-label">Total Students</div>
+              <div class="stat-val" id="statTotal">0</div>
+            </div>
+          </div>
+          <!-- <div class="stat-card">
+            <div class="stat-icon green">
+              <i class="uil uil-graduation-cap"></i>
+            </div>
+            <div>
+              <div class="stat-label">Active Students</div>
+              <div class="stat-val" id="statActive">0</div>
+            </div>
+          </div> -->
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i class="uil uil-calendar-alt"></i>
+            </div>
+            <div>
+              <div class="stat-label">Avg Age</div>
+              <div class="stat-val" id="statAvgAge">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <i class="uil uil-book-open"></i>
+            </div>
+            <div>
+              <div class="stat-label">Levels</div>
+              <div class="stat-val" id="statLevels">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-toolbar">
+            <div class="search-box">
+              <i class="uil uil-search"></i>
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Search by name, email or SSN..."
+                onkeyup="filterTable()"
+              />
+            </div>
+            <span class="row-count" id="rowCount"></span>
+          </div>
+          <table>
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>Student</th>
                 <th>Level</th>
-                <th>dateOfBirth</th>
+                <th>Date of Birth</th>
                 <th>SSN</th>
                 <th>Email</th>
-                <th>Role</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="tableBody"></tbody>
           </table>
         </div>
       </main>
     </div>
 
+    <!-- Student Form Modal -->
+    <div id="studentFormModal" onclick="hideForm()">
+      <div class="form-card" onclick="event.stopPropagation()">
+        <div class="form-header">
+          <h3 id="formTitle">Add Student</h3>
+          <button class="close-btn" onclick="hideForm()">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="form-body">
+          <div class="field">
+            <label>Full Name</label>
+            <input id="studentName" placeholder="e.g. John Doe" />
+          </div>
+          <div class="field">
+            <label>Level</label>
+            <select id="level">
+              <option value="">Select Level</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Date of Birth</label>
+            <input type="date" id="dateOfBirth" />
+          </div>
+          <div class="field">
+            <label>SSN (Social Security Number)</label>
+            <input id="ssn" placeholder="e.g. 123-45-6789" />
+          </div>
+          <div class="field">
+            <label>Email Address</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="e.g. student@email.com"
+            />
+          </div>
+          <div class="field" id="passwordField">
+            <label>Password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Create a password"
+            />
+            <small style="opacity: 0.5; font-size: 11px"
+              >Leave blank to keep unchanged when editing</small
+            >
+          </div>
+          <div class="field">
+            <label>Role</label>
+            <select id="role">
+              <option value="STUDENT">Student</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn-cancel" onclick="hideForm()">Cancel</button>
+          <button id="submitBtn" class="btn-submit">Save Student</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="confirmDialog">
+      <div class="confirm-card">
+        <div class="confirm-icon"><i class="uil uil-trash-alt"></i></div>
+        <h3>Delete this student?</h3>
+        <p>
+          This action cannot be undone. The student account will be permanently
+          removed from the system.
+        </p>
+        <div class="confirm-actions">
+          <button id="confirmNo">Keep</button>
+          <button id="confirmYes">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
     <script>
+      const API = "http://localhost:8080/api/admin/students";
+      const LEVELS_API = "http://localhost:8080/api/admin/levels";
+
       let editStudentId = null;
+      let allStudents = [];
+      let allLevels = [];
 
-      function showForm() {
-        document.getElementById("studentForm").style.display = "block";
+      const $ = (id) => document.getElementById(id);
+
+      function toast(msg, type = "success") {
+        const icons = {
+          success: "uil-check-circle",
+          error: "uil-exclamation-circle",
+        };
+        const div = document.createElement("div");
+        div.className = "toast " + type;
+        div.innerHTML = `<i class="uil ${icons[type]}"></i><span>${msg}</span>`;
+        $("toastContainer").appendChild(div);
+        setTimeout(() => div.remove(), 3500);
       }
 
-      function hideForm() {
-        document.getElementById("studentForm").style.display = "none";
-        clearForm();
-      }
-
-      function clearForm() {
-        document.getElementById("studentName").value = "";
-        document.getElementById("level").value = "";
-        document.getElementById("dateOfBirth").value = "";
-        document.getElementById("ssn").value = "";
-        document.getElementById("email").value = "";
-        document.getElementById("password").value = "";
-        document.getElementById("role").value = "STUDENT";
-        editStudentId = null;
+      function askConfirm(cb) {
+        $("confirmDialog").style.display = "flex";
+        $("confirmYes").onclick = () => {
+          $("confirmDialog").style.display = "none";
+          cb();
+        };
+        $("confirmNo").onclick = () => {
+          $("confirmDialog").style.display = "none";
+        };
       }
 
       async function loadLevels() {
         try {
-          const res = await fetch("http://localhost:8080/api/admin/levels");
-          const levels = await res.json();
+          const res = await fetch(LEVELS_API);
+          if (!res.ok) throw new Error();
+          allLevels = await res.json();
 
-          const select = document.getElementById("level");
+          const select = $("level");
           select.innerHTML = '<option value="">Select Level</option>';
 
-          levels.forEach((lvl) => {
-            const opt = document.createElement("option");
-            opt.value = lvl.id;
-            opt.textContent = lvl.name;
-            select.appendChild(opt);
+          allLevels.forEach((level) => {
+            const option = document.createElement("option");
+            option.value = level.id;
+            option.textContent = `${level.name}`;
+            select.appendChild(option);
           });
         } catch (err) {
           console.error("Error loading levels:", err);
+          toast("Could not load levels", "error");
         }
+      }
+
+      function openAddForm() {
+        editStudentId = null;
+        $("studentName").value = "";
+        $("level").value = "";
+        $("dateOfBirth").value = "";
+        $("ssn").value = "";
+        $("email").value = "";
+        $("password").value = "";
+        $("role").value = "STUDENT";
+        $("passwordField").style.display = "block";
+        $("formTitle").innerText = "Add Student";
+        $("submitBtn").innerText = "Save Student";
+        showForm();
+      }
+
+      function showForm() {
+        $("studentFormModal").style.display = "flex";
+      }
+
+      function hideForm() {
+        $("studentFormModal").style.display = "none";
+      }
+
+      function calculateAge(dateOfBirth) {
+        if (!dateOfBirth) return 0;
+        const birthDate = new Date(dateOfBirth);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
+          age--;
+        }
+        return age;
+      }
+
+      function updateStats() {
+        $("statTotal").innerText = allStudents.length;
+
+        const avgAge =
+          allStudents.reduce((sum, s) => sum + calculateAge(s.dateOfBirth), 0) /
+          (allStudents.length || 1);
+        $("statAvgAge").innerText = Math.round(avgAge);
+
+        const uniqueLevels = new Set(
+          allStudents.map((s) => s.levelId).filter((id) => id),
+        );
+        $("statLevels").innerText = uniqueLevels.size;
+      }
+
+      function initials(name) {
+        return (name || "?")
+          .split(" ")
+          .map((w) => w[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+      }
+
+      function renderTable(studentsToRender) {
+        const tbody = $("tableBody");
+        tbody.innerHTML = "";
+        $("rowCount").innerText =
+          `${studentsToRender.length} student${studentsToRender.length !== 1 ? "s" : ""}`;
+
+        if (!studentsToRender.length) {
+          tbody.innerHTML =
+            '<tr class="empty-row"><td colspan="7"><i class="uil uil-user"></i>No students found</td></tr>';
+          return;
+        }
+
+        studentsToRender.forEach((s) => {
+          const tr = document.createElement("tr");
+          const levelName = s.levelName;
+          const dateOfBirth = s.dateOfBirth
+            ? new Date(s.dateOfBirth).toLocaleDateString()
+            : "-";
+
+          tr.innerHTML = `
+            <td><span class="id-badge">#${s.id}</span></td>
+            <td>
+              <div class="cell-name">
+                <div class="avatar">${initials(s.name)}</div>
+                <strong>${s.name}</strong>
+              </div>
+            </td>
+            <td>${levelName !== "N/A" ? `<span class="chip"><i class="uil uil-book-open"></i>${levelName}</span>` : levelName}</td>
+            <td style="opacity:.6">${dateOfBirth}</td>
+            <td style="opacity:.6">${s.ssn || "-"}</td>
+            <td style="opacity:.6">${s.email || "-"}</td>
+            <td>
+              <div class="action-btns">
+                <button class="btn-edit" onclick="editStudent(${s.id})">Edit</button>
+                <button class="btn-delete" onclick="askDelete(${s.id})">Delete</button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function filterTable() {
+        const searchTerm = $("searchInput").value.toLowerCase();
+
+        if (!searchTerm) {
+          renderTable(allStudents);
+          return;
+        }
+
+        const filtered = allStudents.filter(
+          (student) =>
+            student.name.toLowerCase().includes(searchTerm) ||
+            (student.email &&
+              student.email.toLowerCase().includes(searchTerm)) ||
+            (student.ssn && student.ssn.includes(searchTerm)),
+        );
+
+        renderTable(filtered);
       }
 
       async function loadStudents() {
         try {
-          const res = await fetch("http://localhost:8080/api/admin/students");
-          const students = await res.json();
-
-          const tbody = document.querySelector("#studentsTable tbody");
-          tbody.innerHTML = "";
-
-          students.forEach((s) => {
-            const levelName = s.level ? s.level.name : "N/A";
-            const levelId = s.level ? s.level.id : "";
-
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-              <td>${s.id}</td>
-              <td>${s.name}</td>
-              <td data-level-id="${levelId}">${levelName}</td>
-              <td data-dateOfBirth="${s.dateOfBirth || ""}">${
-                s.dateOfBirth || "-"
-              }</td>
-              <td>${s.ssn || "-"}</td>
-              <td>${s.email || "-"}</td>
-              <td>${s.role || "-"}</td>
-              <td>
-                <button class="edit" onclick="startEdit(${
-                  s.id
-                }, this)"><i class="uil uil-edit"></i></button>
-                <button class="delete" onclick="deleteStudent(${
-                  s.id
-                }, this)"><i class="uil uil-trash-alt"></i></button>
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
+          const res = await fetch(API);
+          if (!res.ok) throw new Error();
+          allStudents = await res.json();
+          updateStats();
+          renderTable(allStudents);
         } catch (err) {
           console.error("Error loading students:", err);
+          allStudents = [];
+          updateStats();
+          renderTable([]);
+          toast("Could not load students", "error");
         }
       }
 
-      function startEdit(id, btn) {
-        const row = btn.closest("tr");
+      async function saveStudent() {
+        const name = $("studentName").value.trim();
+        const levelId = parseInt($("level").value);
+        const dateOfBirth = $("dateOfBirth").value;
+        const ssn = $("ssn").value.trim();
+        const email = $("email").value.trim();
+        const password = $("password").value;
+        const role = $("role").value;
+
+        if (!name || !levelId || !dateOfBirth || !ssn || !email) {
+          toast("Please fill all required fields", "error");
+          return;
+        }
+
+        const payload = {
+          name,
+          levelId,
+          dateOfBirth,
+          ssn,
+          email,
+          role,
+        };
+
+        if (!editStudentId && !password) {
+          toast("Password is required for new student", "error");
+          return;
+        }
+
+        if (password) {
+          payload.password = password;
+        }
+
+        try {
+          const url = editStudentId ? `${API}/${editStudentId}` : API;
+          const method = editStudentId ? "PUT" : "POST";
+
+          const res = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (!res.ok) throw new Error(await res.text());
+
+          toast(editStudentId ? "Student updated" : "Student added");
+          hideForm();
+          await loadStudents();
+        } catch (err) {
+          console.error(err);
+          toast("Error saving student: " + err.message, "error");
+        }
+      }
+
+      async function editStudent(id) {
+        const student = allStudents.find((s) => s.id === id);
+        if (!student) {
+          toast("Student not found", "error");
+          return;
+        }
+
         editStudentId = id;
-
-        const cells = row.cells;
-
-        document.getElementById("studentName").value =
-          cells[1].innerText.trim();
-        document.getElementById("level").value =
-          cells[2].getAttribute("data-level-id");
-
-        const dateOfBirth = cells[3].getAttribute("data-dateOfBirth");
-        document.getElementById("dateOfBirth").value = dateOfBirth || "";
-
-        document.getElementById("ssn").value =
-          cells[4].innerText.trim() !== "-" ? cells[4].innerText.trim() : "";
-        document.getElementById("email").value =
-          cells[5].innerText.trim() !== "-" ? cells[5].innerText.trim() : "";
-        document.getElementById("role").value = cells[6].innerText.trim();
-
-        // Password must stay empty
-        document.getElementById("password").value = "";
+        $("studentName").value = student.name;
+        $("level").value = student.levelId || "";
+        $("dateOfBirth").value = student.dateOfBirth || "";
+        $("ssn").value = student.ssn || "";
+        $("email").value = student.email || "";
+        $("password").value = "";
+        $("role").value = student.role || "STUDENT";
+        $("passwordField").style.display = "block";
+        $("formTitle").innerText = "Edit Student";
+        $("submitBtn").innerText = "Update Student";
 
         showForm();
       }
 
-      async function submitStudent() {
-        const name = document.getElementById("studentName").value.trim();
-        const levelId = parseInt(document.getElementById("level").value);
-        const dateOfBirth = document.getElementById("dateOfBirth").value;
-        const ssn = document.getElementById("ssn").value.trim();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const role = document.getElementById("role").value;
-
-        if (!name || !levelId || !dateOfBirth || !ssn || !email) {
-          alert("Please fill all required fields");
-          return;
-        }
-
-        const dto = { name, levelId, dateOfBirth, ssn, email, role };
-        if (password) dto.password = password;
-
-        const url = editStudentId
-          ? `http://localhost:8080/api/admin/students/${editStudentId}`
-          : "http://localhost:8080/api/admin/students";
-
-        const method = editStudentId ? "PUT" : "POST";
-
-        try {
-          const res = await fetch(url, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dto),
-          });
-
-          if (!res.ok) throw new Error(await res.text());
-
-          hideForm();
-          await loadStudents();
-        } catch (err) {
-          alert("Failed to save: " + err.message);
-        }
+      function askDelete(id) {
+        askConfirm(async () => {
+          try {
+            const res = await fetch(`${API}/${id}`, { method: "DELETE" });
+            if (!res.ok) throw new Error(await res.text());
+            toast("Student deleted");
+            await loadStudents();
+          } catch (err) {
+            console.error(err);
+            toast("Error deleting student", "error");
+          }
+        });
       }
 
-      async function deleteStudent(id, btn) {
-        if (!confirm("Delete this student?")) return;
-
-        try {
-          const res = await fetch(
-            `http://localhost:8080/api/admin/students/${id}`,
-            {
-              method: "DELETE",
-            },
-          );
-
-          if (!res.ok) throw new Error(await res.text());
-
-          btn.closest("tr").remove();
-        } catch (err) {
-          alert("Failed to delete: " + err.message);
-        }
-      }
-
-      document
-        .getElementById("submitBtn")
-        .addEventListener("click", submitStudent);
+      $("submitBtn").onclick = saveStudent;
 
       window.onload = async () => {
         await loadLevels();

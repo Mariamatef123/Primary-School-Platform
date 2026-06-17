@@ -2,6 +2,7 @@ package com.first.first_app.Model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.first.first_app.Enum.AssessmentType;
 
 import jakarta.persistence.*;
 

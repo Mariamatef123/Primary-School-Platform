@@ -3,287 +3,1451 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Manage Levels</title>
+    <title>Manage Levels - TinyScholars</title>
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/manage-student.css" />
     <link
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
     <style>
-      #levelForm {
-        display: none;
-        margin: 1rem 0 2rem;
-        padding: 1.5rem;
-        border-radius: 10px;
-        background: var(--color-bg1);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2);
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
       }
-      .form-row {
+
+      .page-header {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
+        justify-content: space-between;
+        margin-bottom: 28px;
       }
-      .btn {
-        padding: 9px 14px;
+
+      .page-header h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--color-white);
+        letter-spacing: -0.3px;
+      }
+
+      .page-header p {
+        font-size: 13px;
+        color: var(--color-white);
+        opacity: 0.5;
+        margin: 4px 0 0;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .stat-card {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.2s;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .stat-card:hover {
+        border-color: rgba(108, 99, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .stat-card::after {
+        content: "\e9af";
+        font-family: "unicons";
+        position: absolute;
+        right: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.3;
+        font-size: 18px;
+      }
+
+      .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+
+      .stat-icon.blue {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+
+      .stat-icon.green {
+        background: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+      }
+
+      .stat-icon.orange {
+        background: rgba(255, 152, 0, 0.15);
+        color: #ff9800;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        color: var(--color-white);
+        opacity: 0.5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .stat-val {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--color-white);
+        line-height: 1.2;
+      }
+
+      .add-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 10px 18px;
         border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .stat-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+
+      .stat-arrow {
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      .add-btn:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+      }
+
+      .levels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+        gap: 20px;
+      }
+
+      .level-card {
+        background: var(--color-bg1);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+        transition: all 0.2s;
+      }
+
+      .level-card:hover {
+        border-color: rgba(108, 99, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .lc-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 18px;
+        cursor: pointer;
+        background: #323987;
+        user-select: none;
+      }
+
+      .lc-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .lc-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(
+          135deg,
+          var(--color-primary) 40,
+          var(--color-primary) 20
+        );
+        color: var(--color-primary);
+        font-size: 14px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .lc-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--color-white);
+      }
+
+      .lc-meta {
+        font-size: 11px;
+        color: var(--color-white);
+        opacity: 0.5;
+        margin-top: 3px;
+      }
+
+      .lc-chevron {
+        color: var(--color-white);
+        opacity: 0.5;
+        font-size: 18px;
+        transition: transform 0.2s;
+      }
+
+      .lc-chevron.open {
+        transform: rotate(180deg);
+      }
+
+      .lc-body {
+        display: none;
+        padding: 16px 18px;
+      }
+
+      .lc-body.open {
+        display: block;
+      }
+
+      .term-section {
+        margin-bottom: 20px;
+      }
+
+      .term-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .term-header i {
+        font-size: 18px;
+      }
+
+      .term-header i.term1-icon {
+        color: #6c63ff;
+      }
+
+      .term-header i.term2-icon {
+        color: #ff9800;
+      }
+
+      .term-header span {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-white);
+      }
+
+      .term-badge {
+        font-size: 11px;
+        background: rgba(108, 99, 255, 0.15);
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin-left: 8px;
+      }
+
+      .subject-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--color-bg2);
+        border-radius: 8px;
+        padding: 8px 10px;
+        margin-bottom: 6px;
+        transition: all 0.2s;
+      }
+
+      .subject-row:hover {
+        background: rgba(35, 43, 69, 0.8);
+      }
+
+      .subject-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+      }
+
+      .subject-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .subject-dot.term1 {
+        background: #6c63ff;
+        box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+      }
+
+      .subject-dot.term2 {
+        background: #ff9800;
+        box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+      }
+
+      .subject-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--color-white);
+      }
+
+      .subject-code {
+        font-size: 10px;
+        opacity: 0.5;
+        margin-left: 8px;
+      }
+
+      .subject-stats {
+        font-size: 10px;
+        opacity: 0.6;
+        margin-top: 2px;
+        display: flex;
+        gap: 12px;
+      }
+
+      .subject-stats span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .subject-teacher {
+        font-size: 10px;
+        opacity: 0.5;
+        margin-top: 2px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 4px;
+      }
+
+      .btn-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 4px 8px;
+        border: none;
+        border-radius: 5px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .btn-icon i {
+        font-size: 11px;
+      }
+
+      .btn-edit {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+
+      .btn-edit:hover {
+        background: rgba(33, 150, 243, 0.28);
+      }
+
+      .btn-delete {
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+      }
+
+      .btn-delete:hover {
+        background: rgba(244, 67, 54, 0.28);
+      }
+
+      .add-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .add-row button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 7px 10px;
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        background: none;
+        color: var(--color-white);
+        opacity: 0.6;
         border-radius: 6px;
         cursor: pointer;
-        color: #fff;
-        margin: 8px;
+        font-size: 11px;
+        font-weight: 500;
+        transition: all 0.15s;
       }
-      .edit-btn {
-        background: #2196f3;
+
+      .add-row button:hover {
+        opacity: 1;
+        border-color: var(--color-primary);
+        color: var(--color-primary);
+        background: rgba(108, 99, 255, 0.05);
       }
-      .delete-btn {
-        background: #f44336;
+
+      .empty-subjects {
+        font-size: 12px;
+        opacity: 0.4;
+        padding: 12px;
+        text-align: center;
       }
-      #levelForm input,
-      #levelForm select {
+
+      .card-footer {
+        padding: 10px 18px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .btn-danger {
+        background: rgba(244, 67, 54, 0.1);
+        color: #f44336;
+        border: 1px solid rgba(244, 67, 54, 0.2);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.15s;
+      }
+
+      .btn-danger:hover {
+        background: rgba(244, 67, 54, 0.2);
+        transform: translateY(-1px);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--color-white);
+        opacity: 0.35;
+      }
+
+      .empty-state i {
+        font-size: 48px;
         display: block;
-        width: 100%;
-        padding: 0.6rem 1rem;
-        margin-bottom: 1rem;
-        border-radius: 5px;
-        border: 1px solid #ccc;
+        margin-bottom: 12px;
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+      }
+
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal-container {
+        background: var(--color-bg1);
+        border-radius: 14px;
+        width: 500px;
+        max-width: 90vw;
+        max-height: 85vh;
+        overflow-y: auto;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: modalSlideIn 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .modal-header h3 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        color: var(--color-white);
+      }
+
+      .modal-close {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: none;
         background: var(--color-bg2);
         color: var(--color-white);
-        font-size: 0.9rem;
-        width: 25%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+        transition: all 0.15s;
       }
-      .add-btn {
+
+      .modal-close:hover {
+        background: rgba(244, 67, 54, 0.2);
+        color: #f44336;
+      }
+
+      .modal-body {
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .form-field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0.55;
+        margin-bottom: 6px;
+        color: var(--color-white);
+      }
+
+      .form-field input,
+      .form-field select {
+        width: 100%;
+        padding: 10px 12px;
+        background: var(--color-bg2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        color: var(--color-white);
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.15s;
+        font-family: inherit;
+      }
+
+      .form-field input:focus,
+      .form-field select:focus {
+        border-color: var(--color-primary);
+      }
+
+      .form-field select option {
+        background: var(--color-bg2);
+      }
+
+      .modal-footer {
+        display: flex;
+        gap: 10px;
+        padding: 14px 22px;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .btn-submit {
+        flex: 1;
         background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .btn-submit:hover {
+        opacity: 0.88;
+      }
+
+      .btn-cancel {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        font-size: 14px;
+        padding: 10px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.15s;
+      }
+
+      .btn-cancel:hover {
+        opacity: 1;
+      }
+
+      .subject-modal {
+        width: 550px;
+      }
+
+      .subject-modal .form-row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+
+      .subject-modal .form-field {
+        flex: 1;
+      }
+
+      .confirm-dialog {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 1100;
+      }
+
+      .confirm-dialog.show {
+        display: flex;
+      }
+
+      .confirm-card {
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 28px;
+        width: 340px;
+        text-align: center;
+        color: var(--color-white);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: modalSlideIn 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+      }
+
+      .confirm-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+      }
+
+      .confirm-card h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      .confirm-card p {
+        font-size: 13px;
+        opacity: 0.55;
+        margin-bottom: 22px;
+        white-space: pre-line;
+      }
+
+      .confirm-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .confirm-actions button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.15s;
+      }
+
+      .confirm-yes {
+        background: #dc3545;
+        color: #fff;
+      }
+
+      .confirm-no {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .toast-container {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--color-white);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        min-width: 220px;
+        animation: toastIn 0.25s ease;
+      }
+
+      .toast.success {
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .toast.success i {
+        color: var(--color-primary);
+      }
+
+      .toast.error {
+        border-left: 3px solid #f44336;
+      }
+
+      .toast.error i {
+        color: #f44336;
+      }
+
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: var(--color-white);
+        opacity: 0.5;
+      }
+      .sidebar {
+        width: 260px;
+        background: var(--color-bg1);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        left: 0;
+        top: 0;
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
+        padding: 0 20px 24px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .menu {
+        list-style: none;
+        padding: 20px 0;
+        margin: 0;
+      }
+
+      .menu li {
+        margin-bottom: 4px;
+      }
+      .sidebar .menu li {
+        padding: 0px;
+      }
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+      }
+
+      .menu li a:hover,
+      .menu li.active a {
+        opacity: 1;
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .menu li a i {
+        font-size: 18px;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .logo,
+        .sidebar .menu li a span {
+          display: none;
+        }
+
+        .sidebar .menu li a i {
+          margin: 0 auto;
+        }
+
+        .main {
+          margin-left: 70px;
+          max-width: calc(100% - 70px);
+          padding: 20px;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .child-selector {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        #childSelect {
+          width: 100%;
+        }
+
+        .child-info-card {
+          flex-direction: column;
+          text-align: center;
+        }
       }
     </style>
   </head>
   <body>
     <div class="dashboard">
       <aside class="sidebar">
-        <h2 class="logo">TinyScholars</h2>
+        <h2 class="logo" style="text-align: left">TinyScholars</h2>
+
         <ul class="menu">
           <li>
-            <a href="/dashboard-admin"
-              ><i class="uil uil-home"></i> Dashboard</a
-            >
+            <a href="/dashboard-admin">
+              <i class="uil uil-home"></i>
+              <span>Dashboard</span>
+            </a>
           </li>
+
+          <!-- <li>
+      <a href="/manage-student">
+        <i class="uil uil-users-alt"></i>
+        <span>Students</span>
+      </a>
+    </li> -->
+
           <li>
-            <a href="/manage-student"
-              ><i class="uil uil-users-alt"></i> Students</a
-            >
+            <a href="/manage-teacher">
+              <i class="uil uil-user"></i>
+              <span>Teachers</span>
+            </a>
           </li>
+
+          <!-- <li>
+      <a href="/manage-parent">
+        <i class="uil uil-users-alt"></i>
+        <span>Parents</span>
+      </a>
+    </li> -->
+
           <li>
-            <a href="/manage-teacher"><i class="uil uil-user"></i> Teachers</a>
+            <a href="/ManageFamilyMembers.html">
+              <i class="uil uil-users-alt"></i>
+              <span>Family Members</span>
+            </a>
           </li>
-          <li>
-            <a href="/manage-parent"
-              ><i class="uil uil-users-alt"></i> Parents</a
-            >
-          </li>
+
           <li class="active">
-            <a href="/manage-levels"><i class="uil uil-layers"></i> Levels</a>
+            <a href="/manage-levels">
+              <i class="uil uil-layers"></i>
+              <span>Levels</span>
+            </a>
           </li>
+
+          <!-- <li>
+      <a href="/manage-subjects">
+        <i class="uil uil-book-open"></i>
+        <span>Subjects</span>
+      </a>
+    </li> -->
+
           <li>
-            <a href="/manage-subjects"
-              ><i class="uil uil-book-open"></i> Subjects</a
-            >
-          </li>
-          <li>
-            <a href="/logout"><i class="uil uil-signout"></i> Logout</a>
+            <a href="/index">
+              <i class="uil uil-signout"></i>
+              <span>Logout</span>
+            </a>
           </li>
         </ul>
       </aside>
 
       <main class="main">
-        <h1>Manage Levels</h1>
-        <button class="btn add-btn" onclick="showForm()">+ Add Level</button>
+        <div class="page-header">
+          <div>
+            <h1>Manage Levels</h1>
+            <p>Manage education levels and their subjects</p>
+          </div>
+          <button class="add-btn" onclick="openLevelModal()">
+            <i class="uil uil-plus"></i> Add Level
+          </button>
+        </div>
 
-        <div id="levelForm">
-          <div class="form-row">
-            <input id="levelSelect" type="text" />
-            <button class="btn add-btn" onclick="saveLevel()">Submit</button>
-            <button class="btn delete-btn" onclick="hideForm()">Cancel</button>
+        <div class="stats-row">
+          <div
+            class="stat-card"
+            onclick="window.location.href = '/manage-levels'"
+          >
+            <div class="stat-icon blue"><i class="uil uil-layers"></i></div>
+            <div class="stat-content">
+              <div>
+                <div class="stat-label">Total Levels</div>
+                <div class="stat-val" id="statLevels">0</div>
+              </div>
+              <i class="bi bi-arrow-right stat-arrow"></i>
+            </div>
+          </div>
+          <div
+            class="stat-card"
+            onclick="window.location.href = '/manage-subjects'"
+          >
+            <div class="stat-icon green"><i class="uil uil-book-open"></i></div>
+            <div class="stat-content">
+              <div>
+                <div class="stat-label">Total Subjects</div>
+                <div class="stat-val" id="statSubjects">0</div>
+              </div>
+              <i class="bi bi-arrow-right stat-arrow"></i>
+            </div>
+          </div>
+          <div
+            class="stat-card"
+            onclick="window.location.href = '/manage-teacher'"
+          >
+            <div class="stat-icon orange"><i class="uil uil-user"></i></div>
+            <div class="stat-content">
+              <div>
+                <div class="stat-label">Teachers</div>
+                <div class="stat-val" id="statTeachers">0</div>
+              </div>
+              <i class="bi bi-arrow-right stat-arrow"></i>
+            </div>
           </div>
         </div>
 
-        <div class="table-container">
-          <table id="levelTable" cellpadding="5" cellspacing="0">
-            <thead>
-              <tr>
-                <th>Level</th>
-                <th>Subjects</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+        <div id="loadingIndicator" class="loading" style="display: none">
+          <i class="uil uil-spinner-alt uil-spin"></i> Loading levels...
         </div>
+        <div class="levels-grid" id="levelsGrid"></div>
       </main>
     </div>
+
+    <!-- Level Modal -->
+    <div id="levelModal" class="modal-overlay">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h3 id="levelModalTitle">Add Level</h3>
+          <button class="modal-close" onclick="closeModal('levelModal')">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-field">
+            <label>Level Name</label
+            ><input id="levelName" placeholder="e.g. Grade 1, Level A, etc." />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal('levelModal')">
+            Cancel</button
+          ><button class="btn-submit" onclick="saveLevel()">Save Level</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subject Modal -->
+    <div id="subjectModal" class="modal-overlay">
+      <div class="modal-container subject-modal">
+        <div class="modal-header">
+          <h3 id="subjectModalTitle">Add Subject</h3>
+          <button class="modal-close" onclick="closeModal('subjectModal')">
+            <i class="uil uil-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-field">
+              <label>Subject Code</label
+              ><input id="subjectCode" type="number" placeholder="e.g. 101" />
+            </div>
+            <div class="form-field">
+              <label>Subject Name</label
+              ><input id="subjectName" placeholder="e.g. Mathematics" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Term</label
+              ><select id="subjectTerm">
+                <option value="">Select Term</option>
+                <option value="TERM_1">📖 Term 1</option>
+                <option value="TERM_2">📘 Term 2</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Assign Teacher</label
+              ><select id="subjectTeacher">
+                <option value="">Select Teacher</option>
+              </select>
+            </div>
+          </div>
+          <input type="hidden" id="subjectLevelId" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" onclick="closeModal('subjectModal')">
+            Cancel</button
+          ><button class="btn-submit" onclick="saveSubject()">
+            Save Subject
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="confirmDialog" class="confirm-dialog">
+      <div class="confirm-card">
+        <div class="confirm-icon"><i class="uil uil-trash-alt"></i></div>
+        <h3 id="confirmTitle">Are you sure?</h3>
+        <p id="confirmMessage">This action cannot be undone.</p>
+        <div class="confirm-actions">
+          <button class="confirm-no" onclick="closeConfirm()">Cancel</button
+          ><button class="confirm-yes" onclick="executeConfirm()">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+
     <script>
+      const API_BASE = "http://localhost:8080/api/admin";
+
+      let levels = [];
+      let allSubjects = [];
+      let allTeachers = [];
+      let currentLevelId = null;
       let editLevelId = null;
-      let allLevels = []; // CRITICAL: Store all levels for uniqueness check
+      let editSubjectId = null;
+      let confirmCallback = null;
 
-      // Show/hide form
-      function showForm() {
-        document.getElementById("levelForm").style.display = "block";
-      }
-      function hideForm() {
-        document.getElementById("levelForm").style.display = "none";
-        clearForm();
-      }
-      // Simplified: Only clear the Level select input
-      function clearForm() {
-        document.getElementById("levelSelect").value = "";
-        editLevelId = null;
+      function $(id) {
+        return document.getElementById(id);
       }
 
-      // --- NEW: Uniqueness Check Function ---
-      function isLevelNameUnique(newName, currentId) {
-        const normalizedNewName = newName.trim().toLowerCase();
-
-        // Check against all existing levels
-        const duplicate = allLevels.find(
-          (level) =>
-            // Check if the name matches AND the ID is different (or it's a new level)
-            level.name.toLowerCase() === normalizedNewName &&
-            level.id !== currentId,
-        );
-
-        return !duplicate;
+      function showToast(message, type = "success") {
+        const icons = {
+          success: "uil-check-circle",
+          error: "uil-exclamation-circle",
+        };
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="uil ${icons[type]}"></i><span>${message}</span>`;
+        $("toastContainer").appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
       }
 
-      // Load levels (Includes subject display)
-      async function loadLevels() {
+      function showLoading(show) {
+        $("loadingIndicator").style.display = show ? "block" : "none";
+      }
+      function openModal(modalId) {
+        $(modalId).classList.add("show");
+      }
+      function closeModal(modalId) {
+        $(modalId).classList.remove("show");
+      }
+
+      function openConfirm(title, message, callback) {
+        $("confirmTitle").innerText = title;
+        $("confirmMessage").innerHTML = message;
+        confirmCallback = callback;
+        $("confirmDialog").classList.add("show");
+      }
+
+      function closeConfirm() {
+        $("confirmDialog").classList.remove("show");
+        confirmCallback = null;
+      }
+      function executeConfirm() {
+        if (confirmCallback) confirmCallback();
+        closeConfirm();
+      }
+
+      function getInitials(name) {
+        if (!name) return "?";
+        return name
+          .split(" ")
+          .map((w) => w[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function (m) {
+          if (m === "&") return "&amp;";
+          if (m === "<") return "&lt;";
+          if (m === ">") return "&gt;";
+          return m;
+        });
+      }
+
+      async function apiCall(endpoint, method = "GET", body = null) {
+        const options = {
+          method,
+          headers: { "Content-Type": "application/json" },
+        };
+        if (body) options.body = JSON.stringify(body);
+        const response = await fetch(API_BASE + endpoint, options);
+        if (!response.ok) throw new Error(await response.text());
+        const contentType = response.headers.get("content-type");
+        return contentType?.includes("application/json")
+          ? response.json()
+          : response.text();
+      }
+
+      async function loadAllData() {
+        showLoading(true);
         try {
-          const res = await fetch("http://localhost:8080/api/admin/levels");
-          if (!res.ok) throw new Error("Failed to load levels");
-
-          // Store the data globally
-          allLevels = await res.json();
-
-          const tbody = document.querySelector("#levelTable tbody");
-          tbody.innerHTML = "";
-
-          for (const level of allLevels) {
-            let subjects = [];
-            try {
-              // Fetch subjects for display purposes
-              const subjRes = await fetch(
-                `http://localhost:8080/api/admin/levels/${level.id}/subjects`,
-              );
-              if (subjRes.ok) subjects = await subjRes.json();
-            } catch (err) {
-              console.error("Failed to fetch subjects for level:", err);
-            }
-
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                    <td>${level.name}</td>
-                    <td>${subjects.map((s) => s.name).join(", ")}</td>
-                    <td>
-                        <button class="btn edit-btn" onclick="editLevel(${
-                          level.id
-                        })">Edit</button>
-                        <button class="btn delete-btn" onclick="deleteLevel(${
-                          level.id
-                        })">Delete</button>
-                    </td>
-                `;
-          }
-        } catch (err) {
-          console.error(err);
-          alert(err.message);
+          [levels, allSubjects, allTeachers] = await Promise.all([
+            apiCall("/levels"),
+            apiCall("/subjects"),
+            apiCall("/teachers"),
+          ]);
+          renderLevels();
+          updateStats();
+        } catch (error) {
+          showToast("Failed to load data: " + error.message, "error");
         }
+        showLoading(false);
       }
 
-      // Edit level (Simplified)
-      async function editLevel(levelId) {
-        try {
-          // Find the level in the globally stored list
-          const level = allLevels.find((l) => l.id === levelId);
-          if (!level) throw new Error("Level not found in memory.");
-
-          editLevelId = level.id;
-          document.getElementById("levelSelect").value = level.name;
-
-          showForm();
-        } catch (err) {
-          console.error(err);
-          alert("Failed to fetch level for editing: " + err.message);
-        }
+      function updateStats() {
+        $("statLevels").innerText = levels.length;
+        $("statSubjects").innerText = allSubjects.length;
+        $("statTeachers").innerText = allTeachers.length;
       }
 
-      // Save level (create/update) - Handles uniqueness check
-      async function saveLevel() {
-        const levelName = document.getElementById("levelSelect").value.trim();
-        if (!levelName) return alert("Level name cannot be empty.");
-
-        // --- CLIENT-SIDE UNIQUENESS CHECK ---
-        if (!isLevelNameUnique(levelName, editLevelId)) {
-          return alert(`The level name '${levelName}' already exists.`);
-        }
-        // --- END CLIENT-SIDE UNIQUENESS CHECK ---
-
-        try {
-          const url = editLevelId
-            ? `http://localhost:8080/api/admin/levels/${editLevelId}`
-            : "http://localhost:8080/api/admin/levels";
-          const method = editLevelId ? "PUT" : "POST";
-
-          const res = await fetch(url, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: levelName }),
-          });
-
-          if (!res.ok) {
-            const errorText = await res.text();
-
-            // Backend uniqueness check (as a fallback)
-            if (
-              errorText.includes("already exists") ||
-              errorText.includes("Duplicate entry")
-            ) {
-              return alert(
-                `Failed to save level: Level name '${levelName}' already exists. (Backend check failed)`,
-              );
-            }
-            throw new Error(errorText);
-          }
-
-          hideForm();
-          await loadLevels();
-        } catch (err) {
-          console.error(err);
-          alert("Failed to save level: " + err.message);
-        }
+      function getAssessmentCount(subjectId) {
+        return 0;
       }
-      // Delete level
-      async function deleteLevel(id) {
-        if (
-          !confirm(
-            "Delete this level? This action is permanent and may fail if entities are linked.",
-          )
-        )
+
+      function renderLevels() {
+        const grid = $("levelsGrid");
+        if (!levels.length) {
+          grid.innerHTML = `<div class="empty-state"><i class="uil uil-layers"></i><div>No levels yet.<br>Click "Add Level" to get started.</div></div>`;
           return;
+        }
+
+        grid.innerHTML = levels
+          .map((level) => {
+            const levelSubjects = allSubjects.filter(
+              (s) => s.levelId === level.id || s.level?.id === level.id,
+            );
+
+            const term1Subjects = levelSubjects.filter(
+              (s) => s.term === "TERM_1",
+            );
+            const term2Subjects = levelSubjects.filter(
+              (s) => s.term === "TERM_2",
+            );
+            const otherSubjects = levelSubjects.filter(
+              (s) => s.term !== "TERM_1" && s.term !== "TERM_2",
+            );
+
+            const renderSubjectRows = (subjects, termType) => {
+              if (subjects.length === 0) {
+                return `<div class="empty-subjects">No subjects in ${termType === "TERM_1" ? "Term 1" : "Term 2"} yet</div>`;
+              }
+              return subjects
+                .map((subject) => {
+                  const teacher = allTeachers.find(
+                    (t) => t.id === (subject.teacherId || subject.teacher?.id),
+                  );
+                  return `
+                <div class="subject-row">
+                  <div class="subject-info">
+                    <div class="subject-dot ${subject.term === "TERM_1" ? "term1" : "term2"}"></div>
+                    <div>
+                      <div class="subject-name">${escapeHtml(subject.name)} <span class="subject-code">(Code: ${subject.code})</span></div>
+                      <div class="subject-stats">
+                        <span><i class="uil uil-file-alt"></i> ${subject.assessments?.length || 0} assessments</span>
+                      </div>
+                      <div class="subject-teacher"><i class="uil uil-user"></i> ${escapeHtml(teacher?.name || "No teacher assigned")}</div>
+                    </div>
+                  </div>
+                  <div class="action-buttons">
+                    <button class="btn-icon btn-edit" onclick="openEditSubjectModal(${subject.id}, ${level.id})" title="Edit Subject"><i class="uil uil-edit"></i></button>
+                    <button class="btn-icon btn-delete" onclick="deleteSubject(${subject.id}, '${escapeHtml(subject.name).replace(/'/g, "\\'")}')" title="Delete Subject"><i class="uil uil-trash-alt"></i></button>
+                  </div>
+                </div>`;
+                })
+                .join("");
+            };
+
+            return `
+            <div class="level-card">
+              <div class="lc-header" onclick="toggleCard(this)">
+                <div class="lc-title">
+                  <div class="lc-avatar">${getInitials(level.name)}</div>
+                  <div>
+                    <div class="lc-name">${escapeHtml(level.name)}</div>
+                    <div class="lc-meta"><i class="uil uil-book-open"></i> ${levelSubjects.length} subjects (Term1: ${term1Subjects.length}/7 | Term2: ${term2Subjects.length}/7)</div>
+                  </div>
+                </div>
+                <i class="uil uil-angle-down lc-chevron"></i>
+              </div>
+              <div class="lc-body">
+                <div class="term-section">
+                  <div class="term-header">
+                    <i class="uil uil-calendar-alt term1-icon"></i>
+                    <span>Term 1 Subjects</span>
+                    <span class="term-badge">${term1Subjects.length} / 7</span>
+                  </div>
+                  ${renderSubjectRows(term1Subjects, "TERM_1")}
+                </div>
+                <div class="term-section">
+                  <div class="term-header">
+                    <i class="uil uil-calendar-alt term2-icon"></i>
+                    <span>Term 2 Subjects</span>
+                    <span class="term-badge">${term2Subjects.length} / 7</span>
+                  </div>
+                  ${renderSubjectRows(term2Subjects, "TERM_2")}
+                </div>
+                ${otherSubjects.length > 0 ? `<div class="term-section"><div class="term-header"><i class="uil uil-question-circle"></i><span>Unassigned Term</span></div>${renderSubjectRows(otherSubjects, null)}</div>` : ""}
+                <div class="add-row">
+                  <button onclick="openAddSubjectModal(${level.id})"><i class="uil uil-plus"></i> Add Subject</button>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button class="btn-danger" onclick="deleteLevel(${level.id}, '${escapeHtml(level.name || "").replace(/'/g, "\\'")}')">
+                  <i class="uil uil-trash-alt"></i> Delete Level
+                </button>
+              </div>
+            </div>`;
+          })
+          .join("");
+      }
+
+      function toggleCard(header) {
+        const body = header.nextElementSibling;
+        const chevron = header.querySelector(".lc-chevron");
+        body.classList.toggle("open");
+        chevron.classList.toggle("open");
+      }
+
+      function openLevelModal() {
+        editLevelId = null;
+        $("levelName").value = "";
+        $("levelModalTitle").innerText = "Add Level";
+        openModal("levelModal");
+      }
+
+      function editLevel(levelId, levelName) {
+        editLevelId = levelId;
+        $("levelName").value = levelName;
+        $("levelModalTitle").innerText = "Edit Level";
+        openModal("levelModal");
+      }
+
+      async function saveLevel() {
+        const name = $("levelName").value.trim();
+        if (!name) return showToast("Level name is required", "error");
         try {
-          const res = await fetch(
-            `http://localhost:8080/api/admin/levels/${id}`,
-            { method: "DELETE" },
-          );
-          if (!res.ok) throw new Error(await res.text());
-          await loadLevels();
-        } catch (err) {
-          console.error(err);
-          // Added specific warning for linked entities
-          alert(
-            "Failed to delete level. Please check the console for details. (Possible reason: Subjects or Students are still linked to this level.)",
-          );
+          if (editLevelId) {
+            await apiCall(`/levels/${editLevelId}`, "PUT", { name });
+            showToast("Level updated successfully");
+          } else {
+            await apiCall("/levels", "POST", { name });
+            showToast("Level created successfully");
+          }
+          closeModal("levelModal");
+          await loadAllData();
+        } catch (error) {
+          showToast(error.message, "error");
         }
       }
 
-      window.onload = loadLevels;
+      function deleteLevel(levelId, name) {
+        openConfirm(
+          `Delete "${name}"?`,
+          "This will delete the level permanently. Subjects in this level will also be affected.",
+          async () => {
+            try {
+              await apiCall(`/levels/${levelId}`, "DELETE");
+              showToast("Level deleted successfully");
+              await loadAllData();
+            } catch (error) {
+              showToast(error.message, "error");
+            }
+          },
+        );
+      }
+
+      async function openAddSubjectModal(levelId) {
+        currentLevelId = levelId;
+        editSubjectId = null;
+        $("subjectCode").value = "";
+        $("subjectName").value = "";
+        $("subjectTerm").value = "";
+        $("subjectTeacher").value = "";
+        $("subjectLevelId").value = levelId;
+        $("subjectModalTitle").innerText = "Add Subject";
+        await populateTeacherDropdown();
+        openModal("subjectModal");
+      }
+
+      async function openEditSubjectModal(subjectId, levelId) {
+        const subject = allSubjects.find((s) => s.id === subjectId);
+        if (!subject) return showToast("Subject not found", "error");
+        editSubjectId = subjectId;
+        currentLevelId = levelId;
+        $("subjectCode").value = subject.code;
+        $("subjectName").value = subject.name;
+        $("subjectTerm").value = subject.term || "";
+        $("subjectLevelId").value = levelId;
+        $("subjectModalTitle").innerText = "Edit Subject";
+        await populateTeacherDropdown(subject.teacherId || subject.teacher?.id);
+        openModal("subjectModal");
+      }
+
+      async function populateTeacherDropdown(selectedTeacherId = null) {
+        const select = $("subjectTeacher");
+        select.innerHTML = '<option value="">Select Teacher</option>';
+        const assignedTeacherIds = allSubjects
+          .filter((sub) => sub.teacherId || sub.teacher?.id)
+          .map((sub) => sub.teacherId || sub.teacher?.id);
+        allTeachers
+          .filter(
+            (teacher) =>
+              !assignedTeacherIds.includes(teacher.id) ||
+              teacher.id === selectedTeacherId,
+          )
+          .forEach((teacher) => {
+            const option = document.createElement("option");
+            option.value = teacher.id;
+            option.textContent = teacher.name || `Teacher ${teacher.id}`;
+            if (teacher.id === selectedTeacherId) option.selected = true;
+            select.appendChild(option);
+          });
+      }
+
+      async function saveSubject() {
+        const code = parseInt($("subjectCode").value);
+        const name = $("subjectName").value.trim();
+        const term = $("subjectTerm").value;
+        const teacherId = parseInt($("subjectTeacher").value);
+        const levelId = currentLevelId;
+
+        if (!code || !name)
+          return showToast("Subject code and name are required", "error");
+        if (!term)
+          return showToast("Please select a term (Term 1 or Term 2)", "error");
+        if (!levelId) return showToast("Level ID is missing", "error");
+
+        const payload = {
+          code,
+          name,
+          term,
+          level: { id: levelId },
+          teacher: teacherId ? { id: teacherId } : null,
+        };
+        try {
+          if (editSubjectId) {
+            await apiCall(`/subjects/${editSubjectId}`, "PUT", payload);
+            showToast("Subject updated successfully");
+          } else {
+            await apiCall("/subjects", "POST", payload);
+            showToast("Subject created successfully");
+          }
+          closeModal("subjectModal");
+          await loadAllData();
+        } catch (error) {
+          showToast(error.message, "error");
+        }
+      }
+
+      function deleteSubject(subjectId, name) {
+        openConfirm(
+          `Delete "${name}"?`,
+          "This will permanently delete the subject.",
+          async () => {
+            try {
+              await apiCall(`/subjects/${subjectId}`, "DELETE");
+              showToast("Subject deleted successfully");
+              await loadAllData();
+            } catch (error) {
+              showToast(error.message, "error");
+            }
+          },
+        );
+      }
+
+      loadAllData();
     </script>
   </body>
 </html>

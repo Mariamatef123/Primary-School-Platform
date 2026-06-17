@@ -1,205 +1,1003 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Manage Exams</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Exams - TinyScholars</title>
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
     <style>
-      .dashboard {
-        padding: 20px;
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
       }
-      .list-box {
+
+      body {
+        background: var(--color-bg);
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      /* Dashboard Layout */
+      .dashboard-container {
         display: flex;
-        flex-direction: column;
-        gap: 12px;
+        min-height: 100vh;
       }
-      .list-item {
-        background: #f4f6f8;
-        padding: 12px 15px;
-        border-radius: 8px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: black;
+
+      /* Sidebar */
+      .sidebar {
+        width: 260px;
+        background: var(--color-bg1);
+        border-right: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 24px 0;
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto;
+        left: 0;
+        top: 0;
       }
-      .list-item h4 {
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
+        padding: 0 20px 24px;
+        margin: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .menu {
+        list-style: none;
+        padding: 20px 0;
         margin: 0;
       }
-      .list-item .meta {
-        font-size: 0.9rem;
-        color: #555;
+
+      .menu li {
+        margin-bottom: 4px;
       }
-      .btn-group button,
-      .btn-group a {
-        margin-left: 8px;
+
+      .menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: var(--color-white);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        opacity: 0.7;
       }
-      .start-btn {
-        padding: 8px 16px;
+
+      .menu li a:hover,
+      .menu li.active a {
+        background: rgba(108, 99, 255, 0.1);
+        opacity: 1;
+        border-left: 3px solid var(--color-primary);
+      }
+
+      .menu li a i {
+        font-size: 18px;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        margin-left: 260px;
+        padding: 24px 32px;
+        max-width: calc(100% - 260px);
+        min-height: 100vh;
+      }
+
+      /* Page Header */
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .page-header h1 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--color-white);
+        letter-spacing: -0.3px;
+      }
+
+      .page-header p {
+        font-size: 13px;
+        color: var(--color-white);
+        opacity: 0.5;
+        margin: 6px 0 0;
+      }
+
+      /* Stats Cards */
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 32px;
+      }
+
+      .stat-card {
+        background: var(--color-bg1);
+        border-radius: 16px;
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        border-color: rgba(108, 99, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        flex-shrink: 0;
+      }
+
+      .stat-icon.purple {
+        background: rgba(108, 99, 255, 0.15);
+        color: #6c63ff;
+      }
+
+      .stat-icon.green {
+        background: rgba(76, 175, 80, 0.15);
+        color: #4caf50;
+      }
+
+      .stat-icon.orange {
+        background: rgba(255, 152, 0, 0.15);
+        color: #ff9800;
+      }
+
+      .stat-content {
+        flex: 1;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        color: var(--color-white);
+        opacity: 0.5;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+
+      .stat-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--color-white);
+        line-height: 1.2;
+      }
+
+      /* Subject Badge */
+      .subject-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(108, 99, 255, 0.15);
+        border: 1px solid rgba(108, 99, 255, 0.3);
+        border-radius: 40px;
+        padding: 6px 16px;
+        margin-bottom: 24px;
+      }
+
+      .subject-badge i {
+        color: #6c63ff;
+        font-size: 18px;
+      }
+
+      .subject-badge span {
+        color: var(--color-white);
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      /* Create Button */
+      .create-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--color-primary);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 12px 24px;
         border: none;
-        border-radius: 5px;
-        background-color: #2196f3;
-        color: white;
+        border-radius: 10px;
         cursor: pointer;
         text-decoration: none;
+        transition: all 0.2s ease;
       }
-      .start-btn:hover {
-        background-color: #1976d2;
+
+      .create-btn:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
       }
-      .start-btn-danger {
-        background-color: #e53935;
+
+      .create-btn i {
+        font-size: 18px;
       }
-      .start-btn-danger:hover {
-        background-color: #c62828;
+
+      /* Table Container */
+      .table-container {
+        background: var(--color-bg1);
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .table-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .table-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .table-title i {
+        font-size: 20px;
+        color: #6c63ff;
+      }
+
+      .table-title h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--color-white);
+      }
+
+      .exam-count {
+        background: rgba(108, 99, 255, 0.15);
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        color: #6c63ff;
+      }
+
+      .warning-badge {
+        background: rgba(255, 152, 0, 0.15);
+        color: #ff9800;
+        padding: 8px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .warning-badge i {
+        font-size: 18px;
+      }
+
+      /* Exams Grid */
+      .exams-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 16px;
+        padding: 24px;
+      }
+
+      .exam-card {
+        background: var(--color-bg2);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        transition: all 0.2s ease;
+        overflow: hidden;
+      }
+
+      .exam-card:hover {
+        border-color: rgba(108, 99, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .card-content {
+        padding: 20px;
+      }
+
+      .exam-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--color-white);
+        margin: 0 0 12px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .exam-title i {
+        color: #6c63ff;
+        font-size: 18px;
+      }
+
+      .exam-details {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--color-white);
+        opacity: 0.6;
+      }
+
+      .detail-item i {
+        font-size: 14px;
+      }
+
+      .exam-description {
+        font-size: 13px;
+        color: var(--color-white);
+        opacity: 0.7;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+
+      .card-actions {
+        display: flex;
+        gap: 8px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .btn-edit,
+      .btn-delete {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+      }
+
+      .btn-edit {
+        background: rgba(33, 150, 243, 0.15);
+        color: #2196f3;
+      }
+
+      .btn-edit:hover {
+        background: rgba(33, 150, 243, 0.28);
+        transform: translateY(-1px);
+      }
+
+      .btn-delete {
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+      }
+
+      .btn-delete:hover {
+        background: rgba(244, 67, 54, 0.28);
+        transform: translateY(-1px);
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--color-white);
+        opacity: 0.5;
+      }
+
+      .empty-state i {
+        font-size: 48px;
+        display: block;
+        margin-bottom: 16px;
+      }
+
+      .empty-state p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      /* Loading State */
+      .loading-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--color-white);
+        opacity: 0.6;
+      }
+
+      .loading-state i {
+        font-size: 32px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Confirm Dialog */
+      .confirm-dialog {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+      }
+
+      .confirm-dialog.show {
+        display: flex;
+      }
+
+      .confirm-card {
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 28px;
+        width: 340px;
+        text-align: center;
+        color: var(--color-white);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: modalSlideIn 0.22s cubic-bezier(0.34, 1.3, 0.64, 1);
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .confirm-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+      }
+
+      .confirm-card h3 {
+        font-size: 16px;
+        margin-bottom: 8px;
+      }
+
+      .confirm-card p {
+        font-size: 13px;
+        opacity: 0.55;
+        margin-bottom: 22px;
+      }
+
+      .confirm-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .confirm-actions button {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.15s;
+      }
+
+      .confirm-yes {
+        background: #dc3545;
+        color: #fff;
+      }
+
+      .confirm-yes:hover {
+        opacity: 0.88;
+      }
+
+      .confirm-no {
+        background: var(--color-bg2);
+        color: var(--color-white);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      /* Toast Container */
+      .toast-container {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--color-white);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        min-width: 220px;
+        animation: toastIn 0.25s ease;
+      }
+
+      .toast.success {
+        border-left: 3px solid #4caf50;
+      }
+
+      .toast.success i {
+        color: #4caf50;
+      }
+
+      .toast.error {
+        border-left: 3px solid #f44336;
+      }
+
+      .toast.error i {
+        color: #f44336;
+      }
+
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 70px;
+        }
+
+        .sidebar .logo,
+        .sidebar .menu li a span {
+          display: none;
+        }
+
+        .sidebar .menu li a i {
+          margin: 0 auto;
+        }
+
+        .main-content {
+          margin-left: 70px;
+          max-width: calc(100% - 70px);
+          padding: 16px;
+        }
+
+        .stats-row {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+
+        .exams-grid {
+          grid-template-columns: 1fr;
+          padding: 16px;
+        }
+
+        .page-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
       }
     </style>
   </head>
-
   <body>
-    <nav class="dashboard-nav">
-      <h2>Teacher Dashboard</h2>
-      <a href="dashboard-teacher" class="start-btn">Back</a>
-    </nav>
+    <div class="dashboard-container">
+      <aside class="sidebar">
+        <h2 class="logo">TinyScholars</h2>
+        <ul class="menu">
+          <li>
+            <a href="/dashboard-teacher">
+              <i class="uil uil-home"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/manage-assignments">
+              <i class="uil uil-file-edit-alt"></i>
+              <span>Assignments</span>
+            </a>
+          </li>
+          <li class="active">
+            <a href="/manage-quizzes">
+              <i class="uil uil-edit"></i>
+              <span>Exams</span>
+            </a>
+          </li>
+          <li>
+            <a href="/manage-summer-exam.html">
+              <i class="uil uil-edit"></i>
+              <span>Summer Exams</span>
+            </a>
+          </li>
+          <li>
+            <a href="/view-student-grades">
+              <i class="uil uil-users-alt"></i>
+              <span>Students</span>
+            </a>
+          </li>
+          <li>
+            <a href="/teacher-profile">
+              <i class="uil uil-user-circle"></i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li>
+            <a href="/index">
+              <i class="uil uil-signout"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </aside>
 
-    <div class="dashboard">
-      <h2 id="subjectTitle">Manage Exams</h2>
-      <a id="createBtn" class="start-btn" href="#">+ Create Exam</a>
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1>Manage Exams</h1>
+            <p>Create and manage your subject exams</p>
+          </div>
+          <a id="createBtn" class="create-btn" href="#">
+            <i class="uil uil-plus"></i> Create Exam
+          </a>
+        </div>
 
-      <div class="list-box" id="examList">
-        <p>Loading exams...</p>
+        <!-- Stats Cards -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <i class="uil uil-book-open"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Subject</div>
+              <div class="stat-value" id="subjectName">—</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <i class="uil uil-file-alt"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Total Exams</div>
+              <div class="stat-value" id="totalExams">0</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <i class="uil uil-chart-line"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-label">Max Allowed</div>
+              <div class="stat-value" id="maxExams">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subject Badge -->
+        <div class="subject-badge" id="subjectBadge" style="display: none">
+          <i class="uil uil-graduation-cap"></i>
+          <span id="subjectBadgeText"></span>
+        </div>
+
+        <!-- Exams Container -->
+        <div class="table-container">
+          <div class="table-header">
+            <div class="table-title">
+              <i class="uil uil-clipboard-alt"></i>
+              <h3>Your Exams</h3>
+              <span class="exam-count" id="examCount">0</span>
+            </div>
+            <div id="warningMessage"></div>
+          </div>
+          <div id="examsContainer" class="exams-grid">
+            <div class="loading-state">
+              <i class="uil uil-spinner-alt"></i>
+              <p>Loading exams...</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="confirmDialog" class="confirm-dialog">
+      <div class="confirm-card">
+        <div class="confirm-icon"><i class="uil uil-trash-alt"></i></div>
+        <h3>Delete Exam?</h3>
+        <p>
+          This action cannot be undone. The exam will be permanently removed.
+        </p>
+        <div class="confirm-actions">
+          <button class="confirm-no" onclick="closeConfirm()">Cancel</button>
+          <button class="confirm-yes" onclick="executeDelete()">Delete</button>
+        </div>
       </div>
     </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <script>
       const teacherId = localStorage.getItem("userId");
       const API_BASE = "http://localhost:8080/api/teacher";
 
-      const subjectTitle = document.getElementById("subjectTitle");
-      const examList = document.getElementById("examList");
-      const createBtn = document.getElementById("createBtn");
-
       let currentSubject = null;
       let exams = [];
-      let maxExams = 2; // default fallback
+      let maxExams = 2;
+      let pendingDeleteId = null;
 
-      // ---------------- FETCH TEACHER SUBJECT ----------------
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function showToast(message, type = "success") {
+        const icons = {
+          success: "uil-check-circle",
+          error: "uil-exclamation-circle",
+        };
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="uil ${icons[type]}"></i><span>${message}</span>`;
+        $("toastContainer").appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
+      }
+
+      function openConfirm(id) {
+        pendingDeleteId = id;
+        $("confirmDialog").classList.add("show");
+      }
+
+      function closeConfirm() {
+        $("confirmDialog").classList.remove("show");
+        pendingDeleteId = null;
+      }
+
+      async function executeDelete() {
+        if (pendingDeleteId) {
+          await deleteExam(pendingDeleteId);
+          closeConfirm();
+        }
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function (m) {
+          if (m === "&") return "&amp;";
+          if (m === "<") return "&lt;";
+          if (m === ">") return "&gt;";
+          return m;
+        });
+      }
+
       async function fetchSubject() {
         try {
           const res = await fetch(`${API_BASE}/${teacherId}/subject`);
           if (!res.ok) throw new Error("Failed to fetch subject");
-          const subject = await res.json();
 
+          const subject = await res.json();
           if (!subject) {
-            examList.innerHTML = "<p>No subject assigned to teacher.</p>";
-            createBtn.style.display = "none";
+            renderEmptyState("No subject assigned to you yet.");
+            $("createBtn").style.display = "none";
             return;
           }
 
           currentSubject = subject;
-          subjectTitle.textContent = `Manage Exams (${subject.name})`;
-          createBtn.href = `/create-exam?subjectId=${subject.id}`;
+          $("subjectName").innerText = subject.name || "—";
+          $("subjectBadgeText").innerText = subject.name;
+          $("subjectBadge").style.display = "inline-flex";
+          $("createBtn").href = `/create-exam?subjectId=${subject.id}`;
 
           await fetchMaxExams();
           await fetchExams();
         } catch (err) {
-          examList.innerHTML = `<p style="color:red">Failed to load subject: ${err.message}</p>`;
-          createBtn.style.display = "none";
+          console.error(err);
+          renderEmptyState(`Failed to load subject: ${err.message}`);
+          $("createBtn").style.display = "none";
+          showToast("Failed to load subject data", "error");
         }
       }
 
-      // ---------------- FETCH MAX EXAMS ----------------
       async function fetchMaxExams() {
         try {
           const res = await fetch(`http://localhost:8080/assessments/maxExams`);
           if (!res.ok) throw new Error("Failed to fetch max exams");
-          maxExams = parseInt(await res.text()) || maxExams;
+          const data = await res.text();
+          maxExams = parseInt(data) || 2;
+          $("maxExams").innerText = maxExams;
         } catch (err) {
           console.error("Error fetching max exams:", err);
+          $("maxExams").innerText = "—";
         }
       }
 
-      // ---------------- FETCH EXAMS ----------------
       async function fetchExams() {
         try {
           const res = await fetch(
-            `${API_BASE}/assessments?teacherId=${teacherId}`
+            `${API_BASE}/assessments?teacherId=${teacherId}`,
           );
           if (!res.ok) throw new Error("Failed to fetch assessments");
 
-          const all = await res.json();
-          exams = all.filter((e) => e.type === "EXAM");
+          const allAssessments = await res.json();
+          exams = allAssessments.filter((a) => a.type === "EXAM");
 
           renderExams();
+          updateStats();
           checkMaxExams();
         } catch (err) {
-          examList.innerHTML = `<p style="color:red">Failed to load exams: ${err.message}</p>`;
+          console.error(err);
+          renderEmptyState(`Failed to load exams: ${err.message}`);
+          showToast("Failed to load exams", "error");
         }
       }
 
-      // ---------------- RENDER EXAMS ----------------
+      function updateStats() {
+        $("totalExams").innerText = exams.length;
+        $("examCount").innerText = exams.length;
+      }
+
       function renderExams() {
-        examList.innerHTML = "";
+        const container = $("examsContainer");
 
         if (!exams || exams.length === 0) {
-          examList.innerHTML = "<p>No exams found.</p>";
+          container.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <i class="uil uil-file-blank"></i>
+              <p>No exams created yet</p>
+              <p style="font-size: 12px; margin-top: 8px;">Click "Create Exam" to get started</p>
+            </div>
+          `;
           return;
         }
 
-        exams.forEach((e) => {
-          const div = document.createElement("div");
-          div.classList.add("list-item");
-
-          div.innerHTML = `
-            <div>
-              <h4>${e.title}</h4>
-              <p class="meta">Duration: ${e.duration || "-"}</p>
+        container.innerHTML = exams
+          .map(
+            (exam) => `
+          <div class="exam-card">
+            <div class="card-content">
+              <div class="exam-title">
+                <i class="uil uil-edit"></i>
+                ${escapeHtml(exam.title || "Untitled")}
+              </div>
+              <div class="exam-details">
+                <div class="detail-item">
+                  <i class="uil uil-clock"></i>
+                  <span>Duration: ${exam.duration ? exam.duration + " min" : "0 min"}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="uil uil-file-question"></i>
+                  <span>Questions: ${exam.numOfQues || 0}</span>
+                </div>
+              </div>
+              <div class="exam-description">
+                ${escapeHtml(exam.title || "No description provided")}
+              </div>
+              <div class="card-actions">
+                <a href="/create-exam?examId=${exam.assessmentId}&subjectId=${currentSubject.id}" class="btn-edit">
+                  <i class="uil uil-edit"></i> Edit
+                </a>
+                <button class="btn-delete" onclick="openConfirm(${exam.assessmentId})">
+                  <i class="uil uil-trash-alt"></i> Delete
+                </button>
+              </div>
             </div>
-            <div class="btn-group">
-              <a href="/create-exam?examId=${e.assessmentId}&subjectId=${
-            currentSubject.id
-          }" class="start-btn">Edit</a>
-              <button class="start-btn start-btn-danger">Delete</button>
-            </div>
-          `;
-
-          div
-            .querySelector("button")
-            .addEventListener("click", () => deleteExam(e.assessmentId));
-          examList.appendChild(div);
-        });
+          </div>
+        `,
+          )
+          .join("");
       }
 
-      // ---------------- CHECK MAX EXAMS ----------------
+      function renderEmptyState(message) {
+        const container = $("examsContainer");
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1/-1;">
+            <i class="uil uil-folder-open"></i>
+            <p>${escapeHtml(message)}</p>
+          </div>
+        `;
+      }
+
       function checkMaxExams() {
+        const warningContainer = $("warningMessage");
+
         if (exams.length >= maxExams) {
-          createBtn.style.display = "none";
-          const info = document.createElement("p");
-          info.style.color = "red";
-          info.textContent = `Maximum number of exams (${maxExams}) reached.`;
-          examList.prepend(info);
+          $("createBtn").style.display = "none";
+          warningContainer.innerHTML = `
+            <div class="warning-badge">
+              <i class="uil uil-exclamation-triangle"></i>
+              <span>Maximum number of exams (${maxExams}) reached. Delete an exam to create a new one.</span>
+            </div>
+          `;
         } else {
-          createBtn.style.display = "inline-block";
+          $("createBtn").style.display = "inline-flex";
+          warningContainer.innerHTML = "";
         }
       }
 
-      // ---------------- DELETE EXAM ----------------
       async function deleteExam(id) {
-        if (!confirm("Delete this exam?")) return;
-
         try {
           const res = await fetch(`${API_BASE}/assessments/${id}`, {
             method: "DELETE",
           });
           if (!res.ok) throw new Error("Failed to delete exam");
 
+          showToast("Exam deleted successfully");
           await fetchExams();
         } catch (err) {
-          alert(`Error deleting exam: ${err.message}`);
+          console.error(err);
+          showToast(`Error deleting exam: ${err.message}`, "error");
         }
       }
 
-      // ---------------- INITIALIZE ----------------
-      fetchSubject();
+      if (!teacherId) {
+        $("examsContainer").innerHTML = `
+          <div class="empty-state" style="grid-column: 1/-1;">
+            <i class="uil uil-exclamation-triangle"></i>
+            <p>Teacher not logged in. Please login again.</p>
+          </div>
+        `;
+        $("createBtn").style.display = "none";
+      } else {
+        fetchSubject();
+      }
     </script>
   </body>
 </html>

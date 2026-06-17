@@ -1,16 +1,16 @@
-2026-06-08T15:29:11.461+03:00  INFO 12416 --- [first_app] [main] c.f.first_app.FirstAppApplicationTests   : Starting FirstAppApplicationTests using Java 21.0.4 with PID 12416 (started by LENOVO in C:\Users\LENOVO\Projects\first_app\School)
-2026-06-08T15:29:11.476+03:00  INFO 12416 --- [first_app] [main] c.f.first_app.FirstAppApplicationTests   : No active profile set, falling back to 1 default profile: "default"
-2026-06-08T15:29:12.250+03:00  INFO 12416 --- [first_app] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-06-08T15:29:12.347+03:00  INFO 12416 --- [first_app] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 80 ms. Found 10 JPA repository interfaces.
-2026-06-08T15:29:13.838+03:00  INFO 12416 --- [first_app] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-06-08T15:29:13.968+03:00  INFO 12416 --- [first_app] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.2.Final
-2026-06-08T15:29:14.041+03:00  INFO 12416 --- [first_app] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-06-08T15:29:14.559+03:00  INFO 12416 --- [first_app] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-06-08T15:29:14.631+03:00  INFO 12416 --- [first_app] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-06-08T15:29:15.138+03:00  INFO 12416 --- [first_app] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: 5b0bccc6-2e65-410a-b279-715ff06f6946
-2026-06-08T15:29:15.138+03:00  INFO 12416 --- [first_app] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-06-08T15:29:15.236+03:00  WARN 12416 --- [first_app] [main] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-06-08T15:29:15.269+03:00  INFO 12416 --- [first_app] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-06-16T23:11:15.059+03:00  INFO 32020 --- [first_app] [main] c.f.first_app.FirstAppApplicationTests   : Starting FirstAppApplicationTests using Java 21.0.4 with PID 32020 (started by LENOVO in C:\Users\LENOVO\Projects\first_app\School)
+2026-06-16T23:11:15.071+03:00  INFO 32020 --- [first_app] [main] c.f.first_app.FirstAppApplicationTests   : No active profile set, falling back to 1 default profile: "default"
+2026-06-16T23:11:17.000+03:00  INFO 32020 --- [first_app] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-16T23:11:17.188+03:00  INFO 32020 --- [first_app] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 151 ms. Found 12 JPA repository interfaces.
+2026-06-16T23:11:19.815+03:00  INFO 32020 --- [first_app] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-16T23:11:20.001+03:00  INFO 32020 --- [first_app] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.2.Final
+2026-06-16T23:11:20.114+03:00  INFO 32020 --- [first_app] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-06-16T23:11:20.745+03:00  INFO 32020 --- [first_app] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-16T23:11:20.824+03:00  INFO 32020 --- [first_app] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-16T23:11:21.603+03:00  INFO 32020 --- [first_app] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: f859bc71-3add-4c8b-9042-0434c00453e9
+2026-06-16T23:11:21.610+03:00  INFO 32020 --- [first_app] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-16T23:11:21.710+03:00  WARN 32020 --- [first_app] [main] org.hibernate.orm.deprecation            : HHH90000025: SQLServerDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-16T23:11:21.751+03:00  INFO 32020 --- [first_app] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
 	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
 	Database driver: undefined/unknown
 	Database version: 16.0
@@ -18,20 +18,20 @@
 	Isolation level: undefined/unknown
 	Minimum pool size: undefined/unknown
 	Maximum pool size: undefined/unknown
-2026-06-08T15:29:17.684+03:00  INFO 12416 --- [first_app] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-06-08T15:29:18.158+03:00  INFO 12416 --- [first_app] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-06-08T15:29:19.297+03:00  INFO 12416 --- [first_app] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-06-08T15:29:20.961+03:00  WARN 12416 --- [first_app] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-06-08T15:29:21.116+03:00  WARN 12416 --- [first_app] [main] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-16T23:11:23.937+03:00  INFO 32020 --- [first_app] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-16T23:11:24.800+03:00  INFO 32020 --- [first_app] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-16T23:11:25.717+03:00  INFO 32020 --- [first_app] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-16T23:11:28.176+03:00  WARN 32020 --- [first_app] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-16T23:11:28.323+03:00  WARN 32020 --- [first_app] [main] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 0dd155ec-f56f-4a86-8d82-0a03c73db53d
+Using generated security password: c37259a4-71bb-445d-a599-de713e095c88
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-08T15:29:21.141+03:00  INFO 12416 --- [first_app] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-06-08T15:29:22.277+03:00  INFO 12416 --- [first_app] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
-2026-06-08T15:29:24.347+03:00  INFO 12416 --- [first_app] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
-2026-06-08T15:29:24.714+03:00  INFO 12416 --- [first_app] [main] c.f.first_app.FirstAppApplicationTests   : Started FirstAppApplicationTests in 13.688 seconds (process running for 14.817)
-2026-06-08T15:29:25.923+03:00  INFO 12416 --- [first_app] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
-2026-06-08T15:29:25.925+03:00  INFO 12416 --- [first_app] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
-2026-06-08T15:29:25.937+03:00  INFO 12416 --- [first_app] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-06-16T23:11:28.344+03:00  INFO 32020 --- [first_app] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-16T23:11:29.696+03:00  INFO 32020 --- [first_app] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2026-06-16T23:11:31.764+03:00  INFO 32020 --- [first_app] [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-06-16T23:11:32.081+03:00  INFO 32020 --- [first_app] [main] c.f.first_app.FirstAppApplicationTests   : Started FirstAppApplicationTests in 17.863 seconds (process running for 19.915)
+2026-06-16T23:11:33.330+03:00  INFO 32020 --- [first_app] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-06-16T23:11:33.330+03:00  INFO 32020 --- [first_app] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-06-16T23:11:33.357+03:00  INFO 32020 --- [first_app] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

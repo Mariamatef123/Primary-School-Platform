@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.first.first_app.DTO.QuestionDTO;
+import com.first.first_app.Enum.AssessmentType;
 
 @Entity
 @Table(name = "assessments")
@@ -33,6 +34,8 @@ public class Assessment {
     @JsonBackReference("subject-assessment")
     private Subject subject;
 
+   
+
     @OneToMany(mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("assessment-questions")
     private List<Question> questions = new ArrayList<>();
@@ -40,6 +43,10 @@ public class Assessment {
     @OneToMany(mappedBy = "assessment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Score> scores = new ArrayList<>();
+
+    
+@Column(nullable = false)
+private boolean isSummerExam = false;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
@@ -197,5 +204,10 @@ public class Assessment {
     public void setType(AssessmentType type) {
         this.type = type;
     }
-
+public void setSummerExam(boolean isSummerExam) {
+    this.isSummerExam = isSummerExam;
+}
+public boolean getSummerExam() {
+    return isSummerExam;
+}
 }

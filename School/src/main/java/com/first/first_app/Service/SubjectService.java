@@ -25,8 +25,10 @@ public class SubjectService {
     @Autowired
     private LevelRepo levelRepo;
 
-    public SubjectService(SubjectRepo subjectRepo) {
+    public SubjectService(SubjectRepo subjectRepo,TeacherRepo teacherRepo,LevelRepo levelRepo) {
         this.subjectRepo = subjectRepo;
+        this.levelRepo=levelRepo;
+        this.teacherRepo=teacherRepo;
     }
 
     public Subject createSubject(Subject subject) {

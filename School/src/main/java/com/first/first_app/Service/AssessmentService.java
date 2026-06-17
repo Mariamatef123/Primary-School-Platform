@@ -38,14 +38,14 @@ public class AssessmentService {
                 .orElseThrow(() -> new RuntimeException("Assessment not found with ID: " + assessmentId));
     }
 
-    // add the ques in assessment and save it
+   
     public Assessment addQuestion(int assessmentId, Question q) {
         Assessment a = getAssessmentById(assessmentId);
         a.addQuestion(q);
         return assessmentRepo.save(a);
     }
 
-    // check the ques exists or not and delete it from assessmeent and save the new
+
     public Assessment removeQuestion(int assessmentId, int questionId) {
         Assessment a = getAssessmentById(assessmentId);
         Question q = questionRepo.findById(questionId)
@@ -54,7 +54,7 @@ public class AssessmentService {
         return assessmentRepo.save(a);
     }
 
-    // edit and save
+
     public Assessment editQuestion(int assessmentId, Question updatedQ) {
         Assessment a = getAssessmentById(assessmentId);
         a.editQuestion(updatedQ);
@@ -66,11 +66,7 @@ public class AssessmentService {
         return a.remainingQuestions();
     }
 
-    // loop in questions and compare the correct and the answer of student and
-    // increment the score and add to Score obj the student ,assessment,its score
-    // and make it taken
-    // add the score to assessment and save the assessment and the score and return it
-    
+
     @Transactional
     public Score evaluateAnswers(Assessment assessment, Student student, List<String> answers) {
         List<Question> questions = assessment.getQuestions();

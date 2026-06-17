@@ -1,203 +1,832 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Take Quiz</title>
+    <title>Take Assessment - TinyScholars</title>
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.2.0/css/line.css"
+    />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/dashboard.css" />
     <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
       body {
-        font-family: Arial, sans-serif;
+        background: var(--color-bg);
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
         margin: 0;
+        padding: 0;
       }
-      .dashboard-nav {
+
+      /* Navigation Bar */
+      .nav-bar {
+        max-width: 100%;
+        background: var(--color-bg1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 16px 32px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding: 15px 25px;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
       }
-      .dashboard-nav h2 {
-        margin: 0;
-      }
-      .dashboard-nav a {
+
+      .logo {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--color-primary);
         text-decoration: none;
-        font-weight: bold;
-        border-radius: 6px;
-        padding: 6px 12px;
       }
-      .dashboard {
-        max-width: 900px;
-        margin: auto;
-        padding: 20px;
-      }
-      .list-box {
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      }
-      .question-box {
-        margin-bottom: 15px;
-        padding: 15px;
-        border-radius: 8px;
-      }
-      .question-box p {
-        margin: 0 0 8px 0;
-      }
-      .question-box label {
-        display: block;
-        margin-bottom: 5px;
-        cursor: pointer;
-      }
-      .start-btn {
-        padding: 10px 18px;
-        border-radius: 6px;
+
+      .quit-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(244, 67, 54, 0.15);
+        color: #f44336;
+        font-size: 14px;
         font-weight: 500;
-        border: none;
+        padding: 8px 20px;
+        border: 1px solid rgba(244, 67, 54, 0.3);
+        border-radius: 10px;
         cursor: pointer;
-        margin-top: 10px;
+        text-decoration: none;
+        transition: all 0.2s ease;
       }
-      .timer {
-        font-weight: bold;
-        margin-bottom: 15px;
-        font-size: 1.2rem;
-        color: #ff7043;
+
+      .quit-btn:hover {
+        background: rgba(244, 67, 54, 0.25);
+        transform: translateY(-1px);
+      }
+
+      /* Main Container */
+      .main-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 32px 24px;
+      }
+
+      /* Assessment Header */
+      .assessment-header {
+        background: linear-gradient(
+          135deg,
+          rgba(108, 99, 255, 0.1),
+          rgba(108, 99, 255, 0.05)
+        );
+        border-radius: 20px;
+        padding: 24px 28px;
+        margin-bottom: 24px;
+        margin-top: 50px;
+        border: 1px solid rgba(108, 99, 255, 0.2);
+      }
+
+      .assessment-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--color-white);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .assessment-title i {
+        font-size: 28px;
+        color: #6c63ff;
+      }
+
+      /* Timer */
+      .timer-container {
+        background: var(--color-bg2);
+        border-radius: 16px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .timer-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--color-white);
+        opacity: 0.7;
+      }
+
+      .timer-label i {
+        font-size: 18px;
+        color: #ff9800;
+      }
+
+      .timer-value {
+        font-size: 24px;
+        font-weight: 700;
+        font-family: monospace;
+        color: #ff9800;
+      }
+
+      /* Questions Container */
+      .questions-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 28px;
+      }
+
+      /* Question Card */
+      .question-card {
+        background: var(--color-bg1);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .question-card:hover {
+        border-color: rgba(108, 99, 255, 0.3);
+      }
+
+      .question-header {
+        padding: 16px 20px;
+        background: var(--color-bg2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .question-text {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--color-white);
+        line-height: 1.4;
+        margin: 0;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .question-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 28px;
+        background: rgba(108, 99, 255, 0.15);
+        border-radius: 8px;
+        color: #6c63ff;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .question-body {
+        padding: 20px;
+      }
+
+      /* Choices */
+      .choices-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .choice-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 16px;
+        background: var(--color-bg2);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .choice-item:hover {
+        border-color: rgba(108, 99, 255, 0.3);
+        background: rgba(108, 99, 255, 0.05);
+      }
+
+      .choice-item.selected {
+        border-color: #6c63ff;
+        background: rgba(108, 99, 255, 0.1);
+      }
+
+      .choice-radio {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: #6c63ff;
+      }
+
+      .choice-text {
+        flex: 1;
+        font-size: 14px;
+        color: var(--color-white);
+        line-height: 1.4;
+        cursor: pointer;
+      }
+
+      .choice-letter {
+        width: 28px;
+        height: 28px;
+        background: rgba(108, 99, 255, 0.15);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        color: #6c63ff;
+      }
+
+      /* Submit Button */
+      .submit-section {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 16px;
+      }
+
+      .submit-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #4caf50;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 14px 32px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .submit-btn:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+        background: #43a047;
+      }
+
+      /* Loading State */
+      .loading-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--color-white);
+        opacity: 0.6;
+      }
+
+      .loading-state i {
+        font-size: 48px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Progress Indicator */
+      .progress-indicator {
+        display: flex;
+        position: fixed;
+        top: 101px;
+        width: 855px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding: 12px 16px;
+        background: var(--color-bg2);
+        border-radius: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .progress-text {
+        font-size: 13px;
+        color: var(--color-white);
+        opacity: 0.7;
+      }
+
+      .progress-text i {
+        margin-right: 6px;
+        color: #6c63ff;
+      }
+
+      .progress-bar-container {
+        flex: 1;
+        margin: 0 16px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: #6c63ff;
+        border-radius: 3px;
+        transition: width 0.3s ease;
+      }
+
+      /* Toast */
+      .toast-container {
+        position: fixed;
+        bottom: 22px;
+        right: 22px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .toast {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--color-bg1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--color-white);
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        min-width: 220px;
+        animation: toastIn 0.25s ease;
+      }
+
+      .toast.success {
+        border-left: 3px solid #4caf50;
+      }
+
+      .toast.success i {
+        color: #4caf50;
+      }
+
+      .toast.error {
+        border-left: 3px solid #f44336;
+      }
+
+      .toast.error i {
+        color: #f44336;
+      }
+
+      .toast.warning {
+        border-left: 3px solid #ff9800;
+      }
+
+      .toast.warning i {
+        color: #ff9800;
+      }
+
+      @keyframes toastIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .nav-bar {
+          padding: 12px 20px;
+        }
+
+        .main-container {
+          padding: 20px 16px;
+        }
+
+        .assessment-title {
+          font-size: 20px;
+        }
+
+        .timer-value {
+          font-size: 18px;
+        }
+
+        .question-header {
+          padding: 12px 16px;
+        }
+
+        .question-body {
+          padding: 16px;
+        }
+
+        .choice-item {
+          padding: 10px 12px;
+        }
+
+        .submit-btn {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .progress-indicator {
+          flex-wrap: wrap;
+          gap: 10px;
+          border-radius: 16px;
+        }
+
+        .progress-bar-container {
+          width: 100%;
+          margin: 0;
+        }
       }
     </style>
   </head>
   <body>
-    <nav class="dashboard-nav">
-      <h2>Take Quiz</h2>
-      <a href="/dashboard-student" class="start-btn">Quit</a>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+      <a href="/dashboard-student" class="logo">
+        <i class="uil uil-graduation-cap"></i> TinyScholars
+      </a>
+      <!-- <a href="#" id="quitBtn" class="quit-btn">
+        <i class="uil uil-times-circle"></i> Save & Quit
+      </a> -->
     </nav>
 
-    <div class="dashboard">
-      <div class="list-box">
-        <h2 id="quizTitle">Loading...</h2>
-        <div class="timer" id="timer">Time Left: 00:00</div>
-        <form id="quizForm">
-          <div id="questionsContainer"></div>
-          <button type="submit" id="submitBtn" class="start-btn">
-            Submit Quiz
-          </button>
-        </form>
+    <!-- Main Content -->
+    <div class="main-container">
+      <!-- Assessment Header -->
+      <div class="assessment-header">
+        <div class="assessment-title">
+          <i class="uil uil-file-alt"></i>
+          <span id="quizTitle">Loading...</span>
+        </div>
       </div>
+
+      <!-- Timer -->
+      <div class="timer-container" id="timerContainer" style="display: none">
+        <div class="timer-label">
+          <i class="uil uil-clock"></i>
+          <span>Time Remaining</span>
+        </div>
+        <div class="timer-value" id="timer">00:00</div>
+      </div>
+
+      <!-- Progress Indicator -->
+      <div class="progress-indicator">
+        <div class="progress-text">
+          <i class="uil uil-check-circle"></i>
+          <span id="answeredCount">0</span> /
+          <span id="totalQuestions">0</span> Answered
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Questions Form -->
+      <form id="quizForm">
+        <div id="questionsContainer" class="questions-container">
+          <div class="loading-state">
+            <i class="uil uil-spinner-alt"></i>
+            <p>Loading assessment...</p>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="submit-section">
+          <button type="submit" id="submitBtn" class="submit-btn">
+            <i class="uil uil-check-circle"></i>
+            Submit Assessment
+          </button>
+        </div>
+      </form>
     </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
 
     <script>
       const API_BASE = "http://localhost:8080/students";
-      // const studentId = localStorage.getItem("userId");
       const urlParams = new URLSearchParams(window.location.search);
       const studentId = urlParams.get("studentId");
       const subjectId = urlParams.get("subjectId");
       const assessmentId = urlParams.get("assessmentId");
 
+      const STORAGE_KEY = `assessment_${studentId}_${assessmentId}`;
+
       if (!studentId || !subjectId || !assessmentId) {
-        alert("Missing quiz identifiers!");
-        window.location.href = "dashboard-student.html";
+        alert("Missing assessment identifiers!");
+        window.location.href = "/student-dashboard";
       }
 
       let timerInterval;
+      let userAnswers = {};
+      let assessmentData = null;
+      let timeLeft = 0;
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function showToast(message, type = "success") {
+        const icons = {
+          success: "uil-check-circle",
+          error: "uil-exclamation-circle",
+          warning: "uil-exclamation-triangle",
+        };
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<i class="uil ${icons[type]}"></i><span>${message}</span>`;
+        $("toastContainer").appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function (m) {
+          if (m === "&") return "&amp;";
+          if (m === "<") return "&lt;";
+          if (m === ">") return "&gt;";
+          return m;
+        });
+      }
+
+      function updateProgress() {
+        const total = Object.keys(assessmentData?.questions || {}).length;
+        const answered = Object.keys(userAnswers).length;
+        const percentage = total > 0 ? (answered / total) * 100 : 0;
+
+        $("answeredCount").innerText = answered;
+        $("totalQuestions").innerText = total;
+        $("progressBar").style.width = `${percentage}%`;
+      }
+
+      function markAnswer(questionIndex, value) {
+        userAnswers[questionIndex] = value;
+        updateProgress();
+        saveProgressToStorage();
+      }
+
+      function saveProgressToStorage() {
+        const savedData = {
+          userAnswers: userAnswers,
+          timeLeft: timeLeft,
+          assessmentId: assessmentId,
+          studentId: studentId,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(savedData));
+      }
+
+      function loadProgressFromStorage() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            if (
+              data.assessmentId === assessmentId &&
+              data.studentId === studentId
+            ) {
+              userAnswers = data.userAnswers || {};
+              timeLeft = data.timeLeft || 0;
+              return true;
+            }
+          } catch (e) {
+            console.error("Failed to load saved progress", e);
+          }
+        }
+        return false;
+      }
+
+      function clearSavedProgress() {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+
+      function restoreUserAnswers() {
+        const questions = assessmentData?.questions || [];
+        for (let i = 0; i < questions.length; i++) {
+          const savedAnswer = userAnswers[i];
+          if (savedAnswer) {
+            const questionCard = document.querySelector(
+              `.question-card[data-index="${i}"]`,
+            );
+            if (questionCard) {
+              const choiceItems = questionCard.querySelectorAll(".choice-item");
+              choiceItems.forEach((item) => {
+                if (item.dataset.value === savedAnswer) {
+                  const radio = item.querySelector('input[type="radio"]');
+                  item.classList.add("selected");
+                  if (radio) radio.checked = true;
+                }
+              });
+            }
+          }
+        }
+        updateProgress();
+      }
 
       async function loadQuiz() {
         try {
-          const res = await fetch(
-            `${API_BASE}/${studentId}/subjects/${subjectId}/assessments/${assessmentId}`
-          );
-          const assessment = await res.json();
-          window.assessmentData = assessment;
+          const hasSavedProgress = loadProgressFromStorage();
 
-          document.getElementById("quizTitle").innerText = assessment.title;
-          const container = document.getElementById("questionsContainer");
+          const res = await fetch(
+            `${API_BASE}/${studentId}/subjects/${subjectId}/assessments/${assessmentId}`,
+          );
+          if (!res.ok) throw new Error("Failed to load assessment");
+
+          assessmentData = await res.json();
+          window.assessmentData = assessmentData;
+
+          $("quizTitle").innerText = assessmentData.title;
+          $("totalQuestions").innerText = assessmentData.questions?.length || 0;
+
+          const container = $("questionsContainer");
           container.innerHTML = "";
 
-          assessment.questions.forEach((q, index) => {
-            const div = document.createElement("div");
-            div.classList.add("question-box");
-            div.innerHTML = `<p><strong>${index + 1}. ${q.headline}</strong></p>
-              ${q.choices
-                .map(
-                  (opt, idx) =>
-                    `<label>
-                  <input type="radio" name="q${index}" value="choice${String.fromCharCode(
-                      65 + idx
-                    )}" required> ${opt}
-                </label>`
-                )
-                .join("")}`;
-            container.appendChild(div);
+          if (
+            !assessmentData.questions ||
+            assessmentData.questions.length === 0
+          ) {
+            container.innerHTML = `
+              <div class="loading-state">
+                <i class="uil uil-file-blank"></i>
+                <p>No questions available</p>
+              </div>
+            `;
+            return;
+          }
+
+          assessmentData.questions.forEach((q, index) => {
+            const choicesHtml = q.choices
+              .map((choice, idx) => {
+                const letter = String.fromCharCode(65 + idx);
+                const choiceValue = `choice${letter}`;
+                return `
+                <div class="choice-item" data-question="${index}" data-value="${choiceValue}">
+                  <input type="radio" name="q${index}" value="${choiceValue}" id="q${index}_${idx}" style="display: none;">
+                  <div class="choice-letter">${letter}</div>
+                  <div class="choice-text">${escapeHtml(choice)}</div>
+                </div>
+              `;
+              })
+              .join("");
+
+            const questionCard = document.createElement("div");
+            questionCard.classList.add("question-card");
+            questionCard.setAttribute("data-index", index);
+            questionCard.innerHTML = `
+              <div class="question-header">
+                <div class="question-text">
+                  <span class="question-number">${index + 1}</span>
+                  <span>${escapeHtml(q.headline)}</span>
+                </div>
+              </div>
+              <div class="question-body">
+                <div class="choices-list">
+                  ${choicesHtml}
+                </div>
+              </div>
+            `;
+
+            const choiceItems = questionCard.querySelectorAll(".choice-item");
+            choiceItems.forEach((item) => {
+              const radio = item.querySelector('input[type="radio"]');
+              item.addEventListener("click", () => {
+                choiceItems.forEach((ci) => ci.classList.remove("selected"));
+                item.classList.add("selected");
+                if (radio) radio.checked = true;
+                markAnswer(index, item.dataset.value);
+              });
+            });
+
+            container.appendChild(questionCard);
           });
 
-          const duration = Number(assessment.duration) || 0;
-          const timerEl = document.getElementById("timer");
+          if (hasSavedProgress) {
+            restoreUserAnswers();
+          }
+
+          const duration = Number(assessmentData.duration) || 0;
+
+          const timerContainer = $("timerContainer");
+
           if (duration > 0) {
-            timerEl.style.display = "block";
-            startTimer(duration);
-          } else if (timerEl) {
-            timerEl.remove();
+            timerContainer.style.display = "flex";
+
+            if (hasSavedProgress && timeLeft > 0) {
+              startTimerFromSaved(timeLeft);
+            } else {
+              timeLeft = duration * 60;
+              startTimer(timeLeft);
+            }
           }
         } catch (err) {
           console.error(err);
-          document.getElementById("questionsContainer").innerHTML =
-            "<p>Failed to load quiz.</p>";
+          showToast("Failed to load assessment: " + err.message, "error");
+          $("questionsContainer").innerHTML = `
+            <div class="loading-state">
+              <i class="uil uil-exclamation-triangle"></i>
+              <p>Failed to load assessment. Please try again.</p>
+            </div>
+          `;
         }
       }
 
-      function startTimer(minutes) {
-        let timeLeft = minutes * 60;
-        const timerEl = document.getElementById("timer");
+      function startTimer(seconds) {
+        timeLeft = seconds;
+        const timerEl = $("timer");
+
+        if (timerInterval) clearInterval(timerInterval);
 
         timerInterval = setInterval(() => {
-          if (timeLeft < 0) {
+          if (timeLeft <= 0) {
             clearInterval(timerInterval);
-            alert("Time is up! Submitting quiz...");
+            showToast("Time is up! Submitting assessment...", "warning");
             submitQuiz();
             return;
           }
+          timeLeft--;
           const m = Math.floor(timeLeft / 60);
           const s = timeLeft % 60;
-          if (timerEl) {
-            timerEl.innerText = `Time Left: ${m.toString().padStart(2, "0")}:${s
-              .toString()
-              .padStart(2, "0")}`;
+          timerEl.innerText = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+          saveProgressToStorage();
+        }, 1000);
+      }
+
+      function startTimerFromSaved(savedSeconds) {
+        timeLeft = savedSeconds;
+        const timerEl = $("timer");
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        timerEl.innerText = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+
+        if (timerInterval) clearInterval(timerInterval);
+
+        timerInterval = setInterval(() => {
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            showToast("Time is up! Submitting assessment...", "warning");
+            submitQuiz();
+            return;
           }
           timeLeft--;
+          const m = Math.floor(timeLeft / 60);
+          const s = timeLeft % 60;
+          timerEl.innerText = `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+          saveProgressToStorage();
         }, 1000);
       }
 
       async function submitQuiz() {
-        clearInterval(timerInterval);
+        if (timerInterval) clearInterval(timerInterval);
 
         if (!studentId || !subjectId || !assessmentId) {
-          alert("Cannot submit quiz: missing identifiers!");
-          window.location.href = "dashboard-student.html";
+          showToast("Cannot submit: missing identifiers!", "error");
+          window.location.href = "/student-dashboard";
           return;
         }
 
-        const questionEls = document.querySelectorAll(".question-box");
-        const answers = Array.from(questionEls).map((qBox) => {
-          const checked = qBox.querySelector("input[type=radio]:checked");
-          return checked ? checked.value : "No Answer";
+        const questionEls = document.querySelectorAll(".question-card");
+        const answers = Array.from(questionEls).map((_, idx) => {
+          return userAnswers[idx] || "No Answer";
         });
 
         let score = 0;
-        const questions = window.assessmentData?.questions || [];
+        const questions = assessmentData?.questions || [];
         questions.forEach((q, i) => {
           if (answers[i] === q.correct) score++;
         });
 
-        const result = { score, assessment: window.assessmentData, answers };
+        const totalQuestions = questions.length;
+        const percentage =
+          totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+
+        const result = {
+          score,
+          total: totalQuestions,
+          percentage,
+          assessment: assessmentData,
+          answers,
+        };
         localStorage.setItem("examResult", JSON.stringify(result));
 
-        // -----------------------------
-        // FIXED SCORE PAYLOAD
-        // Only send what backend needs
-        // Backend sets: subject, assessment, type
-        // -----------------------------
         const scorePayload = {
           score: score,
           taken: true,
-          type: window.assessmentData.type || "EXAM",
+          type: assessmentData.type || "EXAM",
         };
 
         try {
@@ -207,23 +836,62 @@
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(scorePayload),
-            }
+            },
           );
 
-          if (!res.ok) throw new Error("Failed to save score to server");
+          if (!res.ok) throw new Error("Failed to save score");
 
-          const data = await res.json();
-          console.log("Score saved:", data);
+          clearSavedProgress();
+
+          showToast(
+            `Assessment submitted! Score: ${score}/${totalQuestions} (${percentage}%)`,
+            "success",
+          );
+          setTimeout(() => {
+            window.location.href = "Exam-result.html";
+          }, 1500);
         } catch (err) {
           console.error("Error submitting score:", err);
+          showToast("Error submitting assessment: " + err.message, "error");
         }
-
-        window.location.href = "Exam-result.html";
       }
+
+      function saveAndQuit() {
+        if (timerInterval) clearInterval(timerInterval);
+        saveProgressToStorage();
+        showToast("Progress saved! You can continue later.", "success");
+        setTimeout(() => {
+          window.location.href = "/student-dashboard";
+        }, 1000);
+      }
+
+      window.addEventListener("beforeunload", function () {
+        if (assessmentData && Object.keys(userAnswers).length > 0) {
+          saveProgressToStorage();
+        }
+      });
 
       document.getElementById("quizForm").addEventListener("submit", (e) => {
         e.preventDefault();
-        submitQuiz();
+
+        const totalQuestions = assessmentData?.questions?.length || 0;
+        const answeredCount = Object.keys(userAnswers).length;
+
+        if (answeredCount < totalQuestions) {
+          showToast(
+            `You have ${totalQuestions - answeredCount} unanswered question(s). Please answer all questions before submitting.`,
+            "warning",
+          );
+          return;
+        }
+
+        if (
+          confirm(
+            "Are you sure you want to submit this assessment? You cannot change your answers after submission.",
+          )
+        ) {
+          submitQuiz();
+        }
       });
 
       loadQuiz();

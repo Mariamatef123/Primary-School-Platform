@@ -45,6 +45,6 @@ public class GatewayLoggingFilter implements GlobalFilter, Ordered {
     }
     @Override
     public int getOrder() {
-        return -1; // runs before most other filters
+        return -1; 
     }
 } 
