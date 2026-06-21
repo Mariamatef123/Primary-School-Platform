@@ -6,7 +6,7 @@
 #     # Use reactive web type because of WebFlux / Gateway
 #     web-application-type: reactive
 
-#   devtools:
+#   devtools: 
 #     restart:
 #       enabled: true
 #     livereload:

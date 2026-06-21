@@ -1,3 +1,75 @@
+# services:
+#   db:
+#     image: mcr.microsoft.com/mssql/server:2022-latest
+#     container_name: school_sql_server
+#     environment:
+#       ACCEPT_EULA: "Y"
+#       MSSQL_PID: Developer
+#       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Mariam@123}
+#     ports:
+#      - "1434:1433"
+#     volumes:
+#       - sqlserver-data:/var/opt/mssql
+#     restart: unless-stopped
+
+#   db-init:
+#     image: mcr.microsoft.com/mssql-tools
+#     container_name: school_db_init
+#     depends_on:
+#       - db
+#     environment:
+#       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Mariam@123}
+#     entrypoint: /bin/bash
+#     command:
+#       - -c
+#       - |
+#         until /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1" >/dev/null 2>&1; do
+#           echo "Waiting for SQL Server..."
+#           sleep 2
+#         done
+#         /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "$$MSSQL_SA_PASSWORD" -Q "IF DB_ID('School') IS NULL CREATE DATABASE School"
+#     restart: "no"
+
+#   school:
+#     build:
+#       context: .
+#       dockerfile: School/Dockerfile
+#     container_name: school_service_app
+#     depends_on:
+#       db-init:
+#         condition: service_completed_successfully
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       SPRING_DATASOURCE_URL: "jdbc:sqlserver://db:1433;databaseName=School;encrypt=true;trustServerCertificate=true"
+#       SPRING_DATASOURCE_USERNAME: sa
+#       SPRING_DATASOURCE_PASSWORD: ${MSSQL_SA_PASSWORD:-Mariam@123}
+#       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#       LOGGING_FILE_NAME: /app/logs/app.log
+#     volumes:
+#       - school-logs:/app/logs
+#     restart: unless-stopped
+
+#   gateway:
+#     build:
+#       context: ./apiGetway
+#       dockerfile: Dockerfile
+#     container_name: api_gateway_app
+#     depends_on:
+#       - school
+#     ports:
+#       - "8082:8082"
+#     environment:
+#       SCHOOL_SERVICE_URL: http://school:8080
+#       LOGGING_FILE_NAME: /app/logs/app.log
+#     volumes:
+#       - gateway-logs:/app/logs
+#     restart: unless-stopped
+
+# volumes:
+#   sqlserver-data:
+#   school-logs:
+#   gateway-logs:
 services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -7,7 +79,7 @@ services:
       MSSQL_PID: Developer
       MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Mariam@123}
     ports:
-     - "1434:1433"
+      - "1434:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
     restart: unless-stopped
@@ -27,14 +99,15 @@ services:
           echo "Waiting for SQL Server..."
           sleep 2
         done
-        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "$$MSSQL_SA_PASSWORD" -Q "IF DB_ID('School') IS NULL CREATE DATABASE School"
+        /opt/mssql-tools/bin/sqlcmd -S db -U sa -P "$$MSSQL_SA_PASSWORD" \
+          -Q "IF DB_ID('School') IS NULL CREATE DATABASE School"
     restart: "no"
 
   school:
     build:
       context: .
-      dockerfile: School/Dockerfile
-    container_name: school_service_app
+      dockerfile: School/Dockerfile.dev
+    container_name: school_service_dev
     depends_on:
       db-init:
         condition: service_completed_successfully
@@ -47,14 +120,18 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       LOGGING_FILE_NAME: /app/logs/app.log
     volumes:
+      # Mount entire workspace so Maven multi-module context works
+      - .:/workspace
+      # Preserve Maven cache between restarts (huge speed boost)
+      - maven-cache:/root/.m2
       - school-logs:/app/logs
     restart: unless-stopped
 
   gateway:
     build:
-      context: ./apiGetway
-      dockerfile: Dockerfile
-    container_name: api_gateway_app
+      context: .
+      dockerfile: apiGetway/Dockerfile.dev
+    container_name: api_gateway_dev
     depends_on:
       - school
     ports:
@@ -63,6 +140,8 @@ services:
       SCHOOL_SERVICE_URL: http://school:8080
       LOGGING_FILE_NAME: /app/logs/app.log
     volumes:
+      - .:/workspace
+      - maven-cache:/root/.m2
       - gateway-logs:/app/logs
     restart: unless-stopped
 
@@ -70,3 +149,4 @@ volumes:
   sqlserver-data:
   school-logs:
   gateway-logs:
+  maven-cache:   # ← shared Maven cache = much faster cold startsyyy

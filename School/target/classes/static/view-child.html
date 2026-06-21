@@ -1080,9 +1080,6 @@
         header.querySelector(".subject-chevron").classList.toggle("open");
       };
 
-      /* ═══════════════════════════════════════════════
-         RESULTS MODAL (Only shows completed terms)
-      ════════════════════════════════════════════════ */
       async function showResults(child) {
         $("resultsModalName").innerText = child.name || "";
         $("resultsContainer").innerHTML =
@@ -1098,7 +1095,6 @@
 
           const allTerms = data.allTermsResults || [];
 
-          /* Group by level, filter only completed terms */
           const levelMap = new Map();
           for (const tr of allTerms) {
             if (!tr.hasCompleted) continue;
@@ -1183,10 +1179,10 @@
                     : "failed";
               const tIcon =
                 term.overallStatus === "Passed"
-                  ? "✅"
+                  ? ""
                   : term.overallStatus === "Failed but Has Summer Exam"
-                    ? "⚠️"
-                    : "❌";
+                    ? ""
+                    : "";
 
               const term2Legend = isTerm2
                 ? `
@@ -1296,9 +1292,6 @@
         }
       }
 
-      /* ═══════════════════════════════════════════════
-         SUBJECTS MODAL
-      ════════════════════════════════════════════════ */
       async function showSubjects(child) {
         $("subjectsContainer").innerHTML =
           '<div class="loading-state"><i class="uil uil-spinner-alt"></i><p>Loading subjects...</p></div>';
@@ -1354,7 +1347,7 @@
             }
 
             const termPill = subj.term
-              ? `<span class="term-badge-pill">${subj.term === "TERM_1" ? "📖 Term 1" : "📘 Term 2"}</span>`
+              ? `<span class="term-badge-pill">${subj.term === "TERM_1" ? " Term 1" : " Term 2"}</span>`
               : "";
 
             subjectsHtml += `
@@ -1390,9 +1383,6 @@
         }
       }
 
-      /* ═══════════════════════════════════════════════
-         LOAD CHILDREN
-      ════════════════════════════════════════════════ */
       async function loadChildren() {
         if (!parentId) {
           showToast("Missing parentId. Please login again.", "error");

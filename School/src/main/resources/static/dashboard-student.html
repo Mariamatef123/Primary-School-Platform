@@ -1320,15 +1320,15 @@
             
             <div class="grand-total-section">
                 <div class="grand-total-item">
-                    <span class="grand-total-label">🏆 GRAND TOTAL</span>
+                    <span class="grand-total-label"> GRAND TOTAL</span>
                     <span class="grand-total-value">${termData.grandTotal ?? 0} / ${termData.maxGrandTotal ?? 0}</span>
                 </div>
                 <div class="grand-total-item">
-                    <span class="grand-total-label">📊 OVERALL PERCENTAGE</span>
+                    <span class="grand-total-label"> OVERALL PERCENTAGE</span>
                     <span class="grand-total-value">${(termData.overallPercentage || 0).toFixed(2)}%</span>
                 </div>
                 <div class="grand-total-item">
-                    <span class="grand-total-label">📋 STATUS</span>
+                    <span class="grand-total-label"> STATUS</span>
                     <span class="overall-status" style="color: ${termData.overallStatus === "Passed" ? "#4caf50" : termData.overallStatus === "Failed but Has Summer Exam" ? "#ff9800" : "#f44336"}">
                         ${termData.overallStatus}
                     </span>
@@ -1339,7 +1339,7 @@
               termData.failedSubjectsCount > 0
                 ? `
             <div style="margin-top: 16px; padding: 12px; background: rgba(244, 67, 54, 0.1); border-radius: 12px; border-left: 3px solid #f44336;">
-                <span style="font-size: 12px; color: #f44336;">⚠️ Failed Subjects Count: ${termData.failedSubjectsCount}</span>
+                <span style="font-size: 12px; color: #f44336;"> Failed Subjects Count: ${termData.failedSubjectsCount}</span>
             </div>
             `
                 : ""
@@ -1474,10 +1474,10 @@
               assessmentsHtml = `
                     <div class="locked-placeholder">
                         <i class="uil uil-lock-alt"></i>
-                        <p>📚 This subject belongs to <strong>${escapeHtml(subject.level?.name || "higher level")}</strong>.</p>
-                        <p>You have passed your current level! 🎉</p>
+                        <p> This subject belongs to <strong>${escapeHtml(subject.level?.name || "higher level")}</strong>.</p>
+                        <p>You have passed your current level </p>
                         <div class="unlock-date">
-                            <i class="uil uil-calendar-alt"></i> 🔓 Unlocks on <strong>15/9/2026</strong>
+                            <i class="uil uil-calendar-alt"></i>  Unlocks on <strong>15/9/2026</strong>
                         </div>
                     </div>
                 `;
@@ -1607,9 +1607,9 @@
                       student.currentTerm,
                     );
                     disabledAttr = 'style="opacity:0.5;pointer-events:none;"';
-                    buttonText = `🔒 Unlocks on ${unlockDateStr}`;
+                    buttonText = ` Unlocks on ${unlockDateStr}`;
                     url = "#";
-                    statusLabel = `🔒 Locked - Available from ${unlockDateStr}`;
+                    statusLabel = ` Locked - Available from ${unlockDateStr}`;
                   }
                 }
 
@@ -1621,7 +1621,7 @@
                   a.type === "EXAM"
                 ) {
                   disabledAttr = 'style="opacity:0.5;pointer-events:none;"';
-                  buttonText = "⛔ Summer Restricted";
+                  buttonText = " Summer Restricted";
                   url = "#";
                 }
 
@@ -1637,12 +1637,12 @@
 
                 const summerBadge =
                   isSummerEligible && statusText === "SUMMER_EXAM"
-                    ? '<span class="summer-badge">☀️ Summer Exam</span>'
+                    ? '<span class="summer-badge"> Summer Exam</span>'
                     : "";
 
                 const lockBadge =
                   isScheduleLocked && !taken
-                    ? `<span class="summer-badge" style="background: rgba(255,152,0,0.2); color:#ff9800;">🔒 ${a.assessmentTypeName} - Unlocks: ${unlockDateStr}</span>`
+                    ? `<span class="summer-badge" style="background: rgba(255,152,0,0.2); color:#ff9800;"> ${a.assessmentTypeName} - Unlocks: ${unlockDateStr}</span>`
                     : "";
 
                 const numberBadge = `<span class="summer-badge" style="background: rgba(108,99,255,0.2); color:#6c63ff;">#${a.sequentialNumber}</span>`;
@@ -1651,7 +1651,7 @@
                   !taken &&
                   isAssessmentsLocked &&
                   a.sequentialNumber <= unlockedCount
-                    ? `<span class="summer-badge" style="background: rgba(76,175,80,0.2); color:#4caf50;">🔓 Unlocked</span>`
+                    ? `<span class="summer-badge" style="background: rgba(76,175,80,0.2); color:#4caf50;"> Unlocked</span>`
                     : "";
 
                 assessmentsHtml += `
@@ -1743,7 +1743,7 @@
             } catch (err) {}
 
             if (summerList.length > 0) {
-              let summerHtml = `<div class="summer-exam-section"><div class="summer-header"><i class="uil uil-sun"></i><h3>☀️ Summer Exam Session</h3></div><div class="summer-grid">`;
+              let summerHtml = `<div class="summer-exam-section"><div class="summer-header"><i class="uil uil-sun"></i><h3> Summer Exam Session</h3></div><div class="summer-grid">`;
               for (const exam of summerList) {
                 let takenFlag = false,
                   scoreVal = 0;
@@ -1771,7 +1771,7 @@
                             <div class="assessment-header">
                                 <div class="assessment-title">
                                     <i class="uil uil-edit"></i>${escapeHtml(exam.title)}
-                                    <span class="summer-badge">☀️ Summer Eligibility</span>
+                                    <span class="summer-badge"> Summer Eligibility</span>
                                 </div>
                                 <span class="type-badge exam"><i class="uil uil-edit"></i>SUMMER EXAM</span>
                             </div>
@@ -1790,7 +1790,7 @@
               summerHtml += `</div></div>`;
               summerContainer.innerHTML = summerHtml;
             } else {
-              summerContainer.innerHTML = `<div class="summer-exam-section"><div class="summer-header"><i class="uil uil-sun"></i><h3>☀️ Summer Exam Session</h3></div><div class="empty-state"><i class="uil uil-sun"></i><p>No summer exams assigned yet.</p></div></div>`;
+              summerContainer.innerHTML = `<div class="summer-exam-section"><div class="summer-header"><i class="uil uil-sun"></i><h3> Summer Exam Session</h3></div><div class="empty-state"><i class="uil uil-sun"></i><p>No summer exams assigned yet.</p></div></div>`;
             }
           } else {
             summerContainer.innerHTML = "";

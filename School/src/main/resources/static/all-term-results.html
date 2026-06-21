@@ -939,7 +939,7 @@
             <div class="section-container">
               <div class="section-header">
                 <i class="uil uil-chart-growth"></i>
-                <h2>📊 Complete Academic History</h2>
+                <h2> Complete Academic History</h2>
               </div>
               <div style="padding:0;">`;
 
@@ -1009,10 +1009,10 @@
 
               const termIcon =
                 term.overallStatus === "Passed"
-                  ? "✅"
+                  ? ""
                   : term.overallStatus === "Failed but Has Summer Exam"
-                    ? "⚠️"
-                    : "❌";
+                    ? ""
+                    : "";
 
               const term2Note = isTerm2
                 ? `
@@ -1043,7 +1043,7 @@
                     <div class="term-status">
                       <span class="term-badge ${termStatusClass}">${termIcon} ${escapeHtml(term.overallStatus)}</span>
                       <span class="term-percentage">${(term.overallPercentage || 0).toFixed(1)}%</span>
-                      <span>🏆 ${fmt(term.grandTotal)} / ${fmt(term.maxGrandTotal)}</span>
+                      <span> ${fmt(term.grandTotal)} / ${fmt(term.maxGrandTotal)}</span>
                       <i class="uil uil-angle-down term-chevron" data-term-key="${termKey}"></i>
                     </div>
                   </div>
