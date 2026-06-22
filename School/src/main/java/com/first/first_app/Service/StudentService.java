@@ -464,8 +464,13 @@ public ResponseEntity<?> getTermResult(int studentId) {
                 }
             }
         }
+long summerSubjects = student.getSubjectsFailed().stream()
+        .filter(subject -> subject.getAssessments() != null && subject.getAssessments().stream().anyMatch(Assessment::getSummerExam))
+        .count();
 
-        if (summerSolved.get() == student.getSubjectsFailed().size() && student.getSubjectsFailed().size() > 0) {
+if (summerSolved.get() == summerSubjects && summerSubjects > 0) {
+
+           
             if (summerFailed.get() == 0) {
                 int levelId = student.getLevelId() + 1;
                 Level level = levelRepo.findById(levelId).orElse(null);
